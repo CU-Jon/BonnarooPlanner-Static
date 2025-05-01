@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bonnaroo Planner</title>
+
+        <!-- Google font + existing stylesheet  -->
+        <link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+
+        <!-- jsPDF + autotable for PDF export -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    </head>
+    <body>
+        <div class="container" id="app">
+            <h1 id="title">Select Your Bonnaroo Events</h1>
+
+            <!-- Year selector will be filled by JS once we know what JSON files exist → /schedules/centeroo_YYYY.json -->
+            <form id="yearForm" style="margin-bottom:20px;">
+                <label for="year">Select Year:</label>
+                <select id="year"></select>
+            </form>
+
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event,'Centeroo')">Centeroo</button>
+                <button class="tablinks" onclick="openTab(event,'Outeroo')">Outeroo</button>
+            </div>
+
+            <div style="margin:15px 0;">
+                <button type="button" onclick="toggleSelection(true)">Select all</button>
+                <button type="button" onclick="toggleSelection(false)">Deselect all</button>
+            </div>
+
+            <!-- tabs (selection check‑boxes) will be injected here → #tabContainer -->
+            <div id="tabContainer"></div>
+
+            <button id="buildBtn" type="button">Build My Planner!</button>
+        </div>
+
+        <!-- Print / PDF / start‑over are injected *after* planner is built -->
+
+        <script>
+            /**********************************************************
+             *  General‑purpose helpers (ported from the original PHP) *
+             **********************************************************/
+
+            function timeToMinutes(time) {
+                /* Convert "h:mm AM/PM" → minutes since 00:00  
+                BUT treat 12 AM–6 AM as *next‑day* so they render after the day’s main events. */
+                const LATE_NIGHT_CUTOFF = 6 * 60;      // 06:00 AM
+                const [_, h, m, ampm] = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || [];
+                let hours = parseInt(h, 10);
+                const minutes = parseInt(m, 10);
+                if (/PM/i.test(ampm) && hours !== 12) hours += 12;
+                if (/AM/i.test(ampm) && hours === 12) hours = 0;
+                let total = hours * 60 + minutes;
+                if (total <= LATE_NIGHT_CUTOFF) total += 1440; // push to “next day”
+                return total;
+            }
+
+            function minutesToTime(mins) {
+                if (mins >= 1440) mins -= 1440;      // wrap back into 24‑h clock
+                let h = Math.floor(mins / 60);
+                const m = mins % 60;
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12;
+                if (h === 0) h = 12;
+                return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+            }
+
+            // Collapse *overlapping* events for the same location/day into one synthetic block (but keep every title)
+            function mergeOverlapsWithDetail(events) {
+                // clone & sort chronologically
+                const sorted = [...events].sort((a,b) => timeToMinutes(a.start)-timeToMinutes(b.start));
+                const buckets = [];
+                for (const ev of sorted) {
+                    const s = timeToMinutes(ev.start);
+                    const e = timeToMinutes(ev.end);
+                    if (!buckets.length || s >= buckets.at(-1).end) {
+                        // new bucket
+                        buckets.push({start:s,end:e,lines:[`${ev.name}<br><small>${ev.start}&nbsp;–&nbsp;${ev.end}</small>`]});
+                    } else {
+                        // overlaps – extend last bucket
+                        const b = buckets.at(-1);
+                        b.end = Math.max(b.end,e);
+                        b.lines.push(`${ev.name}<br><small>${ev.start}&nbsp;–&nbsp;${ev.end}</small>`);
+                    }
+                }
+                return buckets.map(b=>({name:b.lines.join('<br><br>'),start:minutesToTime(b.start),end:minutesToTime(b.end)}));
+            }
+
+            /*******************************************************
+             *            UI logic for the selection step          *
+             *******************************************************/
+
+            const jsonBase = 'schedules';           // folder where centeroo_YYYY.json lives
+            let scheduleData = {Centeroo:null,Outeroo:null};
+            let currentYear  = null;
+            let currentType = null;
+
+            async function init() {
+                // detect available years (beginning with 2025 and incremented by (x)) – you can widen this range if needed
+                const years = [];
+                const YEAR_RANGE = [...Array(1).keys()].map(i=>2025+i);
+                for (const y of YEAR_RANGE) {
+                    try {
+                        // try a HEAD fetch to centeroo file – if it exists we assume outeroo exists as well
+                        const resp = await fetch(`${jsonBase}/centeroo_${y}.json`,{method:'HEAD'});
+                        if (resp.ok) years.push(y);
+                    } catch(e) { /* ignore network errors (404 etc.) */ }
+                }
+                if (!years.length) {
+                    alert('No schedule JSON files found under /schedules');
+                    return;
+                }
+                years.sort();
+
+                // populate year dropdown
+                const yearSel = document.getElementById('year');
+                for (const y of years) {
+                    const opt = document.createElement('option');
+                    opt.value = opt.textContent = y;
+                    yearSel.appendChild(opt);
+                }
+                currentYear = years.at(-1);               // default to latest year
+                yearSel.value = currentYear;
+                yearSel.addEventListener('change', ()=>loadYear(yearSel.value));
+
+                await loadYear(currentYear);
+            }
+
+            async function loadYear(y) {
+                currentYear = y;
+                document.getElementById('title').textContent = `Select Your Bonnaroo ${y} Events`;
+                scheduleData = {Centeroo:null,Outeroo:null};
+
+                // fetch both schedule files in parallel
+                try {
+                    const [centeroo, outeroo] = await Promise.all([
+                        fetch(`${jsonBase}/centeroo_${y}.json`).then(r=>r.json()),
+                        fetch(`${jsonBase}/outeroo_${y}.json`).then(r=>r.json())
+                    ]);
+                    scheduleData.Centeroo = centeroo;
+                    scheduleData.Outeroo  = outeroo;
+                    buildSelectionUI();
+                } catch(err) {
+                    alert(`Could not load schedule data for year ${y}`);
+                    console.error(err);
+                }
+            }
+
+            function buildSelectionUI() {
+                const tabContainer = document.getElementById('tabContainer');
+                tabContainer.innerHTML = '';
+
+                for (const type of ['Centeroo','Outeroo']) {
+                    const content = document.createElement('div');
+                    content.id = type;
+                    content.classList.add('tabcontent');
+
+                    const data = scheduleData[type];
+                    for (const [day, locations] of Object.entries(data)) {
+                        const h2 = document.createElement('h2');
+                        h2.textContent = day;
+                        content.appendChild(h2);
+
+                        const grid = document.createElement('div');
+                        grid.className = 'locations-grid';
+
+                        for (const [loc, events] of Object.entries(locations)) {
+                            if (!events || !events.length) continue;
+                            const block = document.createElement('div');
+                            block.className = 'location-block';
+                            block.innerHTML = `<h3>${loc}</h3>`;
+                            for (const ev of events) {
+                                const lbl = document.createElement('label');
+                                const cbox = document.createElement('input');
+                                cbox.type = 'checkbox';
+                                cbox.dataset.payload = JSON.stringify({type,day,location:loc,event:ev});
+                                lbl.appendChild(cbox);
+                                lbl.insertAdjacentText('beforeend',` ${ev.name} (${ev.start} - ${ev.end})`);
+                                block.appendChild(lbl);
+                                block.appendChild(document.createElement('br'));
+                            }
+                            grid.appendChild(block);
+                        }
+                        content.appendChild(grid);
+                    }
+                    tabContainer.appendChild(content);
+                }
+
+                // After rebuilding UI re‑activate first tab
+                document.querySelector('.tablinks').click();
+            }
+
+            /*******************************************************
+             *                Planner building section             *
+             *******************************************************/
+
+            document.getElementById('buildBtn').addEventListener('click',buildPlanner);
+
+            function buildPlanner() {
+                // get all checked boxes
+                const selections = Array.from(document.querySelectorAll("input[type='checkbox']:checked"))
+                    .map(cb=>JSON.parse(cb.dataset.payload));
+                if (!selections.length) {
+                    alert('Please pick at least one event!');
+                    return;
+                }
+
+                // group selections –> type → day → location → events[]
+                const grouped = {};
+                for (const sel of selections) {
+                    grouped[sel.type] ??= {};
+                    grouped[sel.type][sel.day] ??= {};
+                    grouped[sel.type][sel.day][sel.location] ??= [];
+                    grouped[sel.type][sel.day][sel.location].push(sel.event);
+                }
+
+                // compute per‑day time‑grid extents (start / end in minutes)
+                const timeGrid = {};
+                for (const days of Object.values(grouped)) {
+                    for (const [day, locations] of Object.entries(days)) {
+                        let earliest = 1440, latest = 0;
+                        for (const events of Object.values(locations)) {
+                            for (const ev of events) {
+                                const s = timeToMinutes(ev.start);
+                                const e = timeToMinutes(ev.end);
+                                earliest = Math.min(earliest,s);
+                                latest   = Math.max(latest,e);
+                            }
+                        }
+                        earliest = Math.floor(earliest/15)*15;
+                        latest   = Math.ceil(latest/15)*15;
+                        timeGrid[day] = {start:earliest,end:latest};
+                    }
+                }
+
+                // clear *everything* inside #app then rebuild planner view
+                const app = document.getElementById('app');
+                app.innerHTML = '';
+                const header = document.createElement('h1');
+                header.textContent = `Your Custom Bonnaroo ${currentYear} Planner`;
+                app.appendChild(header);
+
+                const instruct = document.createElement('h3');
+                instruct.className = 'print-instructions';
+                instruct.textContent = 'Scroll down to print this page or save to PDF!';
+                app.appendChild(instruct);
+
+                for (const [type, days] of Object.entries(grouped)) {
+                    const typeHdr = document.createElement('h1');
+                    typeHdr.className = 'plannerType';
+                    typeHdr.textContent = type;
+                    app.appendChild(typeHdr);
+                    currentType = type;
+
+                    for (const [day, locations] of Object.entries(days)) {
+                        // on‑screen heading
+                        const dayScreen = document.createElement('h2');
+                        dayScreen.className = 'day-heading-screen';
+                        dayScreen.textContent = day;
+                        app.appendChild(dayScreen);
+
+                        // build table
+                        const tbl = document.createElement('table');
+                        tbl.className = 'day-section';
+                        tbl.dataset.day = day;
+
+                        // THEAD
+                        const thead = document.createElement('thead');
+                        // header row used only in print – full‑width cell
+                        const trDayPrint = document.createElement('tr');
+                        trDayPrint.className = 'day-heading-print';
+                        const thDay = document.createElement('th');
+                        thDay.colSpan = Object.keys(locations).length + 1;
+                        thDay.textContent = day;
+                        trDayPrint.appendChild(thDay);
+                        thead.appendChild(trDayPrint);
+
+                        // column headers
+                        const trCols = document.createElement('tr');
+                        trCols.innerHTML = '<th>Time</th>';
+                        const stageNames = Object.keys(locations);
+                        for (const stg of stageNames) {
+                            const th = document.createElement('th');
+                            th.textContent = stg;
+                            trCols.appendChild(th);
+                        }
+                        thead.appendChild(trCols);
+                        tbl.appendChild(thead);
+
+                        // BODY
+                        const tbody = document.createElement('tbody');
+                        // pre‑merge overlaps for each stage
+                        const stageEvents = {};
+                        for (const stg of stageNames) {
+                            stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
+                        }
+                        const rowSpanTracker = {};
+                        for (let tm = timeGrid[day].start; tm < timeGrid[day].end; tm += 15) {
+                            const tr = document.createElement('tr');
+                            const tdTime = document.createElement('td');
+                            tdTime.className = 'left-time-col';
+                            tdTime.textContent = minutesToTime(tm);
+                            tr.appendChild(tdTime);
+
+                            for (const stg of stageNames) {
+                                if (rowSpanTracker[stg] > 0) {
+                                    rowSpanTracker[stg]--; // skip cells inside rowspan
+                                    continue;
+                                }
+                                let evFound = null;
+                                for (const ev of stageEvents[stg]) {
+                                    const s = timeToMinutes(ev.start);
+                                    if (s === tm) { evFound = ev; break; }
+                                }
+                                if (evFound) {
+                                    const span = (timeToMinutes(evFound.end)-timeToMinutes(evFound.start))/15;
+                                    const td = document.createElement('td');
+                                    td.innerHTML = evFound.name;
+                                    td.rowSpan = span;
+                                    tr.appendChild(td);
+                                    rowSpanTracker[stg] = span-1;
+                                } else {
+                                    tr.appendChild(document.createElement('td'));
+                                }
+                            }
+                            tbody.appendChild(tr);
+                        }
+                        tbl.appendChild(tbody);
+                        app.appendChild(tbl);
+                        app.appendChild(document.createElement('br'));
+                    }
+                }
+
+                // action buttons
+                const btnWrap = document.createElement('div');
+                const printBtn = document.createElement('button');
+                printBtn.id = 'printButton';
+                printBtn.textContent = 'Print';
+                printBtn.addEventListener('click',()=>window.print());
+                btnWrap.appendChild(printBtn);
+
+                const pdfBtn = document.createElement('button');
+                pdfBtn.id = 'pdfButton';
+                pdfBtn.textContent = 'Download as PDF';
+                pdfBtn.addEventListener('click',downloadPDF);
+                btnWrap.appendChild(pdfBtn);
+
+                const restart = document.createElement('a');
+                restart.id = 'startOver';
+                restart.href = '#';
+                restart.textContent = 'Start Over';
+                restart.addEventListener('click',()=>location.reload());
+                btnWrap.appendChild(restart);
+
+                app.appendChild(btnWrap);
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            /****************************************************************
+             *           PDF export (uses autoTable just like PHP)          *
+             ****************************************************************/
+
+            function downloadPDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
+
+                const tables = document.querySelectorAll('.day-section');
+                const plannerTitle = `Bonnaroo ${currentYear} Planner (${currentType})`;
+
+                tables.forEach((table,index)=>{
+                    if (index>0) doc.addPage();
+                    const day = table.dataset.day;
+                    const firstPage = doc.internal.getNumberOfPages();
+
+                    doc.autoTable({
+                        html: table,
+                        startY:70,
+                        margin:{top:70},
+                        theme:'grid',
+                        headStyles:{fillColor:[106,13,173],fontStyle:'bold'},
+                        styles:{font:'helvetica',fontSize:9,halign:'center',valign:'middle'},
+                        didDrawPage:function (data) {
+                            const pageWidth = doc.internal.pageSize.getWidth();
+                            const pageInfo  = doc.internal.getCurrentPageInfo();
+
+                            doc.setFontSize(14);
+                            doc.setTextColor(0,0,0);
+                            doc.text(plannerTitle,pageWidth/2,30,{align:'center'});
+
+                            doc.setFontSize(18);
+                            if (pageInfo.pageNumber===firstPage) {
+                                doc.text(day,40,50);
+                            } else {
+                                doc.text(`${day} (Continued)`,40,50);
+                            }
+                        }
+                    });
+                });
+
+                doc.save(`Bonnaroo_Planner_${currentYear}_${currentType}.pdf`);
+            }
+
+            /*******************************************************
+             *                  Existing UI helpers                *
+             *******************************************************/
+
+            function openTab(evt,tabName) {
+                document.querySelectorAll("input[type='checkbox']").forEach(cb=>cb.checked=false);
+                document.querySelectorAll('.tabcontent').forEach(e=>e.style.display='none');
+                document.querySelectorAll('.tablinks').forEach(e=>e.classList.remove('active'));
+                document.getElementById(tabName).style.display='block';
+                evt.currentTarget.classList.add('active');
+            }
+
+            function toggleSelection(state) {
+                const activeTab = document.querySelector(".tabcontent[style*='block']");
+                if (!activeTab) return;
+                activeTab.querySelectorAll("input[type='checkbox']").forEach(cb=>cb.checked=state);
+            }
+
+            // auto‑click the first tab once UI is built
+
+            /*********************** Start‑up ************************/
+            init();
+        </script>
+    </body>
+</html>
