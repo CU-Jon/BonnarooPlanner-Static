@@ -119,6 +119,7 @@ button:hover, a#startOver:hover {
 }
 #startOver {
     display: block;
+    max-width: 4em;
 }
 @media print {
     #printButton, #pdfButton, #startOver {
