@@ -87,16 +87,51 @@ async function init() {
     await loadYear(currentYear);
 }
 
+/**
+ * Creates (or updates) a <p> right under the #title H1
+ * displaying the given Date in the user's locale.
+ */
+function displayLastUpdated(date) {
+    const titleEl = document.getElementById('title');
+    let p = document.getElementById('lastUpdated');
+    if (!p) {
+        p = document.createElement('p');
+        p.id = 'lastUpdated';
+        p.className = 'last-updated';
+        // insert right after the H1
+        titleEl.insertAdjacentElement('afterend', p);
+    }
+    p.textContent = `Schedules last updated: ${date.toLocaleString()}`;
+}
+
 async function loadYear(y) {
     currentYear = y;
     document.getElementById('title').textContent = `Select Your Bonnaroo ${y} Events`;
     scheduleData = {Centeroo:null,Outeroo:null};
 
-    // fetch both schedule files in parallel
     try {
+        // 1) grab the responses so we can read Last-Modified
+        const [respCent, respOut] = await Promise.all([
+            fetch(`${jsonBase}/centeroo_${y}.json`),
+            fetch(`${jsonBase}/outeroo_${y}.json`)
+        ]);
+ 
+        // 2) extract their Last-Modified headers
+        const lmCent = respCent.headers.get('Last-Modified');
+        const lmOut  = respOut.headers.get('Last-Modified');
+        if (lmCent || lmOut) {
+            const dCent = lmCent ? new Date(lmCent) : null;
+            const dOut  = lmOut  ? new Date(lmOut)  : null;
+            // pick the later one
+            let latest = dCent;
+            if (!latest || (dOut && dOut > latest)) latest = dOut;
+            if (latest) displayLastUpdated(latest);
+        }
+ 
+        // 3) now actually parse them
         const [centeroo, outeroo] = await Promise.all([
-            fetch(`${jsonBase}/centeroo_${y}.json`).then(r=>r.json()),
-            fetch(`${jsonBase}/outeroo_${y}.json`).then(r=>r.json())
+            respCent.json(),
+            respOut.json()
         ]);
         scheduleData.Centeroo = centeroo;
         scheduleData.Outeroo  = outeroo;
