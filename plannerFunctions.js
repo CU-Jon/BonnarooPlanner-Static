@@ -1,10 +1,29 @@
 /**********************************************************
- *  General‑purpose helpers (ported from the original PHP) *
+ *    Changeable variables used within the entire page    *
  **********************************************************/
+const jsonBase = 'schedules'; // folder where centeroo_YYYY.json lives
+const firstYearAvailable = 2025; // first year available in the /schedules folder. This helps speed up page load times for the user.
+const yearsAvailable = 1; // how many years are available in /schedules. This helps speed up page load times for the user.
+
+/**********************************************************
+ *                General‑purpose helpers                 *
+ **********************************************************/
+
+// Utility to lazy-load an external script
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error(`Failed to load ${src}`));
+      document.head.appendChild(s);
+    });
+}
 
 function timeToMinutes(time) {
     /* Convert "h:mm AM/PM" → minutes since 00:00  
-       BUT treat 12 AM–6 AM as *next‑day* so they render after the day’s main events. */
+       BUT treat 12 AM–6 AM as *next‑day* so they render after the day’s main events. 
+       This is because Bonnaroo includes midnight - 6:00 AM events on the "previous day's" schedule */
     const LATE_NIGHT_CUTOFF = 6 * 60;      // 06:00 AM
     const [_, h, m, ampm] = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || [];
     let hours = parseInt(h, 10);
@@ -51,15 +70,14 @@ function mergeOverlapsWithDetail(events) {
  *            UI logic for the selection step          *
  *******************************************************/
 
-const jsonBase = 'schedules';           // folder where centeroo_YYYY.json lives
 let scheduleData = {Centeroo:null,Outeroo:null};
 let currentYear  = null;
 let currentType = null;
 
 async function init() {
-    // detect available years (beginning with 2025 and incremented by (x)) – you can widen this range if needed
+    // detect available years (beginning with const firstYearAvailable and incremented by const yearsAvailable)
     const years = [];
-    const YEAR_RANGE = [...Array(1).keys()].map(i=>2025+i);
+    const YEAR_RANGE = [...Array(yearsAvailable).keys()].map(i=>firstYearAvailable+i);
     for (const y of YEAR_RANGE) {
         try {
             // try a HEAD fetch to centeroo file – if it exists we assume outeroo exists as well
@@ -68,7 +86,7 @@ async function init() {
         } catch(e) { /* ignore network errors (404 etc.) */ }
     }
     if (!years.length) {
-        alert('No schedule JSON files found under /schedules');
+        alert(`No schedule JSON files found under ${jsonBase}`);
         return;
     }
     years.sort();
@@ -200,7 +218,25 @@ function buildSelectionUI() {
  *                Planner building section             *
  *******************************************************/
 
-document.getElementById('buildBtn').addEventListener('click',buildPlanner);
+let scriptsLoaded = false;
+document.getElementById('buildBtn').addEventListener('click', async () => {
+  const buildBtn = document.getElementById('buildBtn');
+  buildBtn.disabled = true; // Disable the button to prevent duplicate clicks
+  if (!scriptsLoaded) {
+    try {
+      // load jsPDF first, then the autotable plugin
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js');
+      scriptsLoaded = true;
+    } catch (error) {
+      console.error('Failed to load required scripts:', error);
+      alert('An error occurred while loading required scripts. Please try again later.');
+      return; // Exit the function to prevent further execution
+    }
+  }
+  buildPlanner();
+  buildBtn.disabled = false; // Re-enable the build button in case a user decides to "Start Over"
+});
 
 function buildPlanner() {
     // get all checked boxes
