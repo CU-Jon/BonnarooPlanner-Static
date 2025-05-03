@@ -120,7 +120,7 @@ button:hover, a#startOver:hover {
 #startOver {
     display: block;
     max-width: 4em;
-    align-items: center;
+    justify-self: center;
 }
 @media print {
     #printButton, #pdfButton, #startOver {
