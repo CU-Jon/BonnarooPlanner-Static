@@ -235,6 +235,7 @@ document.getElementById('buildBtn').addEventListener('click', async () => {
     }
   }
   buildPlanner();
+  buildBtn.disabled = false; // Re-enable the build button in case a user decides to "Start Over"
 });
 
 function buildPlanner() {
