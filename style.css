@@ -119,7 +119,7 @@ button:hover, a#startOver:hover {
 }
 #startOver {
     display: block;
-    max-width: 4em;
+    max-width: 6em;
     justify-self: center;
 }
 @media print {
