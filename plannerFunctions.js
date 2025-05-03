@@ -220,6 +220,8 @@ function buildSelectionUI() {
 
 let scriptsLoaded = false;
 document.getElementById('buildBtn').addEventListener('click', async () => {
+  const buildBtn = document.getElementById('buildBtn');
+  buildBtn.disabled = true; // Disable the button to prevent duplicate clicks
   if (!scriptsLoaded) {
     try {
       // load jsPDF first, then the autotable plugin
