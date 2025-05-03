@@ -86,7 +86,7 @@ async function init() {
         } catch(e) { /* ignore network errors (404 etc.) */ }
     }
     if (!years.length) {
-        alert('No schedule JSON files found under /schedules');
+        alert(`No schedule JSON files found under ${jsonBase}`);
         return;
     }
     years.sort();
