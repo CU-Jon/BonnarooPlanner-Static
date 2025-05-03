@@ -130,7 +130,11 @@ function buildSelectionUI() {
                 const block = document.createElement('div');
                 block.className = 'location-block';
                 block.innerHTML = `<h3>${loc}</h3>`;
-                for (const ev of events) {
+                // sort events by minutes-since-midnight (with late-night bump)
+                const sortedEvents = events.slice().sort((a, b) =>
+                    timeToMinutes(a.start) - timeToMinutes(b.start)
+                );
+                for (const ev of sortedEvents) {
                     const lbl = document.createElement('label');
                     const cbox = document.createElement('input');
                     cbox.type = 'checkbox';
