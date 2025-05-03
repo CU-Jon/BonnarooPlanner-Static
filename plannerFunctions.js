@@ -1,5 +1,5 @@
 /**********************************************************
- *  Changable variables used within the entire page/site  *
+ *    Changeable variables used within the entire page    *
  **********************************************************/
 const jsonBase = 'schedules'; // folder where centeroo_YYYY.json lives
 const firstYearAvailable = 2025; // first year available in the /schedules folder. This helps speed up page load times for the user.
