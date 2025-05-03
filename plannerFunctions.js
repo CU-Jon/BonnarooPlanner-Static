@@ -221,10 +221,16 @@ function buildSelectionUI() {
 let scriptsLoaded = false;
 document.getElementById('buildBtn').addEventListener('click', async () => {
   if (!scriptsLoaded) {
-    // load jsPDF first, then the autotable plugin
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js');
-    scriptsLoaded = true;
+    try {
+      // load jsPDF first, then the autotable plugin
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js');
+      scriptsLoaded = true;
+    } catch (error) {
+      console.error('Failed to load required scripts:', error);
+      alert('An error occurred while loading required scripts. Please try again later.');
+      return; // Exit the function to prevent further execution
+    }
   }
   buildPlanner();
 });
