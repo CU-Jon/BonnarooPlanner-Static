@@ -118,7 +118,7 @@ button:hover, a#startOver:hover {
     font-weight: bold;
 }
 #startOver {
-    display: flex;
+    display: block;
 }
 @media print {
     #printButton, #pdfButton, #startOver {
