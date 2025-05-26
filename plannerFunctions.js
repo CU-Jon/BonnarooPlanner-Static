@@ -22,9 +22,9 @@ function loadScript(src) {
 
 function timeToMinutes(time) {
     /* Convert "h:mm AM/PM" → minutes since 00:00  
-       BUT treat 12 AM–6 AM as *next‑day* so they render after the day’s main events. 
-       This is because Bonnaroo includes midnight - 6:00 AM events on the "previous day's" schedule */
-    const LATE_NIGHT_CUTOFF = 6 * 60;      // 06:00 AM
+       BUT treat 12 AM–7:00 AM as *next‑day* so they render after the day’s main events. 
+       This is because Bonnaroo includes midnight - 7:00 AM events on the "previous day's" schedule */
+    const LATE_NIGHT_CUTOFF = 7 * 60;      // 07:00 AM
     const [_, h, m, ampm] = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || [];
     let hours = parseInt(h, 10);
     const minutes = parseInt(m, 10);
