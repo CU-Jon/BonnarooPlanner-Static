@@ -73,6 +73,7 @@ function mergeOverlapsWithDetail(events) {
 let scheduleData = {Centeroo:null,Outeroo:null};
 let currentYear  = null;
 let currentType = null;
+let lastSelections = [];
 
 async function init() {
     // detect available years (beginning with const firstYearAvailable and incremented by const yearsAvailable)
@@ -246,6 +247,7 @@ function buildPlanner() {
         alert('Please pick at least one event!');
         return;
     }
+    lastSelections = selections;
 
     // group selections –> type → day → location → events[]
     const grouped = {};
@@ -455,8 +457,7 @@ function downloadPDF() {
 
 function exportToICS() {
     // Gather selected events
-    const selections = Array.from(document.querySelectorAll("input[type='checkbox']:checked"))
-        .map(cb=>JSON.parse(cb.dataset.payload));
+    const selections = lastSelections;
     if (!selections.length) {
         alert('Please pick at least one event!');
         return;
@@ -479,7 +480,8 @@ function exportToICS() {
         if (/PM/i.test(ampm) && h !== 12) h += 12;
         if (/AM/i.test(ampm) && h === 12) h = 0;
         // Build a Date object
-        const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        // const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const months = ["June"]; // For Bonnaroo, we only need June
         const monthIdx = months.findIndex(mon => mon.toLowerCase() === month.toLowerCase());
         if (monthIdx === -1) return null;
         const dt = new Date(Date.UTC(year, monthIdx, parseInt(dayNum,10), h, m, 0));
