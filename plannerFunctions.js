@@ -387,6 +387,12 @@ function buildPlanner() {
     pdfBtn.addEventListener('click',downloadPDF);
     btnWrap.appendChild(pdfBtn);
 
+    const icsBtn = document.createElement('button');
+    icsBtn.id = 'icsButton';
+    icsBtn.textContent = 'Export to Calendar (.ics)';
+    icsBtn.addEventListener('click', exportToICS);
+    btnWrap.appendChild(icsBtn);
+
     const restart = document.createElement('a');
     restart.id = 'startOver';
     restart.href = '#';
@@ -441,6 +447,79 @@ function downloadPDF() {
     });
 
     doc.save(`Bonnaroo_Planner_${currentYear}_${currentType}.pdf`);
+}
+
+/****************************************************************
+ *                         ics export                           *
+ ****************************************************************/
+
+function exportToICS() {
+    // Gather selected events
+    const selections = Array.from(document.querySelectorAll("input[type='checkbox']:checked"))
+        .map(cb=>JSON.parse(cb.dataset.payload));
+    if (!selections.length) {
+        alert('Please pick at least one event!');
+        return;
+    }
+
+    // Helper to format date/time for ICS
+    function formatICSDate(day, time) {
+        // Try to parse the day as a date string (e.g., "Thursday, June 12")
+        // and combine with time (e.g., "1:00 PM")
+        const dateMatch = day.match(/([A-Za-z]+),\s+([A-Za-z]+)\s+(\d+)/);
+        if (!dateMatch) return null;
+        const [_, weekday, month, dayNum] = dateMatch;
+        const year = currentYear;
+        // Parse time
+        const timeMatch = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!timeMatch) return null;
+        let [__, h, m, ampm] = timeMatch;
+        h = parseInt(h, 10);
+        m = parseInt(m, 10);
+        if (/PM/i.test(ampm) && h !== 12) h += 12;
+        if (/AM/i.test(ampm) && h === 12) h = 0;
+        // Build a Date object
+        const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const monthIdx = months.findIndex(mon => mon.toLowerCase() === month.toLowerCase());
+        if (monthIdx === -1) return null;
+        const dt = new Date(Date.UTC(year, monthIdx, parseInt(dayNum,10), h, m, 0));
+        // Format as YYYYMMDDTHHMMSSZ
+        return dt.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
+    }
+
+    // Build ICS content
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Bonnaroo Planner//EN'
+    ];
+    selections.forEach(sel => {
+        const {type, day, location, event} = sel;
+        const dtStart = formatICSDate(day, event.start);
+        const dtEnd = formatICSDate(day, event.end);
+        if (!dtStart || !dtEnd) return;
+        ics.push('BEGIN:VEVENT');
+        ics.push(`SUMMARY:${event.name} (${type} - ${location})`);
+        ics.push(`DTSTART:${dtStart}`);
+        ics.push(`DTEND:${dtEnd}`);
+        ics.push(`LOCATION:${location}`);
+        ics.push(`DESCRIPTION:Bonnaroo ${currentYear} - ${type}`);
+        ics.push('END:VEVENT');
+    });
+    ics.push('END:VCALENDAR');
+    const blob = new Blob([ics.join('\r\n')], {type: 'text/calendar'});
+    const url = URL.createObjectURL(blob);
+
+    // Download the file
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Bonnaroo_Planner_${currentYear}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
 
 /*******************************************************
