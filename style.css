@@ -122,6 +122,11 @@ button:hover, a#startOver:hover {
     max-width: 6em;
     justify-self: center;
 }
+#icsButton {
+    display: block;
+    max-width: 6em;
+    justify-self: center;
+}
 @media print {
     #printButton, #pdfButton, #startOver, #icsButton {
         display: none;
