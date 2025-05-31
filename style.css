@@ -124,7 +124,7 @@ button:hover, a#startOver:hover {
 }
 #icsButton {
     display: block;
-    max-width: 6em;
+    max-width: 15em;
     justify-self: center;
 }
 @media print {
