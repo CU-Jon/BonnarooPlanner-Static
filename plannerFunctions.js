@@ -471,16 +471,36 @@ function downloadPDF() {
  ****************************************************************/
 
 function exportToICS() {
-    // Gather selected events
     const selections = lastSelections;
     if (!selections.length) {
         alert('Please pick at least one event!');
         return;
     }
 
-    // Helper to format date/time for ICS
+    // Add VTIMEZONE for America/Chicago (Central Time)
+    const vtimezone = [
+        'BEGIN:VTIMEZONE',
+        'TZID:America/Chicago',
+        'X-LIC-LOCATION:America/Chicago',
+        'BEGIN:STANDARD',
+        'TZOFFSETFROM:-0500',
+        'TZOFFSETTO:-0600',
+        'TZNAME:CST',
+        'DTSTART:19701101T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+        'END:STANDARD',
+        'BEGIN:DAYLIGHT',
+        'TZOFFSETFROM:-0600',
+        'TZOFFSETTO:-0500',
+        'TZNAME:CDT',
+        'DTSTART:19700308T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+        'END:DAYLIGHT',
+        'END:VTIMEZONE'
+    ];
+
     function formatICSDate(day, time) {
-        // Expect day like "Thursday, June 12" or just "Thursday"
+        // Get day offset
         const dayMatch = day.match(/^([A-Za-z]+)(?:,.*)?$/);
         if (!dayMatch) return null;
         const dayName = dayMatch[1];
@@ -489,9 +509,9 @@ function exportToICS() {
         if (!baseDateStr || !(dayName in dayOffsets)) return null;
 
         // Calculate the actual date for this day
-        const baseDate = new Date(baseDateStr + "T00:00:00Z");
-        const eventDate = new Date(baseDate);
-        eventDate.setUTCDate(baseDate.getUTCDate() + dayOffsets[dayName]);
+        const baseDate = new Date(baseDateStr + "T00:00:00");
+        let eventDate = new Date(baseDate);
+        eventDate.setDate(baseDate.getDate() + dayOffsets[dayName]);
 
         // Parse time
         const timeMatch = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
@@ -502,18 +522,22 @@ function exportToICS() {
         if (/PM/i.test(ampm) && h !== 12) h += 12;
         if (/AM/i.test(ampm) && h === 12) h = 0;
 
-        eventDate.setUTCHours(h, m, 0, 0);
+        // Late night adjustment: 12:00 AM–7:00 AM → next day
+        if ((h * 60 + m) < 7 * 60) {
+            eventDate.setDate(eventDate.getDate() + 1);
+        }
 
-        // Format as YYYYMMDDTHHMMSSZ
-        return eventDate.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
+        // Format as local time (floating, no Z, with TZID)
+        const pad = n => n.toString().padStart(2, '0');
+        return `${eventDate.getFullYear()}${pad(eventDate.getMonth() + 1)}${pad(eventDate.getDate())}T${pad(h)}${pad(m)}00`;
     }
 
-    // Build ICS content
     let ics = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
         'PRODID:-//Bonnaroo Planner//EN',
-        `X-WR-CALNAME:Bonnaroo Planner ${currentYear} - ${currentType}`
+        `X-WR-CALNAME:Bonnaroo Planner ${currentYear} - ${currentType}`,
+        ...vtimezone
     ];
     selections.forEach(sel => {
         const {type, day, location, event} = sel;
@@ -522,8 +546,8 @@ function exportToICS() {
         if (!dtStart || !dtEnd) return;
         ics.push('BEGIN:VEVENT');
         ics.push(`SUMMARY:${event.name} (${type} - ${location})`);
-        ics.push(`DTSTART:${dtStart}`);
-        ics.push(`DTEND:${dtEnd}`);
+        ics.push(`DTSTART;TZID=America/Chicago:${dtStart}`);
+        ics.push(`DTEND;TZID=America/Chicago:${dtEnd}`);
         ics.push(`LOCATION:${location}`);
         ics.push(`DESCRIPTION:Bonnaroo ${currentYear} - ${type}`);
         ics.push('END:VEVENT');
