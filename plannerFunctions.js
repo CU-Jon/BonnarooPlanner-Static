@@ -516,7 +516,7 @@ function exportToICS() {
     // Download the file
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Bonnaroo_Planner_${currentYear}_${type}.ics`;
+    a.download = `Bonnaroo_Planner_${currentYear}_${currentType}.ics`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
