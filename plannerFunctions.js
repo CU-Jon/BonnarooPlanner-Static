@@ -547,8 +547,8 @@ function exportToICS() {
         ics.push(`SUMMARY:${event.name} (${type} - ${location})`);
         ics.push(`DTSTART;TZID=America/Chicago:${dtStart}`);
         ics.push(`DTEND;TZID=America/Chicago:${dtEnd}`);
-        ics.push(`LOCATION:${location}`);
-        ics.push(`DESCRIPTION:Bonnaroo ${currentYear} - ${type}`);
+        ics.push(`LOCATION:${location} (${type})`);
+        ics.push(`DESCRIPTION:Bonnaroo ${currentYear}\\nArtist/Event: ${event.name}\\nLocation: ${type}\\nSublocation: ${location}\\nStart: ${event.start}\\nEnd: ${event.end}`);
         ics.push('END:VEVENT');
     });
     ics.push('END:VCALENDAR');
