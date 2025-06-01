@@ -544,7 +544,7 @@ function exportToICS() {
         const dtEnd = formatICSDate(day, event.end);
         if (!dtStart || !dtEnd) return;
         ics.push('BEGIN:VEVENT');
-        ics.push(`SUMMARY:${event.name} (${type} - ${location})`);
+        ics.push(`SUMMARY:${event.name}`);
         ics.push(`DTSTART;TZID=America/Chicago:${dtStart}`);
         ics.push(`DTEND;TZID=America/Chicago:${dtEnd}`);
         ics.push(`LOCATION:${location} (${type})`);
