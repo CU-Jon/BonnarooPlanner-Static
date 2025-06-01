@@ -4,6 +4,21 @@
 const jsonBase = 'schedules'; // folder where centeroo_YYYY.json lives
 const firstYearAvailable = 2025; // first year available in the /schedules folder. This helps speed up page load times for the user.
 const yearsAvailable = 1; // how many years are available in /schedules. This helps speed up page load times for the user.
+const bonnarooStartMonday = { // The date for Monday of the respective year, used for ics exporting
+    2025: "2025-06-09",
+    // Add more years as needed
+    // 2026: "2026-06-08",
+    // 2027: "2027-06-07",
+};
+const dayOffsets = { // Day offsets for the ics export, used to calculate the date of each day of the festival
+    "Monday": 0,
+    "Tuesday": 1,
+    "Wednesday": 2,
+    "Thursday": 3,
+    "Friday": 4,
+    "Saturday": 5,
+    "Sunday": 6
+};
 
 /**********************************************************
  *                General‑purpose helpers                 *
@@ -465,12 +480,19 @@ function exportToICS() {
 
     // Helper to format date/time for ICS
     function formatICSDate(day, time) {
-        // Try to parse the day as a date string (e.g., "Thursday, June 12")
-        // and combine with time (e.g., "1:00 PM")
-        const dateMatch = day.match(/([A-Za-z]+),\s+([A-Za-z]+)\s+(\d+)/);
-        if (!dateMatch) return null;
-        const [_, weekday, month, dayNum] = dateMatch;
+        // Expect day like "Thursday, June 12" or just "Thursday"
+        const dayMatch = day.match(/^([A-Za-z]+)(?:,.*)?$/);
+        if (!dayMatch) return null;
+        const dayName = dayMatch[1];
         const year = currentYear;
+        const baseDateStr = bonnarooStartMonday[year];
+        if (!baseDateStr || !(dayName in dayOffsets)) return null;
+
+        // Calculate the actual date for this day
+        const baseDate = new Date(baseDateStr + "T00:00:00Z");
+        const eventDate = new Date(baseDate);
+        eventDate.setUTCDate(baseDate.getUTCDate() + dayOffsets[dayName]);
+
         // Parse time
         const timeMatch = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
         if (!timeMatch) return null;
@@ -479,14 +501,11 @@ function exportToICS() {
         m = parseInt(m, 10);
         if (/PM/i.test(ampm) && h !== 12) h += 12;
         if (/AM/i.test(ampm) && h === 12) h = 0;
-        // Build a Date object
-        // const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        const months = ["June"]; // For Bonnaroo, we only need June
-        const monthIdx = months.findIndex(mon => mon.toLowerCase() === month.toLowerCase());
-        if (monthIdx === -1) return null;
-        const dt = new Date(Date.UTC(year, monthIdx, parseInt(dayNum,10), h, m, 0));
+
+        eventDate.setUTCHours(h, m, 0, 0);
+
         // Format as YYYYMMDDTHHMMSSZ
-        return dt.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
+        return eventDate.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
     }
 
     // Build ICS content
