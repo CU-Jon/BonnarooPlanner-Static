@@ -4,6 +4,21 @@
 const jsonBase = 'schedules'; // folder where centeroo_YYYY.json lives
 const firstYearAvailable = 2025; // first year available in the /schedules folder. This helps speed up page load times for the user.
 const yearsAvailable = 1; // how many years are available in /schedules. This helps speed up page load times for the user.
+const bonnarooStartMonday = { // The date for Monday of the respective year, used for ics exporting
+    2025: "2025-06-09",
+    // Add more years as needed
+    // 2026: "2026-06-08",
+    // 2027: "2027-06-07",
+};
+const dayOffsets = { // Day offsets for the ics export, used to calculate the date of each day of the festival
+    "Monday": 0,
+    "Tuesday": 1,
+    "Wednesday": 2,
+    "Thursday": 3,
+    "Friday": 4,
+    "Saturday": 5,
+    "Sunday": 6
+};
 
 /**********************************************************
  *                General‑purpose helpers                 *
@@ -73,6 +88,7 @@ function mergeOverlapsWithDetail(events) {
 let scheduleData = {Centeroo:null,Outeroo:null};
 let currentYear  = null;
 let currentType = null;
+let lastSelections = [];
 
 async function init() {
     // detect available years (beginning with const firstYearAvailable and incremented by const yearsAvailable)
@@ -246,6 +262,7 @@ function buildPlanner() {
         alert('Please pick at least one event!');
         return;
     }
+    lastSelections = selections;
 
     // group selections –> type → day → location → events[]
     const grouped = {};
@@ -387,6 +404,12 @@ function buildPlanner() {
     pdfBtn.addEventListener('click',downloadPDF);
     btnWrap.appendChild(pdfBtn);
 
+    const icsBtn = document.createElement('button');
+    icsBtn.id = 'icsButton';
+    icsBtn.textContent = 'Export to Calendar (.ics)';
+    icsBtn.addEventListener('click', exportToICS);
+    btnWrap.appendChild(icsBtn);
+
     const restart = document.createElement('a');
     restart.id = 'startOver';
     restart.href = '#';
@@ -441,6 +464,107 @@ function downloadPDF() {
     });
 
     doc.save(`Bonnaroo_Planner_${currentYear}_${currentType}.pdf`);
+}
+
+/****************************************************************
+ *                         ics export                           *
+ ****************************************************************/
+
+function exportToICS() {
+    const selections = lastSelections;
+    if (!selections.length) {
+        alert('Please pick at least one event!');
+        return;
+    }
+
+    // Add VTIMEZONE for America/Chicago (Central Time)
+    const vtimezone = [
+        'BEGIN:VTIMEZONE',
+        'TZID:America/Chicago',
+        'BEGIN:STANDARD',
+        'DTSTART:19701101T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+        'TZOFFSETFROM:-0500',
+        'TZOFFSETTO:-0600',
+        'TZNAME:CST',
+        'END:STANDARD',
+        'BEGIN:DAYLIGHT',
+        'DTSTART:19700308T020000',
+        'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+        'TZOFFSETFROM:-0600',
+        'TZOFFSETTO:-0500',
+        'TZNAME:CDT',
+        'END:DAYLIGHT',
+        'END:VTIMEZONE'
+    ];
+
+    function formatICSDate(day, time) {
+        // Get day offset
+        const dayMatch = day.match(/^([A-Za-z]+)(?:,.*)?$/);
+        if (!dayMatch) return null;
+        const dayName = dayMatch[1];
+        const year = currentYear;
+        const baseDateStr = bonnarooStartMonday[year];
+        if (!baseDateStr || !(dayName in dayOffsets)) return null;
+
+        // Calculate the actual date for this day
+        const baseDate = new Date(baseDateStr + "T00:00:00");
+        let eventDate = new Date(baseDate);
+        eventDate.setDate(baseDate.getDate() + dayOffsets[dayName]);
+
+        // Parse time
+        const timeMatch = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!timeMatch) return null;
+        let [__, h, m, ampm] = timeMatch;
+        h = parseInt(h, 10);
+        m = parseInt(m, 10);
+        if (/PM/i.test(ampm) && h !== 12) h += 12;
+        if (/AM/i.test(ampm) && h === 12) h = 0;
+
+        // Late night adjustment: 12:00 AM–7:00 AM → next day
+        if ((h * 60 + m) < 7 * 60) {
+            eventDate.setDate(eventDate.getDate() + 1);
+        }
+
+        // Format as local time (floating, no Z, with TZID)
+        const pad = n => n.toString().padStart(2, '0');
+        return `${eventDate.getFullYear()}${pad(eventDate.getMonth() + 1)}${pad(eventDate.getDate())}T${pad(h)}${pad(m)}00`;
+    }
+
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Bonnaroo Planner//EN',
+        `X-WR-CALNAME:Bonnaroo Planner ${currentYear} - ${currentType}`,
+        ...vtimezone
+    ];
+    selections.forEach(sel => {
+        const {type, day, location, event} = sel;
+        const dtStart = formatICSDate(day, event.start);
+        const dtEnd = formatICSDate(day, event.end);
+        if (!dtStart || !dtEnd) return;
+        ics.push('BEGIN:VEVENT');
+        ics.push(`SUMMARY:${event.name}`);
+        ics.push(`DTSTART;TZID=America/Chicago:${dtStart}`);
+        ics.push(`DTEND;TZID=America/Chicago:${dtEnd}`);
+        ics.push(`LOCATION:${location} (${type})`);
+        ics.push(`DESCRIPTION:Bonnaroo ${currentYear}\\nArtist/Event: ${event.name}\\nLocation: ${type}\\nSublocation: ${location}\\nStart: ${event.start}\\nEnd: ${event.end}`);
+        ics.push('END:VEVENT');
+    });
+    ics.push('END:VCALENDAR');
+    const blob = new Blob([ics.join('\r\n')], {type: 'text/calendar'});
+    const url = URL.createObjectURL(blob);
+
+    // Download the file
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Bonnaroo_Planner_${currentYear}_${currentType}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
 
 /*******************************************************
