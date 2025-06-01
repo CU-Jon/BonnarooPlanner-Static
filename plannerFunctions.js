@@ -493,7 +493,8 @@ function exportToICS() {
     let ics = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Bonnaroo Planner//EN'
+        'PRODID:-//Bonnaroo Planner//EN',
+        `X-WR-CALNAME:Bonnaroo Planner ${currentYear} - ${currentType}`
     ];
     selections.forEach(sel => {
         const {type, day, location, event} = sel;
@@ -515,7 +516,7 @@ function exportToICS() {
     // Download the file
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Bonnaroo_Planner_${currentYear}.ics`;
+    a.download = `Bonnaroo_Planner_${currentYear}_${type}.ics`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
