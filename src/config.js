@@ -36,7 +36,7 @@ export const SHOW_PRINT_BUTTON = false;
 // NEW: HTML <title> for index.html
 // You can include {year} or {tabPart} if you wish, but it’s static here
 // -----------------------------------
-export const HTML_TITLE = 'Bonnaroo Planner - {year}';
+export const HTML_TITLE_TEMPLATE = 'Bonnaroo Planner - {year}';
 
 // The “static” default title before React mounts:
 export const HTML_TITLE_FALLBACK = 'Bonnaroo Planner';

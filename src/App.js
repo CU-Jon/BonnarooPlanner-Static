@@ -14,7 +14,6 @@ export default function App() {
   const [year, setYear] = useState(null);
   const [activeTab, setActiveTab] = useState('Centeroo');
 
-  // When “Build My Planner” is clicked:
   function handleBuild(selected, selectedYear, tabName) {
     setSelections(selected);
     setYear(selectedYear);
@@ -22,7 +21,6 @@ export default function App() {
     setView('planner');
   }
 
-  // When “Start Over” is clicked:
   function handleRestart() {
     setSelections([]);
     setYear(null);
@@ -30,24 +28,22 @@ export default function App() {
     setView('builder');
   }
 
-  // Whenever view/year/tab changes, update the HTML <title>:
+  // Update <title> on every relevant change
   useEffect(() => {
     if (view === 'builder') {
-      // Only year (no tab) in the builder title
+      // For builder: “Select Your Bonnaroo Events{yearPart}”
+      // We’ll show just “Select Your Bonnaroo Events” or “Select Your Bonnaroo Events 2025”
       const yearPart = year ? ` ${year}` : '';
       document.title = BUILDER_TITLE_TEMPLATE.replace(
         '{yearPart}',
         yearPart
       );
     } else {
-      // view === 'planner'
-      // We want: “Bonnaroo Planner - {year} - {tab}”
-      // Our template is "Bonnaroo Planner - {year}{tabPart}"
-      const tabPart = ` - ${activeTab}`;
-      document.title = HTML_TITLE_TEMPLATE.replace(
-        '{year}',
-        year
-      ).replace('{tabPart}', tabPart);
+      // For planner: “Bonnaroo Planner - {year} - {tab}”
+      const tabPart = ` - ${activeTab}`; // always include “ - Centeroo” or “ - Outeroo”
+      document.title = HTML_TITLE_TEMPLATE
+        .replace('{year}', year)
+        .replace('{tabPart}', tabPart);
     }
   }, [view, year, activeTab]);
 
@@ -55,19 +51,24 @@ export default function App() {
     <>
       {view === 'builder' && (
         <>
+          {/* On‐screen heading uses the same BUILDER_TITLE_TEMPLATE */}
           <h1>
-            {BUILDER_TITLE_TEMPLATE
-              .replace('{yearPart}', year ? ` ${year}` : '')}
+            {BUILDER_TITLE_TEMPLATE.replace(
+              '{yearPart}',
+              year ? ` ${year}` : ''
+            )}
           </h1>
           <PlannerBuilder onBuild={handleBuild} />
         </>
       )}
       {view === 'planner' && (
         <>
+          {/* On‐screen heading uses APP_TITLE_PLANNER */}
           <h1>
-            {APP_TITLE_PLANNER
-              .replace('{year}', year)
-              .replace('{tab}', activeTab)}
+            {APP_TITLE_PLANNER.replace('{year}', year).replace(
+              '{tab}',
+              activeTab
+            )}
           </h1>
           <PlannerView
             selections={selections}
