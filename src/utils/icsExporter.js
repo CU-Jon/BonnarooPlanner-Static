@@ -1,8 +1,13 @@
-import { bonnarooStartMonday, dayOffsets, LATE_NIGHT_CUTOFF, ICS_CALENDARNAME_TEMPLATE } from '../config';
+import {
+  bonnarooStartMonday,
+  dayOffsets,
+  LATE_NIGHT_CUTOFF,
+  ICS_CALENDARNAME_TEMPLATE
+} from '../config';
 import { timeToMinutes } from './timeUtils';
 
 /**
- * Convert “Day” + “hh:mm AM/PM” into an ICS datetime.
+ * Converts “Day” + “hh:mm AM/PM” into an ICS datetime string.
  */
 export function formatICSDate(day, time, year) {
   const dayName = day.match(/^([A-Za-z]+)/)[1];
@@ -16,6 +21,7 @@ export function formatICSDate(day, time, year) {
   const ampm = match[3];
   if (/PM/i.test(ampm) && h !== 12) h += 12;
   if (/AM/i.test(ampm) && h === 12) h = 0;
+  // If before cutoff (7:00 AM), bump to next day:
   if ((h * 60 + m) < LATE_NIGHT_CUTOFF) {
     eventDate.setDate(eventDate.getDate() + 1);
   }
@@ -26,12 +32,11 @@ export function formatICSDate(day, time, year) {
 }
 
 /**
- * @param {Array<{name, start, end, day, year}>} events
+ * @param {Array<{ type, day, location, event: {name,start,end} }>} selections
  * @param {number} year
  * @param {string} activeTab  // "Centeroo" or "Outeroo"
- * @returns {string} ICS text
  */
-export function generateICS(events, year, activeTab) {
+export function generateICS(selections, year, activeTab) {
   const calendarName = ICS_CALENDARNAME_TEMPLATE
     .replace('{year}', year)
     .replace('{tab}', activeTab);
@@ -42,6 +47,8 @@ export function generateICS(events, year, activeTab) {
   lines.push(`NAME:${calendarName}`);
   lines.push('VERSION:2.0');
   lines.push('PRODID:-//Bonnaroo Planner//EN');
+
+  // VTIMEZONE block for America/Chicago (identical to your original)
   lines.push('BEGIN:VTIMEZONE');
   lines.push('TZID:America/Chicago');
   lines.push('BEGIN:STANDARD');
@@ -60,14 +67,23 @@ export function generateICS(events, year, activeTab) {
   lines.push('END:DAYLIGHT');
   lines.push('END:VTIMEZONE');
 
-  events.forEach(ev => {
-    const dtstart = formatICSDate(ev.day, ev.start, ev.year);
-    const dtend = formatICSDate(ev.day, ev.end, ev.year);
+  // For each selected event, create a VEVENT with LOCATION + DESCRIPTION
+  selections.forEach(sel => {
+    const { type, day, location, event } = sel;
+    const dtstart = formatICSDate(day, event.start, year);
+    const dtend = formatICSDate(day, event.end, year);
+    if (!dtstart || !dtend) return;
+
     lines.push('BEGIN:VEVENT');
     lines.push(`DTSTAMP:${dtstart}`);
     lines.push(`DTSTART;TZID=America/Chicago:${dtstart}`);
     lines.push(`DTEND;TZID=America/Chicago:${dtend}`);
-    lines.push(`SUMMARY:${ev.name}`);
+    lines.push(`SUMMARY:${event.name}`);
+    lines.push(`LOCATION:${location} (${type})`);
+    // DESCRIPTION matches your original formatting (escaped newline as \n):
+    lines.push(
+      `DESCRIPTION:Bonnaroo ${year}\\nArtist/Event: ${event.name}\\nLocation: ${type}\\nSublocation: ${location}\\nStart: ${event.start}\\nEnd: ${event.end}`
+    );
     lines.push('END:VEVENT');
   });
 

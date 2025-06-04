@@ -123,12 +123,10 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   }
 
   function downloadPDF() {
-    // Build filename via template:
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab);
 
-    // Build PDF title via template:
     const plannerTitle = APP_TITLE_PLANNER
       .replace('{year}', year)
       .replace('{tab}', activeTab);
@@ -157,15 +155,12 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
           valign: 'middle'
         },
         didDrawPage: data => {
-          // Use pageSize.getWidth() instead of getWidth()
           const pageWidth = doc.internal.pageSize.getWidth();
           const pageInfo = doc.internal.getCurrentPageInfo();
           doc.setFontSize(14);
           doc.setTextColor(0, 0, 0);
-          // Centered title:
           doc.text(plannerTitle, pageWidth / 2, 30, { align: 'center' });
           doc.setFontSize(18);
-          // Day heading at top-left:
           if (pageInfo.pageNumber === firstPage) {
             doc.text(day, 40, 50);
           } else {
@@ -179,20 +174,11 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   }
 
   function exportICS() {
-    const eventsList = selections.map(sel => ({
-      name: sel.event.name,
-      start: sel.event.start,
-      end: sel.event.end,
-      day: sel.day,
-      year
-    }));
-
-    // Build ICS filename:
     const fileName = ICS_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab);
 
-    const icsData = generateICS(eventsList, year, activeTab);
+    const icsData = generateICS(selections, year, activeTab);
     const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -204,9 +190,6 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
 
   return (
     <div className="container" id="plannerView">
-      {/*
-        The <h1> is now rendered by App.js, so we omit it here.
-      */}
       <h3 className="print-instructions">
         Scroll down to print this page or save to PDF!
       </h3>
@@ -223,9 +206,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         <button id="icsButton" onClick={exportICS}>
           Export to Calendar (.ics)
         </button>
-        {/* 
-          Explicitly set type="button" so CSS targeting button[type='button'] will apply 
-        */}
+        {/* Ensure type="button" so CSS styling applies */}
         <button id="startOver" type="button" onClick={onRestart}>
           Start Over
         </button>

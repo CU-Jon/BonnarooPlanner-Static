@@ -78,7 +78,9 @@ export default function PlannerBuilder({ onBuild }) {
     const data = scheduleData[activeTab];
     Object.entries(data).forEach(([day, locations]) => {
       Object.entries(locations).forEach(([loc, events]) => {
-        events.forEach(ev => all.push({ type: activeTab, day, location: loc, event: ev }));
+        events.forEach(ev =>
+          all.push({ type: activeTab, day, location: loc, event: ev })
+        );
       });
     });
     setCurrentSelections(prev => {
