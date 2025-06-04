@@ -4,6 +4,7 @@ import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
 import {
   BUILDER_TITLE_TEMPLATE,
+  HTML_TITLE_FALLBACK,
   HTML_TITLE_TEMPLATE,
   APP_TITLE_PLANNER
 } from './config';
@@ -28,15 +29,17 @@ export default function App() {
     setView('builder');
   }
 
-  // Whenever view/year/activeTab change, update the browser tab <title>
+  // Update the browser tab <title> on each change of view/year/activeTab:
   useEffect(() => {
-    if (view === 'builder') {
-      // Builder page: “Select Your Bonnaroo Events” or “Select Your Bonnaroo Events 2025”
-      const yearPart = year ? ` ${year}` : '';
-      document.title = BUILDER_TITLE_TEMPLATE.replace('{yearPart}', yearPart);
+    if (!year) {
+      // No year selected → use fallback (“Bonnaroo Planner”) 
+      document.title = HTML_TITLE_FALLBACK;
     } else {
-      // Planner page: “Bonnaroo Planner – {year} – {tab}”
-      const tabPart = ` - ${activeTab}`;
+      // Always use HTML_TITLE_TEMPLATE:
+      // {year} is guaranteed non-null here.
+      // If we're in builder view, we omit tabPart (empty string).
+      // If we're in planner view, we include “ - {activeTab}”.
+      const tabPart = view === 'planner' ? ` - ${activeTab}` : '';
       document.title = HTML_TITLE_TEMPLATE
         .replace('{year}', year)
         .replace('{tabPart}', tabPart);
@@ -47,7 +50,7 @@ export default function App() {
     <>
       {view === 'builder' && (
         <>
-          {/* Only one <h1> here. Year will append once user picks it. */}
+          {/* On‐screen heading for the builder page */}
           <h1>
             {BUILDER_TITLE_TEMPLATE.replace(
               '{yearPart}',
@@ -60,7 +63,7 @@ export default function App() {
 
       {view === 'planner' && (
         <>
-          {/* Planner heading remains “Your Bonnaroo {year} Planner – {tab}” */}
+          {/* On‐screen heading for the planner page */}
           <h1>
             {APP_TITLE_PLANNER
               .replace('{year}', year)
