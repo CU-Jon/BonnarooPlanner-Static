@@ -6,8 +6,8 @@ import {
   minutesToTime
 } from '../utils/timeUtils';
 import { generateICS } from '../utils/icsExporter';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import {
   PDF_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
@@ -128,23 +128,23 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab);
-  
+
     const plannerTitle = APP_TITLE_PLANNER
       .replace('{year}', year)
       .replace('{tab}', activeTab);
-  
+
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'pt',
       format: 'letter'
     });
-  
+
     // Build flat tables for each day
     const type = activeTab;
     const days = Object.entries(grouped[type]);
     days.forEach(([day, locations], idx) => {
       if (idx > 0) doc.addPage();
-  
+
       // Find all stage names and time grid
       const stageNames = Object.keys(locations);
       let minTime = 1440, maxTime = 0;
@@ -158,7 +158,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       });
       minTime = Math.floor(minTime / 15) * 15;
       maxTime = Math.ceil(maxTime / 15) * 15;
-  
+
       // Prepare table head and body
       const head = [['Time', ...stageNames]];
       const body = [];
@@ -174,8 +174,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         });
         body.push(row);
       }
-  
-      autoTable(doc, {
+
+      doc.autoTable({
         head,
         body,
         startY: 70,
@@ -203,9 +203,9 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         }
       });
     });
-  
+
     doc.save(fileName);
-  
+
     // Helper to format event time range
     function evTimeRange(ev) {
       return `${ev.start} – ${ev.end}`;
