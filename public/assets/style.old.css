@@ -95,7 +95,7 @@ select#year:hover {
     white-space: nowrap;
     overflow: hidden;
 }
-button[type='submit'], button#printButton, button#pdfButton, a#startOver, button#icsButton, button[type='button'] {
+button:not(.tab button), a#startOver{
     background-color: #6A0DAD;
     color: white;
     font-family: 'Concert One', cursive;
@@ -108,33 +108,35 @@ button[type='submit'], button#printButton, button#pdfButton, a#startOver, button
     margin: 10px;
     text-decoration: none;
 }
-button:hover, a#startOver:hover {
+button:not(.tab button):hover, a#startOver:hover {
     background-color: #FF69B4;
     transform: scale(1.05);
+}
+.locations-grid label {
+    margin: 12px 0;
+    padding: 4px 0;
+    font-size: 1.1em; /* Optional: make text a bit larger */
 }
 .plannerType {
     margin-top:40px;
     text-decoration: underline;
     font-weight: bold;
 }
-#startOver {
-    display: block;
-    max-width: 6em;
-    justify-self: center;
-}
-#icsButton {
-    display: block;
-    max-width: 15em;
-    justify-self: center;
-}
 @media print {
-    #printButton, #pdfButton, #startOver, #icsButton {
+    button, #startOver {
         display: none;
     }
     body {
         background: none !important;          /* remove colour / image */
         -webkit-print-color-adjust: exact;    /* still let text keep its colour if you use any */
         print-color-adjust: exact;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        /* Scale down slightly so wide tables fit */
+        transform: scale(0.95);
+        transform-origin: top left;
     }
     /* don’t waste vertical space with the on-screen h3 */
     h2.day-heading-screen {
@@ -157,10 +159,15 @@ button:hover, a#startOver:hover {
         break-before: page;
         /* fallback for older Chrome / legacy engines */
         page-break-before: always;
+        width: 100% !important;
+        table-layout: fixed !important;
     }
     table.day-section:first-of-type {
         break-before: auto;
         page-break-before: auto;
+    }
+    .day-section th, .day-section td {
+        word-wrap: break-word;
     }
 }
 @media screen {
@@ -172,4 +179,50 @@ button:hover, a#startOver:hover {
         font-weight: bold;
         text-decoration: underline;
     }
+}
+@media (max-width: 700px) {
+  html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    padding: 10px;
+    margin: 0;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  .day-section {
+    display: block;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: auto;
+    box-sizing: border-box;
+    margin: 0;
+  }
+  .day-section table {
+    min-width: 600px;
+  }
+  h1, h2, h3, h4 {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+  }
+  #plannerView > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  #plannerView button, #plannerView a {
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+  }
 }
