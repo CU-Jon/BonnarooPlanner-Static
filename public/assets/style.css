@@ -128,13 +128,20 @@ button:hover, a#startOver:hover {
     justify-self: center;
 }
 @media print {
-    #printButton, #pdfButton, #startOver, #icsButton {
+    #printButton, #pdfButton, #startOver, #icsButton, button[type='button'] {
         display: none;
     }
     body {
         background: none !important;          /* remove colour / image */
         -webkit-print-color-adjust: exact;    /* still let text keep its colour if you use any */
         print-color-adjust: exact;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        /* Scale down slightly so wide tables fit */
+        transform: scale(0.95);
+        transform-origin: top left;
     }
     /* don’t waste vertical space with the on-screen h3 */
     h2.day-heading-screen {
@@ -157,10 +164,15 @@ button:hover, a#startOver:hover {
         break-before: page;
         /* fallback for older Chrome / legacy engines */
         page-break-before: always;
+        width: 100% !important;
+        table-layout: fixed !important;
     }
     table.day-section:first-of-type {
         break-before: auto;
         page-break-before: auto;
+    }
+    .day-section th, .day-section td {
+        word-wrap: break-word;
     }
 }
 @media screen {

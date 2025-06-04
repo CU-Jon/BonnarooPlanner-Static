@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
@@ -17,31 +18,41 @@ export default function App() {
   }
 
   function handleRestart() {
+    // Simply clear out all state—do NOT reload the page.
     setSelections([]);
     setYear(null);
     setActiveTab('Centeroo');
     setView('builder');
-    window.location.reload();
+    // Now the builder view will show with no year set;
+    // YearSelector will detect years and pick the latest automatically.
   }
 
   return (
     <>
       {view === 'builder' && (
-        <React.Fragment>
-          <h1>{APP_TITLE_BUILDER.replace('{year}', year || '').replace('{tab}', activeTab)}</h1>
+        <>
+          <h1>
+            {APP_TITLE_BUILDER
+              .replace('{year}', year || '')
+              .replace('{tab}', activeTab)}
+          </h1>
           <PlannerBuilder onBuild={handleBuild} />
-        </React.Fragment>
+        </>
       )}
       {view === 'planner' && (
-        <React.Fragment>
-          <h1>{APP_TITLE_PLANNER.replace('{year}', year).replace('{tab}', activeTab)}</h1>
+        <>
+          <h1>
+            {APP_TITLE_PLANNER
+              .replace('{year}', year)
+              .replace('{tab}', activeTab)}
+          </h1>
           <PlannerView
             selections={selections}
             year={year}
             activeTab={activeTab}
             onRestart={handleRestart}
           />
-        </React.Fragment>
+        </>
       )}
     </>
   );
