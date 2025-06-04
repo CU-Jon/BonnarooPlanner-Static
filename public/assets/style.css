@@ -12,7 +12,7 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1300px;
     width: 100%;
     margin: 40px auto;
     background: #fff;
@@ -195,6 +195,7 @@ select#year:hover, select#year:focus {
     .container {
         transform: scale(0.95);
         transform-origin: top left;
+        box-shadow: none;
     }
     h2.day-heading-screen {
         display: none;
