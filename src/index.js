@@ -1,4 +1,14 @@
 // src/index.js
+
+// -------------------------------------------------------------
+// Unregister any existing service workers (to silence a console warning)
+// -------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((reg) => reg.unregister());
+  });
+}
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';

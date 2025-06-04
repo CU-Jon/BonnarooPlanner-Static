@@ -95,7 +95,7 @@ select#year:hover {
     white-space: nowrap;
     overflow: hidden;
 }
-button[type='submit'], button#printButton, button#pdfButton, a#startOver, button#icsButton, button[type='button'] {
+button, a#startOver{
     background-color: #6A0DAD;
     color: white;
     font-family: 'Concert One', cursive;
@@ -112,20 +112,15 @@ button:hover, a#startOver:hover {
     background-color: #FF69B4;
     transform: scale(1.05);
 }
+.locations-grid label {
+    margin: 12px 0;
+    padding: 4px 0;
+    font-size: 1.1em; /* Optional: make text a bit larger */
+}
 .plannerType {
     margin-top:40px;
     text-decoration: underline;
     font-weight: bold;
-}
-#startOver {
-    display: block;
-    max-width: 6em;
-    justify-self: center;
-}
-#icsButton {
-    display: block;
-    max-width: 15em;
-    justify-self: center;
 }
 @media print {
     #printButton, #pdfButton, #startOver, #icsButton, button[type='button'] {

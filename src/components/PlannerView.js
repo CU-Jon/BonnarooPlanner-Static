@@ -146,6 +146,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       const firstPage = doc.internal.getNumberOfPages();
       doc.autoTable({
         html: table,
+        pageBreak: 'auto',
+        rowPageBreak: 'avoid',
         startY: 70,
         margin: { top: 70 },
         theme: 'grid',
