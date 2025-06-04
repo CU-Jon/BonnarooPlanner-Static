@@ -10,6 +10,7 @@ import {
 } from './config';
 
 export default function App() {
+  // Move `year` into App so we can update the title as soon as JSON loads:
   const [view, setView] = useState('builder');
   const [selections, setSelections] = useState([]);
   const [year, setYear] = useState(null);
@@ -17,7 +18,8 @@ export default function App() {
 
   function handleBuild(selected, selectedYear, tabName) {
     setSelections(selected);
-    setYear(selectedYear);
+    // At this point, App.year is already set by YearSelector,
+    // so we don’t need to setYear(selectedYear) again.
     setActiveTab(tabName);
     setView('planner');
   }
@@ -29,16 +31,11 @@ export default function App() {
     setView('builder');
   }
 
-  // Update the browser tab <title> on each change of view/year/activeTab:
+  // As soon as `year` becomes non-null, update the <title>:
   useEffect(() => {
     if (!year) {
-      // No year selected → use fallback (“Bonnaroo Planner”) 
       document.title = HTML_TITLE_FALLBACK;
     } else {
-      // Always use HTML_TITLE_TEMPLATE:
-      // {year} is guaranteed non-null here.
-      // If we're in builder view, we omit tabPart (empty string).
-      // If we're in planner view, we include “ - {activeTab}”.
       const tabPart = view === 'planner' ? ` - ${activeTab}` : '';
       document.title = HTML_TITLE_TEMPLATE
         .replace('{year}', year)
@@ -50,20 +47,24 @@ export default function App() {
     <>
       {view === 'builder' && (
         <>
-          {/* On‐screen heading for the builder page */}
+          {/* Builder heading now uses App.year via BUILDER_TITLE_TEMPLATE */}
           <h1>
             {BUILDER_TITLE_TEMPLATE.replace(
               '{yearPart}',
               year ? ` ${year}` : ''
             )}
           </h1>
-          <PlannerBuilder onBuild={handleBuild} />
+          {/* Pass `year` and `setYear` down so that YearSelector can lift state */}
+          <PlannerBuilder
+            year={year}
+            setYear={setYear}
+            onBuild={handleBuild}
+          />
         </>
       )}
 
       {view === 'planner' && (
         <>
-          {/* On‐screen heading for the planner page */}
           <h1>
             {APP_TITLE_PLANNER
               .replace('{year}', year)

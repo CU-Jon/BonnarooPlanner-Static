@@ -1,10 +1,11 @@
+// src/components/PlannerBuilder.js
 import React, { useState, useEffect } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
 
-export default function PlannerBuilder({ onBuild }) {
-  const [currentYear, setCurrentYear] = useState(null);
+export default function PlannerBuilder({ year, setYear, onBuild }) {
+  // Remove local currentYear; use props.year instead
   const [scheduleData, setScheduleData] = useState({
     Centeroo: null,
     Outeroo: null
@@ -13,9 +14,10 @@ export default function PlannerBuilder({ onBuild }) {
   const [currentSelections, setCurrentSelections] = useState([]);
   const [lastModified, setLastModified] = useState(null);
 
+  // Whenever `year` changes, reload JSON
   useEffect(() => {
-    if (currentYear) loadYear(currentYear);
-  }, [currentYear]);
+    if (year) loadYear(year);
+  }, [year]);
 
   async function loadYear(y) {
     setScheduleData({ Centeroo: null, Outeroo: null });
@@ -77,9 +79,7 @@ export default function PlannerBuilder({ onBuild }) {
     const data = scheduleData[activeTab];
     Object.entries(data).forEach(([day, locations]) => {
       Object.entries(locations).forEach(([loc, events]) => {
-        events.forEach(ev =>
-          all.push({ type: activeTab, day, location: loc, event: ev })
-        );
+        events.forEach(ev => all.push({ type: activeTab, day, location: loc, event: ev }));
       });
     });
     setCurrentSelections(prev => {
@@ -100,7 +100,7 @@ export default function PlannerBuilder({ onBuild }) {
       alert(`Please pick at least one event from ${activeTab}!`);
       return;
     }
-    onBuild(filteredSelections, currentYear, activeTab);
+    onBuild(filteredSelections, year, activeTab);
   }
 
   return (
@@ -109,7 +109,8 @@ export default function PlannerBuilder({ onBuild }) {
         <p className="last-updated">Schedules last updated: {lastModified}</p>
       )}
 
-      <YearSelector onYearChange={setCurrentYear} defaultYear={currentYear} />
+      {/* YearSelector now calls props.setYear, which lifts state into App */}
+      <YearSelector onYearChange={setYear} defaultYear={year} />
       <TabContainer activeTab={activeTab} onTabClick={setActiveTab} />
 
       <div style={{ margin: '15px 0' }}>

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { HTML_TITLE_FALLBACK } from './config';
 
-// Before React renders, set a sensible fallback title:
+// Show fallback title (“Bonnaroo Planner”) until React replaces it:
 document.title = HTML_TITLE_FALLBACK;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

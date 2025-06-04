@@ -23,6 +23,7 @@ export default function YearSelector({ onYearChange, defaultYear }) {
         found.sort();
         setYears(found);
         if (!defaultYear) {
+          // Lift the default year into App:
           onYearChange(found[found.length - 1]);
         }
       }
