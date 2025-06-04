@@ -6,6 +6,7 @@ on:
       - main
       - dev
       - feature/**
+      - bugfix/**
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
