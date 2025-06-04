@@ -1,3 +1,4 @@
+// src/components/YearSelector.js
 import React, { useEffect, useState } from 'react';
 import { jsonBase, firstYearAvailable, yearsAvailable } from '../config';
 
@@ -6,33 +7,26 @@ export default function YearSelector({ onYearChange, defaultYear }) {
 
   useEffect(() => {
     async function detectYears() {
-      const foundYears = [];
-
-      // We know the range is firstYearAvailable – (firstYear + yearsAvailable – 1).
+      const found = [];
       for (let i = 0; i < yearsAvailable; i++) {
         const y = firstYearAvailable + i;
         try {
-          // Do a GET instead of HEAD; if the file exists, resp.ok will be true
           const resp = await fetch(`${jsonBase}/centeroo_${y}.json`);
           if (resp.ok) {
-            foundYears.push(y);
+            found.push(y);
           }
         } catch {
-          // ignore any network/fetch errors
+          // ignore errors
         }
       }
-
-      if (foundYears.length) {
-        foundYears.sort();
-        setYears(foundYears);
-
-        // If the parent hasn’t already set a defaultYear, pick the last one:
+      if (found.length) {
+        found.sort();
+        setYears(found);
         if (!defaultYear) {
-          onYearChange(foundYears[foundYears.length - 1]);
+          onYearChange(found[found.length - 1]);
         }
       }
     }
-
     detectYears();
   }, [defaultYear, onYearChange]);
 
