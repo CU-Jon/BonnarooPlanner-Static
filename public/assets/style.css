@@ -95,7 +95,7 @@ select#year:hover {
     white-space: nowrap;
     overflow: hidden;
 }
-button, a#startOver{
+button:not(.tab button), a#startOver{
     background-color: #6A0DAD;
     color: white;
     font-family: 'Concert One', cursive;
@@ -108,7 +108,7 @@ button, a#startOver{
     margin: 10px;
     text-decoration: none;
 }
-button:hover, a#startOver:hover {
+button:not(.tab button):hover, a#startOver:hover {
     background-color: #FF69B4;
     transform: scale(1.05);
 }
@@ -123,7 +123,7 @@ button:hover, a#startOver:hover {
     font-weight: bold;
 }
 @media print {
-    #printButton, #pdfButton, #startOver, #icsButton, button[type='button'] {
+    button, #startOver {
         display: none;
     }
     body {
@@ -179,4 +179,33 @@ button:hover, a#startOver:hover {
         font-weight: bold;
         text-decoration: underline;
     }
+}
+/* 1. Make tables horizontally scrollable on small screens */
+@media (max-width: 700px) {
+  .container {
+    padding: 10px;
+  }
+  .day-section {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    /* Prevent table from overflowing */
+    max-width: 100vw;
+  }
+  .day-section table {
+    min-width: 600px; /* or whatever your minimum table width is */
+  }
+  /* 2. Make the button container wrap and fit */
+  #plannerView > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  #plannerView button, #plannerView a {
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+  }
 }
