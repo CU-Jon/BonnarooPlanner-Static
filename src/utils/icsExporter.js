@@ -1,6 +1,9 @@
-import { bonnarooStartMonday, dayOffsets } from '../config';
+import { bonnarooStartMonday, dayOffsets, LATE_NIGHT_CUTOFF, ICS_CALENDARNAME_TEMPLATE } from '../config';
 import { timeToMinutes } from './timeUtils';
 
+/**
+ * Convert “Day” + “hh:mm AM/PM” into an ICS datetime.
+ */
 export function formatICSDate(day, time, year) {
   const dayName = day.match(/^([A-Za-z]+)/)[1];
   const baseDateStr = bonnarooStartMonday[year];
@@ -13,14 +16,30 @@ export function formatICSDate(day, time, year) {
   const ampm = match[3];
   if (/PM/i.test(ampm) && h !== 12) h += 12;
   if (/AM/i.test(ampm) && h === 12) h = 0;
-  if ((h * 60 + m) < 7 * 60) eventDate.setDate(eventDate.getDate() + 1);
+  if ((h * 60 + m) < LATE_NIGHT_CUTOFF) {
+    eventDate.setDate(eventDate.getDate() + 1);
+  }
   const pad = n => n.toString().padStart(2, '0');
-  return `${eventDate.getFullYear()}${pad(eventDate.getMonth() + 1)}${pad(eventDate.getDate())}T${pad(h)}${pad(m)}00`;
+  return `${eventDate.getFullYear()}${pad(eventDate.getMonth() + 1)}${pad(
+    eventDate.getDate()
+  )}T${pad(h)}${pad(m)}00`;
 }
 
-export function generateICS(events, year) {
+/**
+ * @param {Array<{name, start, end, day, year}>} events
+ * @param {number} year
+ * @param {string} activeTab  // "Centeroo" or "Outeroo"
+ * @returns {string} ICS text
+ */
+export function generateICS(events, year, activeTab) {
+  const calendarName = ICS_CALENDARNAME_TEMPLATE
+    .replace('{year}', year)
+    .replace('{tab}', activeTab);
+
   const lines = [];
   lines.push('BEGIN:VCALENDAR');
+  lines.push(`X-WR-CALNAME:${calendarName}`);
+  lines.push(`NAME:${calendarName}`);
   lines.push('VERSION:2.0');
   lines.push('PRODID:-//Bonnaroo Planner//EN');
   lines.push('BEGIN:VTIMEZONE');
@@ -51,6 +70,7 @@ export function generateICS(events, year) {
     lines.push(`SUMMARY:${ev.name}`);
     lines.push('END:VEVENT');
   });
+
   lines.push('END:VCALENDAR');
   return lines.join('\r\n');
 }

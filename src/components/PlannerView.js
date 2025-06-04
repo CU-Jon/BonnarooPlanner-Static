@@ -1,19 +1,30 @@
 import React, { useEffect } from 'react';
-import { timeToMinutes, mergeOverlapsWithDetail } from '../utils/timeUtils';
+import {
+  timeToMinutes,
+  mergeOverlapsWithDetail,
+  minutesToTime
+} from '../utils/timeUtils';
 import { generateICS } from '../utils/icsExporter';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import {
+  PDF_FILENAME_TEMPLATE,
+  ICS_FILENAME_TEMPLATE,
+  APP_TITLE_PLANNER
+} from '../config';
 
-export default function PlannerView({ selections, year, onRestart }) {
+export default function PlannerView({ selections, year, activeTab, onRestart }) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  // Group selections by type → day → location
   const grouped = {};
   selections.forEach(sel => {
     grouped[sel.type] = grouped[sel.type] || {};
     grouped[sel.type][sel.day] = grouped[sel.type][sel.day] || {};
-    grouped[sel.type][sel.day][sel.location] = grouped[sel.type][sel.day][sel.location] || [];
+    grouped[sel.type][sel.day][sel.location] =
+      grouped[sel.type][sel.day][sel.location] || [];
     grouped[sel.type][sel.day][sel.location].push(sel.event);
   });
 
@@ -21,6 +32,7 @@ export default function PlannerView({ selections, year, onRestart }) {
     return Object.entries(grouped[type]).map(([day, locations]) => {
       const stageNames = Object.keys(locations);
       const timeGrid = {};
+
       Object.entries(locations).forEach(([loc, events]) => {
         events.forEach(ev => {
           const s = timeToMinutes(ev.start);
@@ -30,6 +42,8 @@ export default function PlannerView({ selections, year, onRestart }) {
           timeGrid[day].end = Math.max(timeGrid[day].end, e);
         });
       });
+
+      // Round to nearest 15-minute increments
       timeGrid[day].start = Math.floor(timeGrid[day].start / 15) * 15;
       timeGrid[day].end = Math.ceil(timeGrid[day].end / 15) * 15;
 
@@ -43,7 +57,9 @@ export default function PlannerView({ selections, year, onRestart }) {
               </tr>
               <tr>
                 <th>Time</th>
-                {stageNames.map(stg => <th key={stg}>{stg}</th>)}
+                {stageNames.map(stg => (
+                  <th key={stg}>{stg}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -54,25 +70,46 @@ export default function PlannerView({ selections, year, onRestart }) {
                   stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
                 });
                 const rowSpanTracker = {};
-                for (let tm = timeGrid[day].start; tm < timeGrid[day].end; tm += 15) {
+
+                for (
+                  let tm = timeGrid[day].start;
+                  tm < timeGrid[day].end;
+                  tm += 15
+                ) {
                   const cells = [];
-                  cells.push(<td className="left-time-col" key={`${day}-time-${tm}`}>{convertToTime(tm)}</td>);
+                  // Left-most time label
+                  cells.push(
+                    <td className="left-time-col" key={`${day}-time-${tm}`}>
+                      {minutesToTime(tm)}
+                    </td>
+                  );
+
                   stageNames.forEach(stg => {
                     if (rowSpanTracker[stg] > 0) {
                       rowSpanTracker[stg]--;
                       return;
                     }
-                    const found = stageEvents[stg].find(ev => timeToMinutes(ev.start) === tm);
+                    const found = stageEvents[stg].find(
+                      ev => timeToMinutes(ev.start) === tm
+                    );
                     if (found) {
-                      const span = (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
+                      const span =
+                        (timeToMinutes(found.end) -
+                          timeToMinutes(found.start)) /
+                        15;
                       cells.push(
-                        <td key={`${day}-${stg}-${tm}`} rowSpan={span} dangerouslySetInnerHTML={{ __html: found.name }}></td>
+                        <td
+                          key={`${day}-${stg}-${tm}`}
+                          rowSpan={span}
+                          dangerouslySetInnerHTML={{ __html: found.name }}
+                        ></td>
                       );
                       rowSpanTracker[stg] = span - 1;
                     } else {
                       cells.push(<td key={`${day}-${stg}-${tm}`}></td>);
                     }
                   });
+
                   rows.push(<tr key={`${day}-row-${tm}`}>{cells}</tr>);
                 }
                 return rows;
@@ -86,8 +123,22 @@ export default function PlannerView({ selections, year, onRestart }) {
   }
 
   function downloadPDF() {
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
-    const plannerTitle = `Bonnaroo ${year} Planner`;
+    // Build filename via template:
+    const fileName = PDF_FILENAME_TEMPLATE
+      .replace('{year}', year)
+      .replace('{tab}', activeTab);
+
+    // Build PDF title via template:
+    const plannerTitle = APP_TITLE_PLANNER
+      .replace('{year}', year)
+      .replace('{tab}', activeTab);
+
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'letter'
+    });
+
     const tables = document.querySelectorAll('.day-section');
     tables.forEach((table, idx) => {
       if (idx > 0) doc.addPage();
@@ -99,20 +150,31 @@ export default function PlannerView({ selections, year, onRestart }) {
         margin: { top: 70 },
         theme: 'grid',
         headStyles: { fillColor: [106, 13, 173], fontStyle: 'bold' },
-        styles: { font: 'helvetica', fontSize: 9, halign: 'center', valign: 'middle' },
-        didDrawPage: (data) => {
-          const pageWidth = doc.internal.pageSize.getWidth();
+        styles: {
+          font: 'helvetica',
+          fontSize: 9,
+          halign: 'center',
+          valign: 'middle'
+        },
+        didDrawPage: data => {
+          const pageWidth = doc.internal.getWidth();
           const pageInfo = doc.internal.getCurrentPageInfo();
           doc.setFontSize(14);
-          doc.setTextColor(0,0,0);
+          doc.setTextColor(0, 0, 0);
+          // Centered title:
           doc.text(plannerTitle, pageWidth / 2, 30, { align: 'center' });
           doc.setFontSize(18);
-          if (pageInfo.pageNumber === firstPage) doc.text(day, 40, 50);
-          else doc.text(`${day} (Continued)`, 40, 50);
+          // Day heading at top-left:
+          if (pageInfo.pageNumber === firstPage) {
+            doc.text(day, 40, 50);
+          } else {
+            doc.text(`${day} (Continued)`, 40, 50);
+          }
         }
       });
     });
-    doc.save(`Bonnaroo_Planner_${year}.pdf`);
+
+    doc.save(fileName);
   }
 
   function exportICS() {
@@ -123,11 +185,17 @@ export default function PlannerView({ selections, year, onRestart }) {
       day: sel.day,
       year
     }));
-    const icsData = generateICS(eventsList, year);
+
+    // Build ICS filename:
+    const fileName = ICS_FILENAME_TEMPLATE
+      .replace('{year}', year)
+      .replace('{tab}', activeTab);
+
+    const icsData = generateICS(eventsList, year, activeTab);
     const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Bonnaroo_${year}.ics`;
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -135,19 +203,30 @@ export default function PlannerView({ selections, year, onRestart }) {
 
   return (
     <div className="container" id="plannerView">
-      <h1>Your Custom Bonnaroo {year} Planner</h1>
-      <h3 className="print-instructions">Scroll down to print this page or save to PDF!</h3>
-      {Object.keys(grouped).map(type => (
-        <React.Fragment key={type}>
-          <h1 className="plannerType">{type}</h1>
-          {buildTable(type)}
-        </React.Fragment>
-      ))}
+      {/*
+        Optionally, you could render APP_TITLE_PLANNER here via:
+          <h1>{APP_TITLE_PLANNER.replace('{year}', year).replace('{tab}', activeTab)}</h1>
+        But our App.js already renders that H1.
+      */}
+      <h3 className="print-instructions">
+        Scroll down to print this page or save to PDF!
+      </h3>
+
+      {buildTable(activeTab)}
+
       <div>
-        <button id="printButton" onClick={() => window.print()}>Print</button>
-        <button id="pdfButton" onClick={downloadPDF}>Download as PDF</button>
-        <button id="icsButton" onClick={exportICS}>Export to Calendar (.ics)</button>
-        <button id="startOver" onClick={onRestart}>Start Over</button>
+        <button id="printButton" onClick={() => window.print()}>
+          Print
+        </button>
+        <button id="pdfButton" onClick={downloadPDF}>
+          Download as PDF
+        </button>
+        <button id="icsButton" onClick={exportICS}>
+          Export to Calendar (.ics)
+        </button>
+        <button id="startOver" onClick={onRestart}>
+          Start Over
+        </button>
       </div>
     </div>
   );

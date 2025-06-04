@@ -6,11 +6,15 @@ export default function TabContainer({ activeTab, onTabClick }) {
       <button
         className={`tablinks ${activeTab === 'Centeroo' ? 'active' : ''}`}
         onClick={() => onTabClick('Centeroo')}
-      >Centeroo</button>
+      >
+        Centeroo
+      </button>
       <button
         className={`tablinks ${activeTab === 'Outeroo' ? 'active' : ''}`}
         onClick={() => onTabClick('Outeroo')}
-      >Outeroo</button>
+      >
+        Outeroo
+      </button>
     </div>
   );
 }

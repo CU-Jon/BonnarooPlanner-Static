@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
+import { APP_TITLE_BUILDER } from '../config';
 
 export default function PlannerBuilder({ onBuild }) {
   const [currentYear, setCurrentYear] = useState(null);
-  const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
+  const [scheduleData, setScheduleData] = useState({
+    Centeroo: null,
+    Outeroo: null
+  });
   const [activeTab, setActiveTab] = useState('Centeroo');
   const [currentSelections, setCurrentSelections] = useState([]);
   const [lastModified, setLastModified] = useState(null);
@@ -30,7 +34,10 @@ export default function PlannerBuilder({ onBuild }) {
         if (!latest || (dOut && dOut > latest)) latest = dOut;
         if (latest) setLastModified(latest.toLocaleString());
       }
-      const [centeroo, outeroo] = await Promise.all([respCent.json(), respOut.json()]);
+      const [centeroo, outeroo] = await Promise.all([
+        respCent.json(),
+        respOut.json()
+      ]);
       setScheduleData({ Centeroo: centeroo, Outeroo: outeroo });
     } catch {
       alert(`Could not load schedule data for year ${y}`);
@@ -39,10 +46,28 @@ export default function PlannerBuilder({ onBuild }) {
 
   function toggleSelection(payload) {
     setCurrentSelections(prev => {
-      const exists = prev.some(sel =>
-        sel.type === payload.type && sel.day === payload.day && sel.location === payload.location && sel.event.name === payload.event.name
+      const exists = prev.some(
+        sel =>
+          sel.type === payload.type &&
+          sel.day === payload.day &&
+          sel.location === payload.location &&
+          sel.event.name === payload.event.name &&
+          sel.event.start === payload.event.start &&
+          sel.event.end === payload.event.end
       );
-      if (exists) return prev.filter(sel => !(sel.type === payload.type && sel.day === payload.day && sel.location === payload.location && sel.event.name === payload.event.name));
+      if (exists) {
+        return prev.filter(
+          sel =>
+            !(
+              sel.type === payload.type &&
+              sel.day === payload.day &&
+              sel.location === payload.location &&
+              sel.event.name === payload.event.name &&
+              sel.event.start === payload.event.start &&
+              sel.event.end === payload.event.end
+            )
+        );
+      }
       return [...prev, payload];
     });
   }
@@ -65,24 +90,36 @@ export default function PlannerBuilder({ onBuild }) {
   }
 
   function handleBuild() {
-    if (!currentSelections.length) {
-      alert('Please pick at least one event!');
+    const filteredSelections = currentSelections.filter(
+      sel => sel.type === activeTab
+    );
+    if (!filteredSelections.length) {
+      alert(`Please pick at least one event from ${activeTab}!`);
       return;
     }
-    onBuild(currentSelections, currentYear);
+    onBuild(filteredSelections, currentYear, activeTab);
   }
 
   return (
     <div className="container" id="app">
-      <h1 id="title">Select Your Bonnaroo Events{currentYear ? ` ${currentYear}` : ''}</h1>
-      {lastModified && <p className="last-updated">Schedules last updated: {lastModified}</p>}
+      {/* Optionally, you could render APP_TITLE_BUILDER here with .replace(...) */}
+      {lastModified && (
+        <p className="last-updated">Schedules last updated: {lastModified}</p>
+      )}
+
       <YearSelector onYearChange={setCurrentYear} defaultYear={currentYear} />
       <TabContainer activeTab={activeTab} onTabClick={setActiveTab} />
+
       <div style={{ margin: '15px 0' }}>
-        <button type="button" onClick={selectAll}>Select all</button>
-        <button type="button" onClick={deselectAll}>Deselect all</button>
+        <button type="button" onClick={selectAll}>
+          Select all
+        </button>
+        <button type="button" onClick={deselectAll}>
+          Deselect all
+        </button>
       </div>
-      {(scheduleData[activeTab]) && (
+
+      {scheduleData[activeTab] && (
         <SelectionGrid
           data={scheduleData[activeTab]}
           type={activeTab}
@@ -90,7 +127,10 @@ export default function PlannerBuilder({ onBuild }) {
           onToggleSelection={toggleSelection}
         />
       )}
-      <button id="buildBtn" type="button" onClick={handleBuild}>Build My Planner!</button>
+
+      <button id="buildBtn" type="button" onClick={handleBuild}>
+        Build My Planner!
+      </button>
     </div>
   );
 }

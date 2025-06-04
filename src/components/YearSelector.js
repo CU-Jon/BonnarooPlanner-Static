@@ -7,10 +7,15 @@ export default function YearSelector({ onYearChange, defaultYear }) {
   useEffect(() => {
     async function detectYears() {
       const arr = [];
-      const range = Array.from({ length: yearsAvailable }, (_, i) => firstYearAvailable + i);
+      const range = Array.from(
+        { length: yearsAvailable },
+        (_, i) => firstYearAvailable + i
+      );
       for (const y of range) {
         try {
-          const resp = await fetch(`${jsonBase}/centeroo_${y}.json`, { method: 'HEAD' });
+          const resp = await fetch(`${jsonBase}/centeroo_${y}.json`, {
+            method: 'HEAD'
+          });
           if (resp.ok) arr.push(y);
         } catch {}
       }
@@ -26,12 +31,14 @@ export default function YearSelector({ onYearChange, defaultYear }) {
       <label htmlFor="year">Select Year:</label>
       <select
         id="year"
-        value={defaultYear}
+        value={defaultYear || ''}
         onChange={e => onYearChange(Number(e.target.value))}
         style={{ marginLeft: '10px' }}
       >
         {years.map(y => (
-          <option key={y} value={y}>{y}</option>
+          <option key={y} value={y}>
+            {y}
+          </option>
         ))}
       </select>
     </form>
