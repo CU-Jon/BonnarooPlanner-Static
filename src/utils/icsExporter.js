@@ -21,7 +21,7 @@ export function formatICSDate(day, time, year) {
   const ampm = match[3];
   if (/PM/i.test(ampm) && h !== 12) h += 12;
   if (/AM/i.test(ampm) && h === 12) h = 0;
-  // If before cutoff (7:00 AM), bump to next day:
+  // If before cutoff (7:00 AM), move to next day
   if ((h * 60 + m) < LATE_NIGHT_CUTOFF) {
     eventDate.setDate(eventDate.getDate() + 1);
   }
@@ -32,7 +32,7 @@ export function formatICSDate(day, time, year) {
 }
 
 /**
- * @param {Array<{ type, day, location, event: {name,start,end} }>} selections
+ * @param {Array<{ type, day, location, event: { name, start, end } }>} selections
  * @param {number} year
  * @param {string} activeTab  // "Centeroo" or "Outeroo"
  */
@@ -42,13 +42,17 @@ export function generateICS(selections, year, activeTab) {
     .replace('{tab}', activeTab);
 
   const lines = [];
+
+  // VCALENDAR header
   lines.push('BEGIN:VCALENDAR');
+  lines.push('VERSION:2.0');
+  lines.push('CALSCALE:GREGORIAN');
+  lines.push('METHOD:PUBLISH');
   lines.push(`X-WR-CALNAME:${calendarName}`);
   lines.push(`NAME:${calendarName}`);
-  lines.push('VERSION:2.0');
   lines.push('PRODID:-//Bonnaroo Planner//EN');
 
-  // VTIMEZONE block for America/Chicago (identical to your original)
+  // VTIMEZONE for America/Chicago
   lines.push('BEGIN:VTIMEZONE');
   lines.push('TZID:America/Chicago');
   lines.push('BEGIN:STANDARD');
@@ -67,22 +71,32 @@ export function generateICS(selections, year, activeTab) {
   lines.push('END:DAYLIGHT');
   lines.push('END:VTIMEZONE');
 
-  // For each selected event, create a VEVENT with LOCATION + DESCRIPTION
+  // Each selected event → VEVENT
   selections.forEach(sel => {
     const { type, day, location, event } = sel;
     const dtstart = formatICSDate(day, event.start, year);
     const dtend = formatICSDate(day, event.end, year);
     if (!dtstart || !dtend) return;
 
+    // Build a simple UID: dtstart‐location‐name@bonnaroo
+    const safeName = event.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const safeLoc = location.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const uid = `${dtstart}-${safeLoc}-${safeName}@bonnaroo`;
+
     lines.push('BEGIN:VEVENT');
+    lines.push(`UID:${uid}`);
     lines.push(`DTSTAMP:${dtstart}`);
     lines.push(`DTSTART;TZID=America/Chicago:${dtstart}`);
     lines.push(`DTEND;TZID=America/Chicago:${dtend}`);
     lines.push(`SUMMARY:${event.name}`);
     lines.push(`LOCATION:${location} (${type})`);
-    // DESCRIPTION matches your original formatting (escaped newline as \n):
     lines.push(
-      `DESCRIPTION:Bonnaroo ${year}\\nArtist/Event: ${event.name}\\nLocation: ${type}\\nSublocation: ${location}\\nStart: ${event.start}\\nEnd: ${event.end}`
+      `DESCRIPTION:Bonnaroo ${year}\\n` +
+        `Artist/Event: ${event.name}\\n` +
+        `Location: ${type}\\n` +
+        `Sublocation: ${location}\\n` +
+        `Start: ${event.start}\\n` +
+        `End: ${event.end}`
     );
     lines.push('END:VEVENT');
   });
