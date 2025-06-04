@@ -115,7 +115,7 @@ button:not(.tab button):hover, a#startOver:hover {
 
 label {
     display: block;
-    margin: 8px 0;
+    margin: 12px 0;
     font-size: 1rem;
     cursor: pointer;
 }
@@ -151,11 +151,10 @@ tr:nth-child(even) td {
 }
 
 .left-time-col {
-    text-align: right;
+    text-align: center;
     color: #64748b;
     font-weight: 500;
     background: #f1f5f9;
-    white-space: nowrap;
     overflow: hidden;
 }
 
@@ -223,6 +222,9 @@ select#year:hover, select#year:focus {
     }
     .day-section th, .day-section td {
         word-wrap: break-word;
+    }
+    @page {
+        size: landscape;
     }
 }
 
