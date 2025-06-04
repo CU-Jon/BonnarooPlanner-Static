@@ -186,10 +186,6 @@ button:not(.tab button):hover, a#startOver:hover {
     margin: 0;
     padding: 0;
   }
-  body {
-    display: block;
-    text-align: left;
-  }
   .container {
     padding: 10px;
     margin: 0;
