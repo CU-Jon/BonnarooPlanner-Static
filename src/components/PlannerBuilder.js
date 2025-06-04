@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
-import { APP_TITLE_BUILDER } from '../config';
 
 export default function PlannerBuilder({ onBuild }) {
   const [currentYear, setCurrentYear] = useState(null);
@@ -72,21 +71,25 @@ export default function PlannerBuilder({ onBuild }) {
     });
   }
 
+  // Only selects/deselects items on the active tab
   function selectAll() {
+    if (!scheduleData[activeTab]) return;
     const all = [];
-    ['Centeroo', 'Outeroo'].forEach(type => {
-      const data = scheduleData[type] || {};
-      Object.entries(data).forEach(([day, locations]) => {
-        Object.entries(locations).forEach(([loc, events]) => {
-          events.forEach(ev => all.push({ type, day, location: loc, event: ev }));
-        });
+    const data = scheduleData[activeTab];
+    Object.entries(data).forEach(([day, locations]) => {
+      Object.entries(locations).forEach(([loc, events]) => {
+        events.forEach(ev => all.push({ type: activeTab, day, location: loc, event: ev }));
       });
     });
-    setCurrentSelections(all);
+    setCurrentSelections(prev => {
+      // Remove any existing selections for activeTab, then add all again
+      const filteredOutside = prev.filter(sel => sel.type !== activeTab);
+      return [...filteredOutside, ...all];
+    });
   }
 
   function deselectAll() {
-    setCurrentSelections([]);
+    setCurrentSelections(prev => prev.filter(sel => sel.type !== activeTab));
   }
 
   function handleBuild() {
@@ -102,7 +105,9 @@ export default function PlannerBuilder({ onBuild }) {
 
   return (
     <div className="container" id="app">
-      {/* Optionally, you could render APP_TITLE_BUILDER here with .replace(...) */}
+      <h1 id="title">
+        Select Your Bonnaroo Events{currentYear ? ` ${currentYear}` : ''}
+      </h1>
       {lastModified && (
         <p className="last-updated">Schedules last updated: {lastModified}</p>
       )}

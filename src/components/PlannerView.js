@@ -157,7 +157,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
           valign: 'middle'
         },
         didDrawPage: data => {
-          const pageWidth = doc.internal.getWidth();
+          // Use pageSize.getWidth() instead of getWidth()
+          const pageWidth = doc.internal.pageSize.getWidth();
           const pageInfo = doc.internal.getCurrentPageInfo();
           doc.setFontSize(14);
           doc.setTextColor(0, 0, 0);
@@ -204,9 +205,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   return (
     <div className="container" id="plannerView">
       {/*
-        Optionally, you could render APP_TITLE_PLANNER here via:
-          <h1>{APP_TITLE_PLANNER.replace('{year}', year).replace('{tab}', activeTab)}</h1>
-        But our App.js already renders that H1.
+        The <h1> is now rendered by App.js, so we omit it here.
       */}
       <h3 className="print-instructions">
         Scroll down to print this page or save to PDF!
@@ -224,7 +223,10 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         <button id="icsButton" onClick={exportICS}>
           Export to Calendar (.ics)
         </button>
-        <button id="startOver" onClick={onRestart}>
+        {/* 
+          Explicitly set type="button" so CSS targeting button[type='button'] will apply 
+        */}
+        <button id="startOver" type="button" onClick={onRestart}>
           Start Over
         </button>
       </div>
