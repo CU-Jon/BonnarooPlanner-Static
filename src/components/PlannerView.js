@@ -6,12 +6,9 @@ import {
   minutesToTime
 } from '../utils/timeUtils';
 import { generateICS } from '../utils/icsExporter';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { exportPlannerPDF } from './PlannerPDFExport';
 import {
-  PDF_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
-  APP_TITLE_PLANNER,
   SHOW_PRINT_BUTTON
 } from '../config';
 
@@ -125,91 +122,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   }
 
   function downloadPDF() {
-    const fileName = PDF_FILENAME_TEMPLATE
-      .replace('{year}', year)
-      .replace('{tab}', activeTab);
-  
-    const plannerTitle = APP_TITLE_PLANNER
-      .replace('{year}', year)
-      .replace('{tab}', activeTab);
-  
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'letter'
-    });
-  
-    // Build flat tables for each day
-    const type = activeTab;
-    const days = Object.entries(grouped[type]);
-    days.forEach(([day, locations], idx) => {
-      if (idx > 0) doc.addPage();
-  
-      // Find all stage names and time grid
-      const stageNames = Object.keys(locations);
-      let minTime = 1440, maxTime = 0;
-      Object.values(locations).forEach(events => {
-        events.forEach(ev => {
-          const s = timeToMinutes(ev.start);
-          const e = timeToMinutes(ev.end);
-          minTime = Math.min(minTime, s);
-          maxTime = Math.max(maxTime, e);
-        });
-      });
-      minTime = Math.floor(minTime / 15) * 15;
-      maxTime = Math.ceil(maxTime / 15) * 15;
-  
-      // Prepare table head and body
-      const head = [['Time', ...stageNames]];
-      const body = [];
-      for (let tm = minTime; tm < maxTime; tm += 15) {
-        const row = [minutesToTime(tm)];
-        stageNames.forEach(stg => {
-          const events = locations[stg] || [];
-          // Find event covering this slot
-          const found = events.find(ev =>
-            timeToMinutes(ev.start) <= tm && timeToMinutes(ev.end) > tm
-          );
-          row.push(found ? `${found.name} (${evTimeRange(found)})` : '');
-        });
-        body.push(row);
-      }
-  
-      autoTable(doc, {
-        head,
-        body,
-        startY: 70,
-        margin: { top: 70 },
-        theme: 'grid',
-        headStyles: { fillColor: [106, 13, 173], fontStyle: 'bold' },
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          halign: 'center',
-          valign: 'middle'
-        },
-        didDrawPage: data => {
-          const pageWidth = doc.internal.pageSize.getWidth();
-          const pageInfo = doc.internal.getCurrentPageInfo();
-          doc.setFontSize(14);
-          doc.setTextColor(0, 0, 0);
-          doc.text(plannerTitle, pageWidth / 2, 30, { align: 'center' });
-          doc.setFontSize(18);
-          if (pageInfo.pageNumber === 1) {
-            doc.text(day, 40, 50);
-          } else {
-            doc.text(`${day} (Continued)`, 40, 50);
-          }
-        }
-      });
-    });
-  
-    doc.save(fileName);
-  
-    // Helper to format event time range
-    function evTimeRange(ev) {
-      return `${ev.start} – ${ev.end}`;
-    }
+    exportPlannerPDF({ selections, year, activeTab, grouped });
   }
 
   function exportICS() {
