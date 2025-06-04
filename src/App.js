@@ -1,8 +1,9 @@
 // src/App.js
+
 import React, { useState } from 'react';
 import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
-import { APP_TITLE_BUILDER, APP_TITLE_PLANNER } from './config';
+import { BUILDER_TITLE_TEMPLATE, APP_TITLE_PLANNER } from './config';
 
 export default function App() {
   const [view, setView] = useState('builder');
@@ -18,27 +19,24 @@ export default function App() {
   }
 
   function handleRestart() {
-    // Simply clear out all state—do NOT reload the page.
     setSelections([]);
     setYear(null);
     setActiveTab('Centeroo');
     setView('builder');
-    // Now the builder view will show with no year set;
-    // YearSelector will detect years and pick the latest automatically.
   }
+
+  // Compute “{yearPart}” text: either empty or “ YYYY”
+  const yearPart = year ? ` ${year}` : '';
 
   return (
     <>
       {view === 'builder' && (
         <>
-          <h1>
-            {APP_TITLE_BUILDER
-              .replace('{year}', year || '')
-              .replace('{tab}', activeTab)}
-          </h1>
+          <h1>{BUILDER_TITLE_TEMPLATE.replace('{yearPart}', yearPart)}</h1>
           <PlannerBuilder onBuild={handleBuild} />
         </>
       )}
+
       {view === 'planner' && (
         <>
           <h1>

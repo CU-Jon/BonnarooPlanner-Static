@@ -16,8 +16,8 @@ export const LATE_NIGHT_CUTOFF = 7 * 60;
 
 // On-screen titles:
 // {year} and {tab} (Centeroo/Outeroo) will be replaced via .replace()
-export const APP_TITLE_BUILDER = 'Select Your Bonnaroo {year} Events - {tab}';
-export const APP_TITLE_PLANNER = 'Your Bonnaroo {year} Planner - {tab}';
+export const BUILDER_TITLE_TEMPLATE = 'Select Your Bonnaroo Events{yearPart}';
+export const APP_TITLE_PLANNER = 'Bonnaroo {year} Planner - {tab}';
 
 // Filename templates (use .replace('{year}', year).replace('{tab}', activeTab)):
 export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.pdf';
@@ -25,3 +25,15 @@ export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
 
 // Inside ICS calendar-name (displayed by Outlook/Google Calendar):
 export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
+
+// -----------------------------------
+// NEW: Toggle to show/hide the Print button
+// Set to false to hide “Print” in PlannerView
+// -----------------------------------
+export const SHOW_PRINT_BUTTON = false;
+
+// -----------------------------------
+// NEW: HTML <title> for index.html
+// You can include {year} or {tab} if you wish, but it’s static here
+// -----------------------------------
+export const HTML_TITLE = 'Bonnaroo Planner - {year}';

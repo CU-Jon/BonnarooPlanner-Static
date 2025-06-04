@@ -1,3 +1,4 @@
+// src/components/PlannerView.js
 import React, { useEffect } from 'react';
 import {
   timeToMinutes,
@@ -10,7 +11,8 @@ import 'jspdf-autotable';
 import {
   PDF_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
-  APP_TITLE_PLANNER
+  APP_TITLE_PLANNER,
+  SHOW_PRINT_BUTTON
 } from '../config';
 
 export default function PlannerView({ selections, year, activeTab, onRestart }) {
@@ -197,9 +199,11 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       {buildTable(activeTab)}
 
       <div>
-        <button id="printButton" onClick={() => window.print()}>
-          Print
-        </button>
+        {SHOW_PRINT_BUTTON && (
+          <button id="printButton" onClick={() => window.print()}>
+            Print
+          </button>
+        )}
         <button id="pdfButton" onClick={downloadPDF}>
           Download as PDF
         </button>
