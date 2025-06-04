@@ -137,7 +137,7 @@ th, td {
     text-align: center;
     border: 1px solid #e5e7eb;
     font-size: 1rem;
-    word-break: break-word;
+    word-break: normal;
 }
 
 th {
@@ -215,14 +215,10 @@ select#year:hover, select#year:focus {
         break-before: page;
         page-break-before: always;
         width: 100% !important;
-        table-layout: fixed !important;
     }
     table.day-section:first-of-type {
         break-before: auto;
         page-break-before: auto;
-    }
-    .day-section th, .day-section td {
-        word-wrap: break-word;
     }
     @page {
         size: landscape;
