@@ -6,8 +6,8 @@ import {
   minutesToTime
 } from '../utils/timeUtils';
 import { generateICS } from '../utils/icsExporter';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   PDF_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
@@ -144,7 +144,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       if (idx > 0) doc.addPage();
       const day = table.dataset.day;
       const firstPage = doc.internal.getNumberOfPages();
-      doc.autoTable({
+      autoTable(doc, {
         html: table,
         pageBreak: 'auto',
         rowPageBreak: 'avoid',

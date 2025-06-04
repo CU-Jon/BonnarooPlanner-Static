@@ -1,7 +1,6 @@
 import {
   bonnarooStartMonday,
   dayOffsets,
-  LATE_NIGHT_CUTOFF,
   ICS_CALENDARNAME_TEMPLATE
 } from '../config';
 import { timeToMinutes } from './timeUtils';
@@ -15,16 +14,17 @@ export function formatICSDate(day, time, year) {
   const baseDate = new Date(`${baseDateStr}T00:00:00`);
   const eventDate = new Date(baseDate);
   eventDate.setDate(baseDate.getDate() + dayOffsets[dayName]);
-  const match = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
-  let h = parseInt(match[1], 10);
-  const m = parseInt(match[2], 10);
-  const ampm = match[3];
-  if (/PM/i.test(ampm) && h !== 12) h += 12;
-  if (/AM/i.test(ampm) && h === 12) h = 0;
-  // If before cutoff (7:00 AM), move to next day
-  if ((h * 60 + m) < LATE_NIGHT_CUTOFF) {
+
+  // Use timeToMinutes for parsing and late-night logic
+  const mins = timeToMinutes(time);
+  let h = Math.floor(mins / 60) % 24;
+  const m = mins % 60;
+
+  // If time is after midnight but before cutoff, move to next day
+  if (mins >= 1440) {
     eventDate.setDate(eventDate.getDate() + 1);
   }
+
   const pad = n => n.toString().padStart(2, '0');
   return `${eventDate.getFullYear()}${pad(eventDate.getMonth() + 1)}${pad(
     eventDate.getDate()
