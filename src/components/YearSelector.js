@@ -6,25 +6,35 @@ export default function YearSelector({ onYearChange, defaultYear }) {
 
   useEffect(() => {
     async function detectYears() {
-      const arr = [];
-      const range = Array.from(
-        { length: yearsAvailable },
-        (_, i) => firstYearAvailable + i
-      );
-      for (const y of range) {
+      const foundYears = [];
+
+      // We know the range is firstYearAvailable – (firstYear + yearsAvailable – 1).
+      for (let i = 0; i < yearsAvailable; i++) {
+        const y = firstYearAvailable + i;
         try {
-          const resp = await fetch(`${jsonBase}/centeroo_${y}.json`, {
-            method: 'HEAD'
-          });
-          if (resp.ok) arr.push(y);
-        } catch {}
+          // Do a GET instead of HEAD; if the file exists, resp.ok will be true
+          const resp = await fetch(`${jsonBase}/centeroo_${y}.json`);
+          if (resp.ok) {
+            foundYears.push(y);
+          }
+        } catch {
+          // ignore any network/fetch errors
+        }
       }
-      arr.sort();
-      setYears(arr);
-      if (arr.length && !defaultYear) onYearChange(arr[arr.length - 1]);
+
+      if (foundYears.length) {
+        foundYears.sort();
+        setYears(foundYears);
+
+        // If the parent hasn’t already set a defaultYear, pick the last one:
+        if (!defaultYear) {
+          onYearChange(foundYears[foundYears.length - 1]);
+        }
+      }
     }
+
     detectYears();
-  }, []);
+  }, [defaultYear, onYearChange]);
 
   return (
     <form style={{ marginBottom: '20px' }}>
@@ -32,10 +42,13 @@ export default function YearSelector({ onYearChange, defaultYear }) {
       <select
         id="year"
         value={defaultYear || ''}
-        onChange={e => onYearChange(Number(e.target.value))}
+        onChange={(e) => onYearChange(Number(e.target.value))}
         style={{ marginLeft: '10px' }}
       >
-        {years.map(y => (
+        <option value="" disabled>
+          -- Select Year --
+        </option>
+        {years.map((y) => (
           <option key={y} value={y}>
             {y}
           </option>
