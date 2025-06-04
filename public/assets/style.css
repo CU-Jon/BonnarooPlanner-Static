@@ -180,22 +180,43 @@ button:not(.tab button):hover, a#startOver:hover {
         text-decoration: underline;
     }
 }
-/* 1. Make tables horizontally scrollable on small screens */
 @media (max-width: 700px) {
+  html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    display: block;
+    text-align: left;
+  }
   .container {
     padding: 10px;
+    margin: 0;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
   }
   .day-section {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    /* Prevent table from overflowing */
     max-width: 100vw;
+    overflow-x: auto;
+    box-sizing: border-box;
+    margin: 0;
   }
   .day-section table {
-    min-width: 600px; /* or whatever your minimum table width is */
+    min-width: 600px;
   }
-  /* 2. Make the button container wrap and fit */
+  h1, h2, h3, h4 {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+  }
   #plannerView > div:last-child {
     display: flex;
     flex-wrap: wrap;
