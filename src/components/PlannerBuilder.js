@@ -71,7 +71,6 @@ export default function PlannerBuilder({ onBuild }) {
     });
   }
 
-  // Only selects/deselects items on the active tab
   function selectAll() {
     if (!scheduleData[activeTab]) return;
     const all = [];
@@ -84,7 +83,6 @@ export default function PlannerBuilder({ onBuild }) {
       });
     });
     setCurrentSelections(prev => {
-      // Remove any existing selections for activeTab, then add all again
       const filteredOutside = prev.filter(sel => sel.type !== activeTab);
       return [...filteredOutside, ...all];
     });
@@ -107,9 +105,6 @@ export default function PlannerBuilder({ onBuild }) {
 
   return (
     <div className="container" id="app">
-      <h1 id="title">
-        Select Your Bonnaroo Events{currentYear ? ` ${currentYear}` : ''}
-      </h1>
       {lastModified && (
         <p className="last-updated">Schedules last updated: {lastModified}</p>
       )}

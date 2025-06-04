@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { HTML_TITLE_FALLBACK } from './config';
 
-// Set the initial tab title before React renders:
+// Before React mounts, show this as the tab title:
 document.title = HTML_TITLE_FALLBACK;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

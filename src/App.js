@@ -28,19 +28,15 @@ export default function App() {
     setView('builder');
   }
 
-  // Update <title> on every relevant change
+  // Whenever view/year/activeTab change, update the browser tab <title>
   useEffect(() => {
     if (view === 'builder') {
-      // For builder: “Select Your Bonnaroo Events{yearPart}”
-      // We’ll show just “Select Your Bonnaroo Events” or “Select Your Bonnaroo Events 2025”
+      // Builder page: “Select Your Bonnaroo Events” or “Select Your Bonnaroo Events 2025”
       const yearPart = year ? ` ${year}` : '';
-      document.title = BUILDER_TITLE_TEMPLATE.replace(
-        '{yearPart}',
-        yearPart
-      );
+      document.title = BUILDER_TITLE_TEMPLATE.replace('{yearPart}', yearPart);
     } else {
-      // For planner: “Bonnaroo Planner - {year} - {tab}”
-      const tabPart = ` - ${activeTab}`; // always include “ - Centeroo” or “ - Outeroo”
+      // Planner page: “Bonnaroo Planner – {year} – {tab}”
+      const tabPart = ` - ${activeTab}`;
       document.title = HTML_TITLE_TEMPLATE
         .replace('{year}', year)
         .replace('{tabPart}', tabPart);
@@ -51,7 +47,7 @@ export default function App() {
     <>
       {view === 'builder' && (
         <>
-          {/* On‐screen heading uses the same BUILDER_TITLE_TEMPLATE */}
+          {/* Only one <h1> here. Year will append once user picks it. */}
           <h1>
             {BUILDER_TITLE_TEMPLATE.replace(
               '{yearPart}',
@@ -61,14 +57,14 @@ export default function App() {
           <PlannerBuilder onBuild={handleBuild} />
         </>
       )}
+
       {view === 'planner' && (
         <>
-          {/* On‐screen heading uses APP_TITLE_PLANNER */}
+          {/* Planner heading remains “Your Bonnaroo {year} Planner – {tab}” */}
           <h1>
-            {APP_TITLE_PLANNER.replace('{year}', year).replace(
-              '{tab}',
-              activeTab
-            )}
+            {APP_TITLE_PLANNER
+              .replace('{year}', year)
+              .replace('{tab}', activeTab)}
           </h1>
           <PlannerView
             selections={selections}
