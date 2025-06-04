@@ -139,45 +139,15 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       format: 'letter'
     });
 
-    // Build flat tables for each day
-    const type = activeTab;
-    const days = Object.entries(grouped[type]);
-    days.forEach(([day, locations], idx) => {
+    const tables = document.querySelectorAll('.day-section');
+    tables.forEach((table, idx) => {
       if (idx > 0) doc.addPage();
-
-      // Find all stage names and time grid
-      const stageNames = Object.keys(locations);
-      let minTime = 1440, maxTime = 0;
-      Object.values(locations).forEach(events => {
-        events.forEach(ev => {
-          const s = timeToMinutes(ev.start);
-          const e = timeToMinutes(ev.end);
-          minTime = Math.min(minTime, s);
-          maxTime = Math.max(maxTime, e);
-        });
-      });
-      minTime = Math.floor(minTime / 15) * 15;
-      maxTime = Math.ceil(maxTime / 15) * 15;
-
-      // Prepare table head and body
-      const head = [['Time', ...stageNames]];
-      const body = [];
-      for (let tm = minTime; tm < maxTime; tm += 15) {
-        const row = [minutesToTime(tm)];
-        stageNames.forEach(stg => {
-          const events = locations[stg] || [];
-          // Find event covering this slot
-          const found = events.find(ev =>
-            timeToMinutes(ev.start) <= tm && timeToMinutes(ev.end) > tm
-          );
-          row.push(found ? `${found.name} (${evTimeRange(found)})` : '');
-        });
-        body.push(row);
-      }
-
+      const day = table.dataset.day;
+      const firstPage = doc.internal.getNumberOfPages();
       doc.autoTable({
-        head,
-        body,
+        html: table,
+        pageBreak: 'auto',
+        rowPageBreak: 'avoid',
         startY: 70,
         margin: { top: 70 },
         theme: 'grid',
@@ -195,7 +165,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
           doc.setTextColor(0, 0, 0);
           doc.text(plannerTitle, pageWidth / 2, 30, { align: 'center' });
           doc.setFontSize(18);
-          if (pageInfo.pageNumber === 1) {
+          if (pageInfo.pageNumber === firstPage) {
             doc.text(day, 40, 50);
           } else {
             doc.text(`${day} (Continued)`, 40, 50);
@@ -205,11 +175,6 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
     });
 
     doc.save(fileName);
-
-    // Helper to format event time range
-    function evTimeRange(ev) {
-      return `${ev.start} – ${ev.end}`;
-    }
   }
 
   function exportICS() {
