@@ -6,7 +6,8 @@ import {
   BUILDER_TITLE_TEMPLATE,
   HTML_TITLE_FALLBACK,
   HTML_TITLE_TEMPLATE,
-  APP_TITLE_PLANNER
+  APP_TITLE_PLANNER,
+  FOOTER_HTML
 } from './config';
 
 export default function App() {
@@ -78,6 +79,10 @@ export default function App() {
           />
         </>
       )}
+      <footer
+        className="app-footer"
+        dangerouslySetInnerHTML={{ __html: FOOTER_HTML }}
+      />
     </>
   );
 }

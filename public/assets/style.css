@@ -181,9 +181,29 @@ select#year:hover, select#year:focus {
     font-weight: bold;
 }
 
+.app-footer {
+    margin-bottom: 40px;
+    font-size: 1rem;
+    color: #64748b;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+
+.app-footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.app-footer a:hover {
+    color: #1a365d;
+    text-decoration: underline;
+}
+
 @media print {
     button, #startOver {
-        display: none;
+        display: none !important;
     }
     body {
         background: none !important;
@@ -198,7 +218,7 @@ select#year:hover, select#year:focus {
         box-shadow: none;
     }
     h2.day-heading-screen {
-        display: none;
+        display: none !important;
     }
     .day-heading-print th {
         text-align: center;
@@ -209,7 +229,7 @@ select#year:hover, select#year:focus {
         text-decoration: underline;
     }
     .print-instructions {
-        display: none;
+        display: none !important;
     }
     table.day-section {
         break-before: page;
@@ -220,6 +240,9 @@ select#year:hover, select#year:focus {
         break-before: auto;
         page-break-before: auto;
     }
+    .app-footer {
+        display: none !important;
+    }
     @page {
         size: landscape;
     }
@@ -227,7 +250,7 @@ select#year:hover, select#year:focus {
 
 @media screen {
     .day-heading-print {
-        display: none;
+        display: none !important;
     }
     .day-heading-screen {
         font-weight: bold;

@@ -49,3 +49,8 @@ export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
 // Toggle showing/hiding the “Print” button in PlannerView
 // -------------------------------------------------
 export const SHOW_PRINT_BUTTON = false;
+
+// -------------------------------------------------
+// Footer HTML for the planner view
+// -------------------------------------------------
+export const FOOTER_HTML = 'Made with ❤️ by <a href="https://github.com/CU-Jon" target="_blank" rel="noopener noreferrer">CU-Jon</a>';
