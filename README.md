@@ -166,6 +166,12 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 
 ---
 
+## Building JSON schedules
+
+See the predecessor project [BonnarooPlanner/jsonbuilder](https://github.com/CU-Jon/BonnarooPlanner/blob/main/jsonbuilder) for the PHP code to build or edit schedules. Unfortunately, the builder/editor cannot be served as a static web app to perform live updates to the files for obvious reasons :(
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
