@@ -127,7 +127,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   function downloadPDF(orientation = 'portrait') {
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
-      .replace('{tab}', activeTab);
+      .replace('{tab}', activeTab)
+      .replace('{orientation}', orientation);
 
     const plannerTitle = APP_TITLE_PLANNER
       .replace('{year}', year)
