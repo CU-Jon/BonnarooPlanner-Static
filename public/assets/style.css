@@ -182,8 +182,7 @@ select#year:hover, select#year:focus {
 }
 
 .app-footer {
-    margin-top: 40px;
-    padding: 18px 0 0 0;
+    margin-bottom: 40px;
     font-size: 1rem;
     color: #64748b;
     text-align: center;
