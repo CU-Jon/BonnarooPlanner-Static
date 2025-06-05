@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
+import { FOOTER_HTML } from '../config';
 import {
   BUILDER_TITLE_TEMPLATE,
   HTML_TITLE_FALLBACK,
@@ -78,6 +79,10 @@ export default function App() {
           />
         </>
       )}
+      <footer
+        className="app-footer"
+        dangerouslySetInnerHTML={{ __html: FOOTER_HTML }}
+      />
     </>
   );
 }
