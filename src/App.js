@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
-import { FOOTER_HTML } from '../config';
 import {
   BUILDER_TITLE_TEMPLATE,
   HTML_TITLE_FALLBACK,
   HTML_TITLE_TEMPLATE,
-  APP_TITLE_PLANNER
+  APP_TITLE_PLANNER,
+  FOOTER_HTML
 } from './config';
 
 export default function App() {
