@@ -53,4 +53,4 @@ export const SHOW_PRINT_BUTTON = false;
 // -------------------------------------------------
 // Footer HTML for the planner view
 // -------------------------------------------------
-export const FOOTER_HTML = 'Made with ❤️ by <a href="https://github.com/CU-Jon" target="_blank" rel="noopener noreferrer">CU-Jon</a>';
+export const FOOTER_HTML = 'Made with ❤️ by <a href="https://github.com/CU-Jon/BonnarooPlanner-Static" target="_blank" rel="noopener noreferrer">CU-Jon</a>';
