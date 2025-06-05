@@ -76,6 +76,14 @@ public/
     schedules/              # JSON event data
       centeroo_XXXX.json    # Where "XXXX" is the year
       outeroo_XXXX.json     # Where "XXXX" is the year
+    favicon/                # Favicon and web app icons
+      favicon.ico           # Standard favicon (ICO)
+      favicon.svg           # SVG favicon (recommended for modern browsers)
+      favicon-96x96.png     # PNG favicon (fallback for some browsers)
+      apple-touch-icon.png  # iOS home screen icon
+      site.webmanifest      # Web app manifest for PWA support
+      web-app-manifest-192x192.png # PWA icon
+      web-app-manifest-512x512.png # PWA icon
   index.html
 src/
   components/               # React components
