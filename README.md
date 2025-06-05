@@ -1,3 +1,12 @@
+![Azure Static Web Apps CI/CD](https://github.com/CU-Jon/BonnarooPlanner-Static/actions/workflows/azure-static-web-apps-blue-meadow-029a01a0f.yml/badge.svg)
+![MIT License](https://img.shields.io/github/license/CU-Jon/BonnarooPlanner-Static)
+![Last Commit](https://img.shields.io/github/last-commit/CU-Jon/BonnarooPlanner-Static)
+![Issues](https://img.shields.io/github/issues/CU-Jon/BonnarooPlanner-Static)
+![Pull Requests](https://img.shields.io/github/issues-pr/CU-Jon/BonnarooPlanner-Static)
+![Node Version](https://img.shields.io/badge/node-%3E=16.0.0-brightgreen)
+![JavaScript](https://img.shields.io/github/languages/top/CU-Jon/BonnarooPlanner-Static)
+![React](https://img.shields.io/badge/React-blue?logo=react)
+
 # Bonnaroo Planner
 
 A modern, mobile-friendly web app for planning your Bonnaroo festival schedule.  
