@@ -124,7 +124,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
     });
   }
 
-  function downloadPDF() {
+  function downloadPDF(orientation = 'portrait') {
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab);
@@ -134,7 +134,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       .replace('{tab}', activeTab);
 
     const doc = new jsPDF({
-      orientation: 'portrait',
+      orientation,
       unit: 'pt',
       format: 'letter'
     });
@@ -206,8 +206,11 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
             Print
           </button>
         )}
-        <button id="pdfButton" onClick={downloadPDF}>
-          Download as PDF
+        <button id="pdfButtonPortrait" onClick={() => downloadPDF('portrait')}>
+          Download as PDF (Portrait)
+        </button>
+        <button id="pdfButtonLandscape" onClick={() => downloadPDF('landscape')}>
+          Download as PDF (Landscape)
         </button>
         <button id="icsButton" onClick={exportICS}>
           Export to Calendar (.ics)
