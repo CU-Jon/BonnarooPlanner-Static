@@ -159,7 +159,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
           halign: 'center',
           valign: 'middle'
         },
-        didDrawPage: data => {
+        didDrawPage: function (data) {
           const pageWidth = doc.internal.pageSize.getWidth();
           const pageInfo = doc.internal.getCurrentPageInfo();
           doc.setFontSize(14);
@@ -174,6 +174,23 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         }
       });
     });
+
+    // --- Add Page X of Y footer after all pages are generated ---
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageSize = doc.internal.pageSize;
+      const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        pageWidth - 60,
+        pageHeight - 20,
+        { align: 'right' }
+      );
+    }
 
     doc.save(fileName);
   }
