@@ -55,7 +55,7 @@ Easily select your favorite events, view your custom schedule, and export it as 
    yarn install
    ```
 
-3. **Set up environment variables:**  
+3. **Set up environment variables for local development:**  
    Create a `.env.local` file in your project root (not committed to git):
 
    ```
@@ -64,7 +64,8 @@ Easily select your favorite events, view your custom schedule, and export it as 
    REACT_APP_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
    ```
 
-   For Azure Static Web Apps, set these as Environment Variables in the Azure portal or as environment variables wherever you deploy this.
+   For **Azure Static Web Apps**, you must set these as **GitHub repository variables** (not as Azure SWA Environment Variables or Secrets) and pass them to the build step in your workflow.  
+   See the "Azure Static Web Apps Deployment" section below.
 
 4. **Start the development server:**
    ```sh
@@ -210,7 +211,28 @@ REACT_APP_EMAIL_DOMAIN=yourdomain.com
 REACT_APP_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
 ```
 
-For Azure Static Web Apps, set these as Environment Variables in the Azure portal or as environment variables wherever you deploy this.
+### Azure Static Web Apps Deployment
+
+**Important:**  
+For Azure Static Web Apps, you must set these as **GitHub repository variables** (not as Azure SWA Environment Variables or Secrets) and pass them to the build step in your workflow file.  
+Azure SWA Environment Variables are **not** injected into the frontend build for Create React App.
+
+**Steps:**
+1. Go to your GitHub repo → Settings → Secrets and variables → Actions → **Variables** tab → **New repository variable**.
+2. Add:
+   - `REACT_APP_EMAIL_USER`
+   - `REACT_APP_EMAIL_DOMAIN`
+   - `REACT_APP_EMAIL_SUBJECT`
+3. In your `.github/workflows/azure-static-web-apps-*.yml` workflow file, add:
+   ```
+   env:
+     REACT_APP_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
+     REACT_APP_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
+     REACT_APP_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
+   ```
+   under the build step.
+
+4. Commit and push to trigger a new build.
 
 ---
 
