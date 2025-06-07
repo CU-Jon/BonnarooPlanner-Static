@@ -180,13 +180,16 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
 
     // --- Add Page X of Y footer after all pages are generated ---
     const pageCount = doc.internal.getNumberOfPages();
+
+    // Set footer style once
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-      doc.setFontSize(10);
-      doc.setTextColor(100);
       doc.text(
         `Page ${i} of ${pageCount}`,
         pageWidth - TABLE_MARGIN,
