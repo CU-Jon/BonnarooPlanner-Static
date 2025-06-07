@@ -51,6 +51,21 @@ export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
 export const SHOW_PRINT_BUTTON = false;
 
 // -------------------------------------------------
-// Footer HTML for the planner view
+// Footer HTML for the planner view (We obfuscate the email address to prevent basic web crawlers from getting it.)
+// Email address needs to be set in your environment variables wherever you're deploying this app.
 // -------------------------------------------------
-export const FOOTER_HTML = 'Made with ❤️ by <a href="https://github.com/CU-Jon/BonnarooPlanner-Static" target="_blank" rel="noopener noreferrer">CU-Jon</a>';
+export const EMAIL_USER = process.env.REACT_APP_EMAIL_USER || '';
+export const EMAIL_DOMAIN = process.env.REACT_APP_EMAIL_DOMAIN || '';
+export const EMAIL_SUBJECT = process.env.REACT_APP_EMAIL_SUBJECT || '';
+export const EMAIL_LINK_TEXT = 'email me.';
+export const FOOTER_HTML = `
+Made with ❤️ by <a href="https://github.com/CU-Jon/BonnarooPlanner-Static" target="_blank" rel="noopener noreferrer">CU-Jon</a><br><br>
+Found an issue or schedules updated?<br>
+<a href="https://github.com/CU-Jon/BonnarooPlanner-Static/issues" target="_blank" rel="noopener noreferrer">Report an issue</a> or<br>
+<a href="https://github.com/CU-Jon/BonnarooPlanner-Static/pulls" target="_blank" rel="noopener noreferrer">Open a pull request</a> on GitHub.<br>
+Or you can simply {{EMAIL_LINK}}
+<br>
+<span style="font-size: 0.6em; color: #888;">
+  This project is not affiliated with Bonnaroo or Live Nation.
+</span>
+`;

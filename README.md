@@ -55,14 +55,26 @@ Easily select your favorite events, view your custom schedule, and export it as 
    yarn install
    ```
 
-3. **Start the development server:**
+3. **Set up environment variables for local development:**  
+   Create a `.env.local` file in your project root (not committed to git):
+
+   ```
+   REACT_APP_EMAIL_USER=youruser
+   REACT_APP_EMAIL_DOMAIN=yourdomain.com
+   REACT_APP_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
+   ```
+
+   For **Azure Static Web Apps**, you must set these as **GitHub repository variables** (not as Azure SWA Environment Variables or Secrets) and pass them to the build step in your workflow.  
+   See the "Azure Static Web Apps Deployment" section below.
+
+4. **Start the development server:**
    ```sh
    npm start
    # or
    yarn start
    ```
 
-4. **Open in your browser:**  
+5. **Open in your browser:**  
    Visit [http://localhost:3000](http://localhost:3000)
 
 ---
@@ -92,6 +104,7 @@ src/
     SelectionGrid.js        # The selection grid where you pick the events/artists
     TabContainer.js         # Tab containers to separate Centeroo and Outeroo
     YearSelector.js         # Year selection, defaults to the latest year defined in config
+    Footer.js               # Footer component (handles obfuscated email link if chosen to use)
   utils/                    # Utility functions
     icsExporter.js          # Helper functions for exporting to .ics
     timeUtils.js            # Logic behind "late night" sets and overlapping events at the same location
@@ -127,7 +140,11 @@ package.json                # Necessary modules for this project and the necessa
   Edit `public/assets/style.css` for custom themes or branding.
 
 - **Footer:**  
-  The footer text is set in `src/config.js` via `FOOTER_HTML`.
+  The footer is implemented as a dedicated React component (`src/components/Footer.js`).  
+  The footer HTML is stored as a template string in `src/config.js` and uses a `{{EMAIL_LINK}}` token as a placeholder for the email link.  
+  The email address is **not hard-coded** in the source code; instead, it is dynamically injected at runtime using environment variables and JavaScript for obfuscation.  
+  If you remove `{{EMAIL_LINK}}` from the template, the email link will not be shown.  
+  This helps prevent email scraping by bots and keeps your email private in forks and public clones.
 
 - **Titles, headers, and exported file names:**  
   Titles, headers, and file names can be configured in `src/config.js`.
@@ -162,7 +179,8 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 | `ICS_FILENAME_TEMPLATE`     | Template for exported calendar filenames. Supports `{year}` and `{tab}` placeholders.                            |
 | `ICS_CALENDARNAME_TEMPLATE` | Template for the calendar name in exported `.ics` files. Supports `{year}` and `{tab}` placeholders.             |
 | `SHOW_PRINT_BUTTON`         | Boolean to show/hide the “Print” button in the planner view.                                                     |
-| `FOOTER_HTML`               | HTML string for the app footer. Supports links and emoji. (Don't forget attribution to the original dev ❤️)      |
+| `EMAIL_USER`, `EMAIL_DOMAIN`, `EMAIL_SUBJECT`, `EMAIL_LINK_TEXT` | Email footer config, loaded from environment variables for privacy. (Optional) |
+| `FOOTER_HTML`               | HTML string for the app footer. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. |
 
 ### How to Customize
 
@@ -179,7 +197,51 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
   Set `SHOW_PRINT_BUTTON` to `true` or `false` to control whether users can print directly from the browser with a Print button. This does not enable/disable printing completely, just the button.
 
 - **Customize the footer:**  
-  Edit `FOOTER_HTML` to change the footer text or link. (Please remember to give attribution to the original author :) )
+  Edit `FOOTER_HTML` to change the footer text or link. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. (Please remember to give attribution to the original author :) )
+
+---
+
+## Environment Variables
+
+To keep your email address private and out of the public repo, set the following in a `.env.local` file in your project root (not committed to git):
+
+```
+REACT_APP_EMAIL_USER=youruser
+REACT_APP_EMAIL_DOMAIN=yourdomain.com
+REACT_APP_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
+```
+
+### Azure Static Web Apps Deployment
+
+**Important:**  
+For Azure Static Web Apps, you must set these as **GitHub repository variables** (not as Azure SWA Environment Variables or Secrets) and pass them to the build step in your workflow file.  
+Azure SWA Environment Variables are **not** injected into the frontend build for Create React App.
+
+**Steps:**
+1. Go to your GitHub repo → Settings → Secrets and variables → Actions → **Variables** tab → **New repository variable**.
+2. Add:
+   - `REACT_APP_EMAIL_USER`
+   - `REACT_APP_EMAIL_DOMAIN`
+   - `REACT_APP_EMAIL_SUBJECT`
+3. In your `.github/workflows/azure-static-web-apps-*.yml` workflow file, add:
+   ```
+   env:
+     REACT_APP_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
+     REACT_APP_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
+     REACT_APP_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
+   ```
+   under the build step.
+
+4. Commit and push to trigger a new build.
+
+---
+
+## Footer Obfuscation
+
+The footer email link is **not hard-coded** in the HTML or JavaScript.  
+Instead, the footer template in `config.js` uses a `{{EMAIL_LINK}}` token, which is replaced at runtime by the `Footer` component with an obfuscated email link using environment variables.  
+If you remove `{{EMAIL_LINK}}` from the template, no email link will be shown.  
+This makes it much harder for bots to scrape your email address and keeps your email private in forks and public clones.
 
 ---
 
