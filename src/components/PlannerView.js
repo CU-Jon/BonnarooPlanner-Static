@@ -125,6 +125,9 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   }
 
   function downloadPDF(orientation = 'portrait') {
+    const TABLE_MARGIN = 70; // Single source of truth for margin
+    const FOOTER_MARGIN_BOTTOM = 20;
+
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab)
@@ -149,8 +152,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         html: table,
         pageBreak: 'auto',
         rowPageBreak: 'avoid',
-        startY: 70,
-        margin: { top: 70 },
+        startY: TABLE_MARGIN,
+        margin: { top: TABLE_MARGIN },
         theme: 'grid',
         headStyles: { fillColor: [106, 13, 173], fontStyle: 'bold' },
         styles: {
@@ -174,6 +177,25 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         }
       });
     });
+
+    // --- Add Page X of Y footer after all pages are generated ---
+    const pageCount = doc.internal.getNumberOfPages();
+
+    // Set footer style once
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        pageWidth - TABLE_MARGIN,
+        pageHeight - FOOTER_MARGIN_BOTTOM,
+        { align: 'right' }
+      );
+    }
 
     doc.save(fileName);
   }
