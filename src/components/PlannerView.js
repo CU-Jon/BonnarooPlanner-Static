@@ -188,8 +188,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       const pageWidth = doc.internal.pageSize.getWidth();
-      const pageSize = doc.internal.pageSize;
-      const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+      const pageHeight = doc.internal.pageSize.getHeight();
       doc.text(
         `Page ${i} of ${pageCount}`,
         pageWidth - TABLE_MARGIN,
