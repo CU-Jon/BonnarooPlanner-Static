@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import PlannerBuilder from './components/PlannerBuilder';
 import PlannerView from './components/PlannerView';
+import Footer from './components/Footer';
 import {
   BUILDER_TITLE_TEMPLATE,
   HTML_TITLE_FALLBACK,
   HTML_TITLE_TEMPLATE,
-  APP_TITLE_PLANNER,
-  FOOTER_HTML
+  APP_TITLE_PLANNER
 } from './config';
 
 export default function App() {
@@ -79,10 +79,7 @@ export default function App() {
           />
         </>
       )}
-      <footer
-        className="app-footer"
-        dangerouslySetInnerHTML={{ __html: FOOTER_HTML }}
-      />
+      <Footer />
     </>
   );
 }
