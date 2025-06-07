@@ -125,6 +125,9 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   }
 
   function downloadPDF(orientation = 'portrait') {
+    const TABLE_MARGIN = 70; // Single source of truth for margin
+    const FOOTER_MARGIN_BOTTOM = 20;
+
     const fileName = PDF_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', activeTab)
@@ -149,8 +152,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         html: table,
         pageBreak: 'auto',
         rowPageBreak: 'avoid',
-        startY: 70,
-        margin: { top: 70 },
+        startY: TABLE_MARGIN,
+        margin: { top: TABLE_MARGIN },
         theme: 'grid',
         headStyles: { fillColor: [106, 13, 173], fontStyle: 'bold' },
         styles: {
@@ -159,7 +162,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
           halign: 'center',
           valign: 'middle'
         },
-        didDrawPage: function (data) {
+        didDrawPage: data => {
           const pageWidth = doc.internal.pageSize.getWidth();
           const pageInfo = doc.internal.getCurrentPageInfo();
           doc.setFontSize(14);
@@ -186,8 +189,8 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
       doc.setTextColor(100);
       doc.text(
         `Page ${i} of ${pageCount}`,
-        pageWidth - 60,
-        pageHeight - 20,
+        pageWidth - TABLE_MARGIN,
+        pageHeight - FOOTER_MARGIN_BOTTOM,
         { align: 'right' }
       );
     }
