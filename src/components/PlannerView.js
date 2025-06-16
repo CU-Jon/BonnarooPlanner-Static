@@ -10,10 +10,12 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
   PDF_FILENAME_TEMPLATE,
+  CSV_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
   APP_TITLE_PLANNER,
   SHOW_PRINT_BUTTON
 } from '../config';
+import { generateCSV } from '../utils/csvExporter';
 
 export default function PlannerView({ selections, year, activeTab, onRestart }) {
   useEffect(() => {
@@ -215,6 +217,21 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
     document.body.removeChild(link);
   }
 
+  function exportCSV() {
+    const fileName = CSV_FILENAME_TEMPLATE
+      .replace('{year}', year)
+      .replace('{tab}', activeTab);
+    
+    const csvData = generateCSV(selections, year, activeTab);
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="container" id="plannerView">
       <h3 className="print-instructions">
@@ -237,6 +254,9 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
         </button>
         <button id="icsButton" onClick={exportICS}>
           Export to Calendar (.ics)
+        </button>
+        <button id="csvButton" onClick={exportCSV}>
+          Export to CSV
         </button>
         {/* Ensure type="button" so CSS styling applies */}
         <button id="startOver" type="button" onClick={onRestart}>
