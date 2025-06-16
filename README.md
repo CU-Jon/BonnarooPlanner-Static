@@ -10,7 +10,7 @@
 # Bonnaroo Planner
 
 A modern, mobile-friendly web app for planning your Bonnaroo festival schedule.  
-Easily select your favorite events, view your custom schedule, and export it as a PDF or calendar file.
+Easily select your favorite events, view your custom schedule, and export it as a PDF, CSV, or calendar file.
 
 ---
 
@@ -22,8 +22,8 @@ Easily select your favorite events, view your custom schedule, and export it as 
 - **Custom Schedule Table:**  
   View your selections in a clean, printable table format.
 
-- **PDF & Calendar Export:**  
-  Download your schedule as a PDF (portrait or landscape) or export to `.ics` for your calendar.
+- **PDF, CSV & Calendar Export:**  
+  Download your schedule as a PDF (portrait or landscape), CSV, or export to `.ics` for your calendar.
 
 - **Mobile Friendly:**  
   Responsive design for use on phones, tablets, and desktops.
@@ -106,6 +106,7 @@ src/
     YearSelector.js         # Year selection, defaults to the latest year defined in config
     Footer.js               # Footer component (handles obfuscated email link if chosen to use)
   utils/                    # Utility functions
+    csvExporter.js          # Helper functions for exporting to .csv
     icsExporter.js          # Helper functions for exporting to .ics
     timeUtils.js            # Logic behind "late night" sets and overlapping events at the same location
   config.js                 # App configuration and templates
@@ -126,6 +127,7 @@ package.json                # Necessary modules for this project and the necessa
 
 3. **Export or Print:**  
    - Download as PDF (portrait or landscape)
+   - Export to CSV (with columns: Artist/Event, Location, Sublocation, Day, Start, End; sorted by day and time)
    - Export to calendar (.ics)
    - Print directly from your browser (Currently disabled in preference of exportable PDFs. Print button can be enabled in `config.js`)
 
@@ -176,6 +178,7 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 | `HTML_TITLE_TEMPLATE`       | Template for the browser tab title. Supports `{year}` and `{tabPart}` placeholders.                              |
 | `APP_TITLE_PLANNER`         | Template for the planner view heading. Supports `{year}` and `{tab}` placeholders.                               |
 | `PDF_FILENAME_TEMPLATE`     | Template for exported PDF filenames. Supports `{year}`, `{tab}`, and `{orientation}` placeholders.               |
+| `CSV_FILENAME_TEMPLATE`     | Template for exported CSV filenames. Supports `{year}` and `{tab}` placeholders.                                 |
 | `ICS_FILENAME_TEMPLATE`     | Template for exported calendar filenames. Supports `{year}` and `{tab}` placeholders.                            |
 | `ICS_CALENDARNAME_TEMPLATE` | Template for the calendar name in exported `.ics` files. Supports `{year}` and `{tab}` placeholders.             |
 | `SHOW_PRINT_BUTTON`         | Boolean to show/hide the “Print” button in the planner view.                                                     |

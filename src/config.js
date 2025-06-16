@@ -42,6 +42,7 @@ export const APP_TITLE_PLANNER = 'Your Bonnaroo {year} Planner - {tab}';
 // Filename templates
 // -------------------------------------------------
 export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}_{orientation}.pdf';
+export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
 export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
 export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
 
