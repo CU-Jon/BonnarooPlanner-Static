@@ -302,7 +302,7 @@ This makes it much harder for bots to scrape your email address and keeps your e
 
 The app **automatically calculates the festival's Monday start date** for any year in `availableYears` by finding the Monday before the third Sunday in June (the weekend of Father's Day).  
 You do **not** need to manually update a start date for each year—just add the year to `availableYears` and the app will handle the rest.
-On the rare occurrence that Bonnaroo does not land on the third Sunday in June, set `bonnarooMondayOverrides` in `config.js` for the Monday preceeding Bonnaroo weekend.
+On the rare occurrence that Bonnaroo does not land on the third Sunday in June, set `bonnarooMondayOverrides` in `config.js` for the Monday preceding Bonnaroo weekend.
 
 ---
 
