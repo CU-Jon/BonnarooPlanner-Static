@@ -205,23 +205,28 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 
 ### Key Options
 
-| Name                        | Purpose & Usage                                                                                                  |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `jsonBase`                  | Path to the folder containing event schedule JSON files.                                                         |
-| `availableYears`            | Array of years available for selection.                                                                          |
-| `dayOffsets`                | Maps day names to their offset from the festival’s Monday (e.g., Thursday = 3).                                  |
-| `LATE_NIGHT_CUTOFF`         | The cutoff (in minutes after midnight) for “late night” sets to count as the previous day (default: 7:00 AM).    |
-| `BUILDER_TITLE_TEMPLATE`    | Template for the builder page heading. Supports `{yearPart}` placeholder.                                        |
-| `HTML_TITLE_FALLBACK`       | Fallback browser tab title before React loads.                                                                   |
-| `HTML_TITLE_TEMPLATE`       | Template for the browser tab title. Supports `{year}` and `{tabPart}` placeholders.                              |
-| `APP_TITLE_PLANNER`         | Template for the planner view heading. Supports `{year}` and `{tab}` placeholders.                               |
-| `PDF_FILENAME_TEMPLATE`     | Template for exported PDF filenames. Supports `{year}`, `{tab}`, and `{orientation}` placeholders.               |
-| `CSV_FILENAME_TEMPLATE`     | Template for exported CSV filenames. Supports `{year}` and `{tab}` placeholders.                                 |
-| `ICS_FILENAME_TEMPLATE`     | Template for exported calendar filenames. Supports `{year}` and `{tab}` placeholders.                            |
-| `ICS_CALENDARNAME_TEMPLATE` | Template for the calendar name in exported `.ics` files. Supports `{year}` and `{tab}` placeholders.             |
-| `SHOW_PRINT_BUTTON`         | Boolean to show/hide the “Print” button in the planner view.                                                     |
-| `EMAIL_USER`, `EMAIL_DOMAIN`, `EMAIL_SUBJECT`, `EMAIL_LINK_TEXT` | Email footer config, loaded from environment variables for privacy. (Optional) |
-| `FOOTER_HTML`               | HTML string for the app footer. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. |
+| Name                              | Purpose & Usage                                                                                                  |
+|------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| `jsonBase`                        | Path to the folder containing event schedule JSON files.                                                         |
+| `availableYears`                  | Array of years available for selection.                                                                          |
+| `dayOffsets`                      | Maps day names to their offset from the festival’s Monday (e.g., Thursday = 3).                                  |
+| `LATE_NIGHT_CUTOFF`               | The cutoff (in minutes after midnight) for “late night” sets to count as the previous day (default: 7:00 AM).    |
+| `bonnarooMondayOverrides`          | Object for rare years to override the festival's starting Monday. Keys are years, values are `'YYYY-MM-DD'`.      |
+| `BUILDER_TITLE_TEMPLATE`          | Template for the builder page heading. Supports `{yearPart}` placeholder.                                        |
+| `HTML_TITLE_FALLBACK`             | Fallback browser tab title before React loads.                                                                   |
+| `HTML_TITLE_TEMPLATE`             | Template for the browser tab title. Supports `{year}` and `{tabPart}` placeholders.                              |
+| `APP_TITLE_PLANNER`               | Template for the planner view heading. Supports `{year}` and `{tab}` placeholders.                               |
+| `PDF_FILENAME_TEMPLATE`           | Template for exported PDF filenames. Supports `{year}`, `{tab}`, and `{orientation}` placeholders.               |
+| `CSV_FILENAME_TEMPLATE`           | Template for exported CSV filenames. Supports `{year}` and `{tab}` placeholders.                                 |
+| `ICS_FILENAME_TEMPLATE`           | Template for exported calendar filenames. Supports `{year}` and `{tab}` placeholders.                            |
+| `ICS_CALENDARNAME_TEMPLATE`       | Template for the calendar name in exported `.ics` files. Supports `{year}` and `{tab}` placeholders.             |
+| `SHOW_PRINT_BUTTON`               | Boolean to show/hide the “Print” button in the planner view.                                                     |
+| `BONNAROO_STATUS_ENDED_TEMPLATE`  | Template for the status message when the festival has ended.                                                     |
+| `BONNAROO_STATUS_NOT_STARTED_TEMPLATE` | Template for the status message before the festival starts.                                                |
+| `BONNAROO_STATUS_STARTED_TEMPLATE`| Template for the status message when the festival is in progress.                                                |
+| `SCHEDULE_NOT_AVAILABLE_TEMPLATE` | Template for the message shown if no schedule is available for the selected year.                                |
+| `EMAIL_USER`, `EMAIL_DOMAIN`, `EMAIL_SUBJECT`, `EMAIL_LINK_TEXT` | Email footer config, loaded from environment variables (except `EMAIL_LINK_TEXT`) for privacy. (Optional) |
+| `FOOTER_HTML`                     | HTML string for the app footer. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. |
 
 ### How to Customize
 
@@ -234,11 +239,18 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 - **Edit titles and headings:**  
   Change the templates to update how the app and exported files are named and displayed.
 
+- **Status and Unavailable Schedule Messages:**  
+  You can customize the status messages shown above the schedule (before, during, and after the festival) and the "schedule not available" message by editing the corresponding templates in `src/config.js`:
+  - `BONNAROO_STATUS_ENDED_TEMPLATE`
+  - `BONNAROO_STATUS_NOT_STARTED_TEMPLATE`
+  - `BONNAROO_STATUS_STARTED_TEMPLATE`
+  - `SCHEDULE_NOT_AVAILABLE_TEMPLATE`
+
 - **Show/hide print button:**  
   Set `SHOW_PRINT_BUTTON` to `true` or `false` to control whether users can print directly from the browser with a Print button. This does not enable/disable printing completely, just the button.
 
 - **Customize the footer:**  
-  Edit `FOOTER_HTML` to change the footer text or link. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. (Please remember to give attribution to the original author :) )
+  Edit `FOOTER_HTML` to change the footer text or link. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link if you choose to add a contact email address. Change the text for the obfuscated email link in the footer by editing `EMAIL_LINK_TEXT` in `src/config.js`. (Please remember to give attribution to the original author :) )
 
 ---
 
@@ -288,8 +300,9 @@ This makes it much harder for bots to scrape your email address and keeps your e
 
 ## Festival Week Calculation
 
-The app **automatically calculates the festival's Monday start date** for any year in `availableYears` by finding the Monday before the third Sunday in June (the week of Father's Day).  
+The app **automatically calculates the festival's Monday start date** for any year in `availableYears` by finding the Monday before the third Sunday in June (the weekend of Father's Day).  
 You do **not** need to manually update a start date for each year—just add the year to `availableYears` and the app will handle the rest.
+On the rare occurrence that Bonnaroo does not land on the third Sunday in June, set `bonnarooMondayOverrides` in `config.js` for the Monday preceeding Bonnaroo weekend.
 
 ---
 
