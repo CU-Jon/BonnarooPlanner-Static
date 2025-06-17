@@ -1,14 +1,7 @@
 import { timeToMinutes } from './timeUtils';
+import { dayOffsets } from '../config';
 
-const DAY_ORDER = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday'
-];
+const DAY_ORDER = Object.keys(dayOffsets);
 
 export function generateCSV(selections, year, activeTab) {
   const rows = [

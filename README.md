@@ -31,6 +31,18 @@ Easily select your favorite events, view your custom schedule, and export it as 
 - **Print Support:**  
   Optimized print styles for a professional-looking hard copy.
 
+- **Automatic Festival Week Calculation:**  
+  The app automatically determines the festival week for any year in `availableYears` based on the third Sunday in June (Father's Day).
+
+- **Efficient Schedule Fetching:**  
+  Schedules are only fetched once per year selection, and the app will default to the latest year with available schedule data.
+
+- **Status Message Color Coding:**  
+  The status message box color changes based on whether Bonnaroo has not started (yellow), is in progress (green), or has ended/no schedule (red).
+
+- **Date/Time Spoofing for Testing:**  
+  You can test status messages for any date/time by adding a `?now=YYYY-MM-DDTHH:mm:ss` query parameter to the URL.
+
 ---
 
 ## Getting Started
@@ -103,12 +115,14 @@ src/
     PlannerView.js          # Built planner "view" components
     SelectionGrid.js        # The selection grid where you pick the events/artists
     TabContainer.js         # Tab containers to separate Centeroo and Outeroo
-    YearSelector.js         # Year selection, defaults to the latest year defined in config
+    YearSelector.js         # Year selection, defaults to the latest year with schedule data
     Footer.js               # Footer component (handles obfuscated email link if chosen to use)
   utils/                    # Utility functions
     csvExporter.js          # Helper functions for exporting to .csv
     icsExporter.js          # Helper functions for exporting to .ics
-    timeUtils.js            # Logic behind "late night" sets and overlapping events at the same location
+    timeUtils.js            # Logic behind "late night" sets, festival date calculation, and overlaps
+    scheduleUtils.js        # Efficient schedule fetching/checking
+    bonnarooStatus.js       # Status message logic for festival state
   config.js                 # App configuration and templates
   App.js                    # Main app component
   index.js                  # Entry point
@@ -156,6 +170,32 @@ package.json                # Necessary modules for this project and the necessa
   For example, Bonnaroo may show an artist or event from 3:00 AM - 5:00 AM on Thursday, when in reality, this is on Friday morning. This will place the artist or event at the end of Thursday's schedule to align with the official schedules (as opposed to in the morning on Thursday).
   Exported .ics files will show the artist or event on the actual day and time.
 
+- **Festival Start Date Calculation and Overrides**  
+  By default, the app automatically calculates the festival's Monday start date for any year in `availableYears` by finding the Monday before the third Sunday in June (the week of Father's Day).
+
+  **If Bonnaroo is ever scheduled for a different week, you can override the start date for that year by adding an entry to the `bonnarooMondayOverrides` object in `src/config.js`:**
+
+  ```js
+  export const bonnarooMondayOverrides = {
+    2027: '2027-06-07' // Example: manually set Monday for 2027
+  };
+  ```
+  The app will use the override for that year, and automatic calculation for all others.
+**This approach keeps your code automatic for most years, but flexible for rare exceptions.**
+
+- **Status Message Color Coding:**  
+  The status message box color changes automatically:  
+  - **Yellow:** Before Bonnaroo starts  
+  - **Green:** While Bonnaroo is in progress  
+  - **Red:** After Bonnaroo ends or if no schedule is available
+
+- **Date/Time Spoofing for Testing:**  
+  You can test status messages for any date/time by adding a `?now=YYYY-MM-DDTHH:mm:ss` query parameter to the URL.  
+  Example:  
+  ```
+  http://localhost:3000/?now=2025-06-12T10:00:00
+  ```
+
 ---
 
 ## Configuration (`src/config.js`)
@@ -168,10 +208,8 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 | Name                        | Purpose & Usage                                                                                                  |
 |-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `jsonBase`                  | Path to the folder containing event schedule JSON files.                                                         |
-| `firstYearAvailable`        | The first year for which schedules are available. Used for year selection.                                       |
-| `yearsAvailable`            | Number of years available for selection beginning at `1` based on `firstYearAvailable`. Prevents browser time wastes to loop through and find all schedules.    |
-| `bonnarooStartMonday`       | Maps each year to the festival’s starting Monday (YYYY-MM-DD). Used for date calculations in .ics exports.       |
-| `dayOffsets`                | Maps day names to their offset from the festival’s start (e.g., Thursday = 3).                                   |
+| `availableYears`            | Array of years available for selection.                                                                          |
+| `dayOffsets`                | Maps day names to their offset from the festival’s Monday (e.g., Thursday = 3).                                  |
 | `LATE_NIGHT_CUTOFF`         | The cutoff (in minutes after midnight) for “late night” sets to count as the previous day (default: 7:00 AM).    |
 | `BUILDER_TITLE_TEMPLATE`    | Template for the builder page heading. Supports `{yearPart}` placeholder.                                        |
 | `HTML_TITLE_FALLBACK`       | Fallback browser tab title before React loads.                                                                   |
@@ -188,7 +226,7 @@ The `src/config.js` file centralizes all app-wide settings, templates, and custo
 ### How to Customize
 
 - **Add or update years:**  
-  Update `firstYearAvailable`, `yearsAvailable`, and `bonnarooStartMonday` to support new festival years.
+  Update `availableYears` to support new festival years. The app will automatically calculate the festival week for each year.
 
 - **Change late-night cutoff:**  
   Adjust `LATE_NIGHT_CUTOFF` (in minutes) to match how you want late-night sets to be grouped. Keep in mind this should be no less than the latest late-night cutoff for any of your schedules available.
@@ -245,6 +283,40 @@ The footer email link is **not hard-coded** in the HTML or JavaScript.
 Instead, the footer template in `config.js` uses a `{{EMAIL_LINK}}` token, which is replaced at runtime by the `Footer` component with an obfuscated email link using environment variables.  
 If you remove `{{EMAIL_LINK}}` from the template, no email link will be shown.  
 This makes it much harder for bots to scrape your email address and keeps your email private in forks and public clones.
+
+---
+
+## Festival Week Calculation
+
+The app **automatically calculates the festival's Monday start date** for any year in `availableYears` by finding the Monday before the third Sunday in June (the week of Father's Day).  
+You do **not** need to manually update a start date for each year—just add the year to `availableYears` and the app will handle the rest.
+
+---
+
+## Efficient Schedule Fetching
+
+- The app will only fetch schedule JSONs for a year when needed.
+- On first load, it will default to the latest year in `availableYears` that actually has schedule files available.
+- All years in `availableYears` will still appear in the dropdown, but only years with schedule files will load a schedule.
+
+---
+
+## Status Message Color Coding
+
+- The status message box color changes automatically:
+  - **Yellow:** Before Bonnaroo starts
+  - **Green:** While Bonnaroo is in progress
+  - **Red:** After Bonnaroo ends or if no schedule is available
+
+---
+
+## Date/Time Spoofing for Testing
+
+- You can test status messages for any date/time by adding a `?now=YYYY-MM-DDTHH:mm:ss` query parameter to the URL.
+- Example:  
+  ```
+  http://localhost:3000/?now=2025-06-12T10:00:00
+  ```
 
 ---
 

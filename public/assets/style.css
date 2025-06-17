@@ -12,13 +12,11 @@ body {
 }
 
 .container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 40px auto;
+    margin: 0 0 40px 0;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-    padding: 32px 24px;
+    padding: 18px 24px;
 }
 
 h1, h2, h3, h4 {
@@ -31,6 +29,7 @@ h1, h2, h3, h4 {
 h1 {
     font-size: 2.2rem;
     margin-bottom: 24px;
+    text-align: center;
 }
 
 h2 {
@@ -175,6 +174,36 @@ select#year:hover, select#year:focus {
     outline: none;
 }
 
+.bonnaroo-status {
+  background: #fffbe6;
+  color: #b8860b;
+  border: 1px solid #ffe066;
+  padding: 0.75em 1em;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.bonnaroo-status--not-started {
+  background: #fffbe6;
+  color: #b8860b;
+  border: 1px solid #ffe066;
+}
+
+.bonnaroo-status--started {
+  background: #e6ffed;
+  color: #228b22;
+  border: 1px solid #66ff99;
+}
+
+.bonnaroo-status--ended,
+.bonnaroo-status--not-available {
+  background: #ffeaea;
+  color: #b22222;
+  border: 1px solid #ffb3b3;
+}
+
 .plannerType {
     margin-top: 40px;
     text-decoration: underline;
@@ -201,6 +230,27 @@ select#year:hover, select#year:focus {
     text-decoration: underline;
 }
 
+.loading-status {
+  background: #e6f0ff;
+  color: #00529b;
+  border: 1px solid #b3d1ff;
+  padding: 0.75em 1em;
+  border-radius: 6px;
+  margin-bottom: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.page-wrap {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 @media print {
     button, #startOver {
         display: none !important;
@@ -213,9 +263,13 @@ select#year:hover, select#year:focus {
         padding: 0;
     }
     .container {
-        transform: scale(0.95);
-        transform-origin: top left;
         box-shadow: none;
+        padding: 8px !important;
+        margin: 0 auto !important;
+        border-radius: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     h2.day-heading-screen {
         display: none !important;
@@ -231,10 +285,14 @@ select#year:hover, select#year:focus {
     .print-instructions {
         display: none !important;
     }
-    table.day-section {
+    table.day-section,
+    table {
         break-before: page;
         page-break-before: always;
-        width: 100% !important;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 !important;
+        box-sizing: border-box;
     }
     table.day-section:first-of-type {
         break-before: auto;
@@ -245,6 +303,7 @@ select#year:hover, select#year:focus {
     }
     @page {
         size: landscape;
+        margin: 12mm 8mm; /* 16mm top/bottom, 8mm left/right */
     }
 }
 

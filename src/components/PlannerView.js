@@ -235,7 +235,7 @@ export default function PlannerView({ selections, year, activeTab, onRestart }) 
   return (
     <div className="container" id="plannerView">
       <h3 className="print-instructions">
-        Scroll down to save to PDF or export to your calendar!
+        Scroll down to save to PDF, CSV, or export to your calendar!
       </h3>
 
       {buildTable(activeTab)}

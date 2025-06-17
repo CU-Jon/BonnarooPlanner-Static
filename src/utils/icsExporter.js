@@ -1,16 +1,15 @@
 import {
-  bonnarooStartMonday,
   dayOffsets,
   ICS_CALENDARNAME_TEMPLATE
 } from '../config';
-import { timeToMinutes } from './timeUtils';
+import { getFestivalMonday, timeToMinutes } from './timeUtils';
 
 /**
  * Converts “Day” + “hh:mm AM/PM” into an ICS datetime string.
  */
 export function formatICSDate(day, time, year) {
   const dayName = day.match(/^([A-Za-z]+)/)[1];
-  const baseDateStr = bonnarooStartMonday[year];
+  const baseDateStr = getFestivalMonday(year);
   const baseDate = new Date(`${baseDateStr}T00:00:00`);
   const eventDate = new Date(baseDate);
   eventDate.setDate(baseDate.getDate() + dayOffsets[dayName]);
