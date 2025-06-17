@@ -1,4 +1,4 @@
-import { LATE_NIGHT_CUTOFF } from '../config';
+import { LATE_NIGHT_CUTOFF, bonnarooMondayOverrides } from '../config';
 
 export function timeToMinutes(time) {
   const match = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || [];
@@ -46,4 +46,24 @@ export function mergeOverlapsWithDetail(events) {
     start: minutesToTime(b.start),
     end: minutesToTime(b.end)
   }));
+}
+
+export function getFestivalMonday(year) {
+  if (bonnarooMondayOverrides[year]) {
+    return bonnarooMondayOverrides[year];
+  }
+  let sundayCount = 0;
+  for (let day = 1; day <= 30; day++) {
+    const d = new Date(year, 5, day); // June is month 5 (0-based)
+    if (d.getMonth() !== 5) break;
+    if (d.getDay() === 0) { // Sunday
+      sundayCount++;
+      if (sundayCount === 3) {
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - 6);
+        return monday.toISOString().slice(0, 10);
+      }
+    }
+  }
+  return null;
 }

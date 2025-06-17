@@ -7,29 +7,70 @@ import {
   BUILDER_TITLE_TEMPLATE,
   HTML_TITLE_FALLBACK,
   HTML_TITLE_TEMPLATE,
-  APP_TITLE_PLANNER
+  APP_TITLE_PLANNER,
+  availableYears
 } from './config';
+import { fetchSchedule } from './utils/scheduleUtils';
 
 export default function App() {
-  // Move `year` into App so we can update the title as soon as JSON loads:
   const [view, setView] = useState('builder');
   const [selections, setSelections] = useState([]);
   const [year, setYear] = useState(null);
   const [activeTab, setActiveTab] = useState('Centeroo');
+  const [initialSchedule, setInitialSchedule] = useState(null);
+  const [lastModified, setLastModified] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Refactored logic for picking the default year and schedule
+  async function pickDefaultYearAndSchedule() {
+    setLoading(true);
+    for (let i = availableYears.length - 1; i >= 0; i--) {
+      const y = availableYears[i];
+      const { exists, centeroo, outeroo, lastModified } = await fetchSchedule(y);
+      if (exists) {
+        setYear(y);
+        setInitialSchedule({ Centeroo: centeroo, Outeroo: outeroo });
+        setLastModified(lastModified || null);
+        setSelections([]);
+        setActiveTab('Centeroo');
+        setView('builder');
+        setLoading(false);
+        return;
+      }
+    }
+    // If no year has a schedule, pick the latest year but set empty schedule
+    setYear(availableYears[availableYears.length - 1]);
+    setInitialSchedule({ Centeroo: null, Outeroo: null });
+    setLastModified(null);
+    setSelections([]);
+    setActiveTab('Centeroo');
+    setView('builder');
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    pickDefaultYearAndSchedule();
+    // eslint-disable-next-line
+  }, []);
 
   function handleBuild(selected, selectedYear, tabName) {
     setSelections(selected);
-    // At this point, App.year is already set by YearSelector,
-    // so we don’t need to setYear(selectedYear) again.
     setActiveTab(tabName);
     setView('planner');
   }
 
   function handleRestart() {
-    setSelections([]);
-    setYear(null);
-    setActiveTab('Centeroo');
-    setView('builder');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    pickDefaultYearAndSchedule();
+  }
+
+  async function handleYearChange(newYear) {
+    setLoading(true);
+    setYear(newYear);
+    const { centeroo, outeroo, lastModified } = await fetchSchedule(newYear);
+    setInitialSchedule({ Centeroo: centeroo, Outeroo: outeroo });
+    setLastModified(lastModified || null);
+    setLoading(false);
   }
 
   // As soon as `year` becomes non-null, update the <title>:
@@ -45,25 +86,29 @@ export default function App() {
   }, [view, year, activeTab]);
 
   return (
-    <>
-      {view === 'builder' && (
+    <div className="page-wrap">
+      {!loading && year !== null && view === 'builder' && (
         <>
-          {/* Builder heading now uses App.year via BUILDER_TITLE_TEMPLATE */}
           <h1>
             {BUILDER_TITLE_TEMPLATE.replace(
               '{yearPart}',
               year ? ` ${year}` : ''
             )}
           </h1>
-          {/* Pass `year` and `setYear` down so that YearSelector can lift state */}
           <PlannerBuilder
             year={year}
-            setYear={setYear}
+            setYear={handleYearChange}
             onBuild={handleBuild}
+            initialSchedule={initialSchedule}
+            lastModified={lastModified}
           />
         </>
       )}
-
+      {loading && (
+        <div className="container" id="app">
+          <div className="loading-status">Loading schedule...</div>
+        </div>
+      )}
       {view === 'planner' && (
         <>
           <h1>
@@ -80,6 +125,6 @@ export default function App() {
         </>
       )}
       <Footer />
-    </>
+    </div>
   );
 }

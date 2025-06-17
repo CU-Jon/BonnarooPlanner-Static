@@ -3,47 +3,32 @@ import React, { useState, useEffect } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
+import { getBonnarooStatus } from '../utils/bonnarooStatus';
+import { SCHEDULE_NOT_AVAILABLE_TEMPLATE } from '../config';
 
-export default function PlannerBuilder({ year, setYear, onBuild }) {
-  // Remove local currentYear; use props.year instead
-  const [scheduleData, setScheduleData] = useState({
-    Centeroo: null,
-    Outeroo: null
-  });
+function getStatusClass(roostatus, scheduleMissing) {
+  if (scheduleMissing) return 'bonnaroo-status bonnaroo-status--not-available';
+  if (!roostatus) return 'bonnaroo-status';
+  if (roostatus.includes('has ended')) return 'bonnaroo-status bonnaroo-status--ended';
+  if (roostatus.includes('has begun')) return 'bonnaroo-status bonnaroo-status--started';
+  if (roostatus.includes('begins on')) return 'bonnaroo-status bonnaroo-status--not-started';
+  return 'bonnaroo-status';
+}
+
+export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule, lastModified }) {
+  if (!initialSchedule) {
+    return null;
+  }
+
+  const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
   const [activeTab, setActiveTab] = useState('Centeroo');
   const [currentSelections, setCurrentSelections] = useState([]);
-  const [lastModified, setLastModified] = useState(null);
 
-  // Whenever `year` changes, reload JSON
   useEffect(() => {
-    if (year) loadYear(year);
-  }, [year]);
-
-  async function loadYear(y) {
-    setScheduleData({ Centeroo: null, Outeroo: null });
-    try {
-      const [respCent, respOut] = await Promise.all([
-        fetch(`assets/schedules/centeroo_${y}.json`),
-        fetch(`assets/schedules/outeroo_${y}.json`)
-      ]);
-      const lmCent = respCent.headers.get('Last-Modified');
-      const lmOut = respOut.headers.get('Last-Modified');
-      if (lmCent || lmOut) {
-        const dCent = lmCent ? new Date(lmCent) : null;
-        const dOut = lmOut ? new Date(lmOut) : null;
-        let latest = dCent;
-        if (!latest || (dOut && dOut > latest)) latest = dOut;
-        if (latest) setLastModified(latest.toLocaleString());
-      }
-      const [centeroo, outeroo] = await Promise.all([
-        respCent.json(),
-        respOut.json()
-      ]);
-      setScheduleData({ Centeroo: centeroo, Outeroo: outeroo });
-    } catch {
-      alert(`Could not load schedule data for year ${y}`);
-    }
-  }
+    setScheduleData(initialSchedule || { Centeroo: null, Outeroo: null });
+    setActiveTab('Centeroo');
+    setCurrentSelections([]);
+  }, [initialSchedule]);
 
   function toggleSelection(payload) {
     setCurrentSelections(prev => {
@@ -103,14 +88,42 @@ export default function PlannerBuilder({ year, setYear, onBuild }) {
     onBuild(filteredSelections, year, activeTab);
   }
 
+  // Check if schedule is missing or empty
+  const scheduleMissing =
+    !scheduleData.Centeroo ||
+    !scheduleData.Outeroo ||
+    Object.keys(scheduleData.Centeroo).length === 0 ||
+    Object.keys(scheduleData.Outeroo).length === 0;
+
+  // Show "schedule not available" message if missing
+  if (scheduleMissing) {
+    if (currentSelections.length > 0) setCurrentSelections([]);
+    return (
+      <div className="container" id="app">
+        <YearSelector onYearChange={setYear} defaultYear={year} />
+        <p className="bonnaroo-status bonnaroo-status--not-available">
+          {SCHEDULE_NOT_AVAILABLE_TEMPLATE.replace('{year}', year)}
+        </p>
+      </div>
+    );
+  }
+
+  // Get Bonnaroo status message (only if schedule is available)
+  const roostatus = getBonnarooStatus(year, scheduleData);
+  const statusClass = getStatusClass(roostatus, scheduleMissing);
+
   return (
     <div className="container" id="app">
+      <YearSelector onYearChange={setYear} defaultYear={year} />
+
       {lastModified && (
         <p className="last-updated">Schedules last updated: {lastModified}</p>
       )}
 
-      {/* YearSelector now calls props.setYear, which lifts state into App */}
-      <YearSelector onYearChange={setYear} defaultYear={year} />
+      {roostatus && (
+        <div className={statusClass}>{roostatus}</div>
+      )}
+
       <TabContainer activeTab={activeTab} onTabClick={setActiveTab} />
 
       <div style={{ margin: '15px 0' }}>
