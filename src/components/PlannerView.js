@@ -25,6 +25,8 @@ const PDF_LIGHT_ROW = [247, 247, 247];
 const PDF_TIME_BG = [255, 237, 220];
 const PDF_DARK_TEXT = [30, 30, 30];
 const PDF_TIME_TEXT = [160, 60, 0];
+const PDF_EVENT_BG = [255, 237, 209];
+const PDF_EVENT_TEXT = [120, 40, 0];
 
 export default function PlannerView({ selections, year, onRestart, onBack, onSave }) {
   const [viewMode, setViewMode] = useState('table');
@@ -212,48 +214,53 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     minTime = Math.floor(minTime / 15) * 15;
     maxTime = Math.ceil(maxTime / 15) * 15;
 
-    const stageEvents = {};
+    const stageEventsMap = {};
     stageNames.forEach(stg => {
-      stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
+      stageEventsMap[stg] = mergeOverlapsWithDetail(locations[stg]);
     });
 
-    const columns = ['Time', ...stageNames];
-    const body = [];
-    const rowSpanRemaining = {};
-    stageNames.forEach(s => { rowSpanRemaining[s] = 0; });
+    const timeSlots = (maxTime - minTime) / 15;
 
-    for (let tm = minTime; tm < maxTime; tm += 15) {
-      const row = [{ content: minutesToTime(tm) }];
-
-      stageNames.forEach(stg => {
-        if (rowSpanRemaining[stg] > 0) {
-          rowSpanRemaining[stg]--;
-          return;
-        }
-
-        const found = stageEvents[stg].find(ev => timeToMinutes(ev.start) === tm);
-        if (found) {
-          const span = (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
-          const cleanName = found.name
+    // Per-stage, per-slot state: 'start' | 'continue' | 'empty'
+    const stageCells = stageNames.map(stg => {
+      const evList = stageEventsMap[stg];
+      return Array.from({ length: timeSlots }, (_, i) => {
+        const tm = minTime + i * 15;
+        const startEv = evList.find(e => timeToMinutes(e.start) === tm);
+        if (startEv) {
+          const cleanName = startEv.name
             .replace(/<br\s*\/?>/gi, '\n')
             .replace(/<\/?small>/gi, '')
             .replace(/<[^>]+>/g, '')
             .trim();
-          if (span > 1) {
-            row.push({ content: cleanName, rowSpan: span });
-            rowSpanRemaining[stg] = span - 1;
-          } else {
-            row.push({ content: cleanName });
-          }
-        } else {
-          row.push({ content: '' });
+          return { state: 'start', content: cleanName };
         }
+        const activeEv = evList.find(
+          e => timeToMinutes(e.start) < tm && timeToMinutes(e.end) > tm
+        );
+        return activeEv
+          ? { state: 'continue', content: '' }
+          : { state: 'empty', content: '' };
       });
+    });
 
+    const columns = ['Time', ...stageNames];
+    const body = [];
+    const cellStateMap = [];
+
+    for (let rowIdx = 0; rowIdx < timeSlots; rowIdx++) {
+      const row = [{ content: minutesToTime(minTime + rowIdx * 15) }];
+      const rowStates = [null];
+      stageNames.forEach((_, sIdx) => {
+        const c = stageCells[sIdx][rowIdx];
+        row.push({ content: c.content });
+        rowStates.push(c.state);
+      });
       body.push(row);
+      cellStateMap.push(rowStates);
     }
 
-    return { columns, body };
+    return { columns, body, cellStateMap };
   }
 
   function downloadPDF(orientation = 'portrait') {
@@ -279,13 +286,13 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
         const tableData = buildPDFTableData(type, day);
         if (!tableData) return;
 
+        const { columns, body, cellStateMap } = tableData;
         const firstPage = doc.internal.getNumberOfPages();
 
         autoTable(doc, {
-          columns: tableData.columns,
-          body: tableData.body,
+          columns,
+          body,
           pageBreak: 'auto',
-          rowPageBreak: 'avoid',
           startY: TABLE_MARGIN,
           margin: { top: TABLE_MARGIN },
           theme: 'grid',
@@ -309,6 +316,30 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
               textColor: PDF_TIME_TEXT,
               fontStyle: 'bold',
               cellWidth: 50
+            }
+          },
+          didParseCell: (data) => {
+            if (data.section !== 'body' || data.column.index === 0) return;
+            const state = cellStateMap[data.row.index]?.[data.column.index];
+            if (state === 'start' || state === 'continue') {
+              data.cell.styles.fillColor = PDF_EVENT_BG;
+              data.cell.styles.textColor = PDF_EVENT_TEXT;
+            }
+          },
+          didDrawCell: (data) => {
+            if (data.section !== 'body' || data.column.index === 0) return;
+            const state = cellStateMap[data.row.index]?.[data.column.index];
+            if (state === 'continue') {
+              // Overdraw the top border with the event bg color to visually
+              // merge this cell with the event cell above it.
+              data.doc.setDrawColor(...PDF_EVENT_BG);
+              data.doc.setLineWidth(1.0);
+              data.doc.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x + data.cell.width,
+                data.cell.y
+              );
             }
           },
           didDrawPage: () => {
