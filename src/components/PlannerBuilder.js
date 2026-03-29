@@ -1,10 +1,11 @@
 // src/components/PlannerBuilder.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
 import { getBonnarooStatus } from '../utils/bonnarooStatus';
 import { SCHEDULE_NOT_AVAILABLE_TEMPLATE } from '../config';
+import { detectConflicts } from '../utils/conflictUtils';
 
 function getStatusClass(roostatus, scheduleMissing) {
   if (scheduleMissing) return 'bonnaroo-status bonnaroo-status--not-available';
@@ -15,20 +16,46 @@ function getStatusClass(roostatus, scheduleMissing) {
   return 'bonnaroo-status';
 }
 
-export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule, lastModified }) {
-  if (!initialSchedule) {
-    return null;
-  }
-
+export default function PlannerBuilder({
+  year,
+  setYear,
+  onBuild,
+  initialSchedule,
+  initialSelections,
+  lastModified,
+  onLoad
+}) {
   const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
   const [activeTab, setActiveTab] = useState('Centeroo');
-  const [currentSelections, setCurrentSelections] = useState([]);
+  const [currentSelections, setCurrentSelections] = useState(() => initialSelections || []);
+  const hasInitializedSchedule = useRef(false);
 
   useEffect(() => {
     setScheduleData(initialSchedule || { Centeroo: null, Outeroo: null });
     setActiveTab('Centeroo');
-    setCurrentSelections([]);
+    if (hasInitializedSchedule.current) {
+      // Year changed after initial mount — clear selections for the new year
+      setCurrentSelections([]);
+    }
+    hasInitializedSchedule.current = true;
   }, [initialSchedule]);
+
+  useEffect(() => {
+    setCurrentSelections(initialSelections || []);
+  }, [initialSelections]);
+
+  const conflictKeys = useMemo(
+    () => detectConflicts(currentSelections),
+    [currentSelections]
+  );
+
+  const selectionCounts = useMemo(
+    () => ({
+      Centeroo: currentSelections.filter(s => s.type === 'Centeroo').length,
+      Outeroo: currentSelections.filter(s => s.type === 'Outeroo').length
+    }),
+    [currentSelections]
+  );
 
   function toggleSelection(payload) {
     setCurrentSelections(prev => {
@@ -38,8 +65,7 @@ export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule
           sel.day === payload.day &&
           sel.location === payload.location &&
           sel.event.name === payload.event.name &&
-          sel.event.start === payload.event.start &&
-          sel.event.end === payload.event.end
+          sel.event.start === payload.event.start
       );
       if (exists) {
         return prev.filter(
@@ -49,8 +75,7 @@ export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule
               sel.day === payload.day &&
               sel.location === payload.location &&
               sel.event.name === payload.event.name &&
-              sel.event.start === payload.event.start &&
-              sel.event.end === payload.event.end
+              sel.event.start === payload.event.start
             )
         );
       }
@@ -64,12 +89,14 @@ export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule
     const data = scheduleData[activeTab];
     Object.entries(data).forEach(([day, locations]) => {
       Object.entries(locations).forEach(([loc, events]) => {
-        events.forEach(ev => all.push({ type: activeTab, day, location: loc, event: ev }));
+        events.forEach(ev =>
+          all.push({ type: activeTab, day, location: loc, event: ev })
+        );
       });
     });
     setCurrentSelections(prev => {
-      const filteredOutside = prev.filter(sel => sel.type !== activeTab);
-      return [...filteredOutside, ...all];
+      const outside = prev.filter(sel => sel.type !== activeTab);
+      return [...outside, ...all];
     });
   }
 
@@ -78,60 +105,81 @@ export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule
   }
 
   function handleBuild() {
-    const filteredSelections = currentSelections.filter(
-      sel => sel.type === activeTab
-    );
-    if (!filteredSelections.length) {
-      alert(`Please pick at least one event from ${activeTab}!`);
+    if (!currentSelections.length) {
+      alert('Please pick at least one event!');
       return;
     }
-    onBuild(filteredSelections, year, activeTab);
+    onBuild(currentSelections, year);
   }
 
-  // Check if schedule is missing or empty
+  if (!initialSchedule) {
+    return null;
+  }
+
   const scheduleMissing =
     !scheduleData.Centeroo ||
     !scheduleData.Outeroo ||
     Object.keys(scheduleData.Centeroo).length === 0 ||
     Object.keys(scheduleData.Outeroo).length === 0;
 
-  // Show "schedule not available" message if missing
   if (scheduleMissing) {
-    if (currentSelections.length > 0) setCurrentSelections([]);
     return (
-      <div className="container" id="app">
-        <YearSelector onYearChange={setYear} defaultYear={year} />
+      <>
+        <div className="builder-toolbar">
+          <div className="builder-toolbar-left">
+            <YearSelector onYearChange={setYear} defaultYear={year} />
+          </div>
+        </div>
         <p className="bonnaroo-status bonnaroo-status--not-available">
           {SCHEDULE_NOT_AVAILABLE_TEMPLATE.replace('{year}', year)}
         </p>
-      </div>
+      </>
     );
   }
 
-  // Get Bonnaroo status message (only if schedule is available)
   const roostatus = getBonnarooStatus(year, scheduleData);
   const statusClass = getStatusClass(roostatus, scheduleMissing);
+  const totalCount = currentSelections.length;
+  const conflictCount = conflictKeys.size;
 
   return (
-    <div className="container" id="app">
-      <YearSelector onYearChange={setYear} defaultYear={year} />
-
-      {lastModified && (
-        <p className="last-updated">Schedules last updated: {lastModified}</p>
-      )}
+    <>
+      <div className="builder-toolbar">
+        <div className="builder-toolbar-left">
+          <YearSelector onYearChange={setYear} defaultYear={year} />
+          {lastModified && (
+            <span className="last-updated">Updated: {lastModified}</span>
+          )}
+        </div>
+        <div className="builder-toolbar-right">
+          <button type="button" className="btn btn-load" onClick={onLoad}>
+            Load Plan
+          </button>
+        </div>
+      </div>
 
       {roostatus && (
         <div className={statusClass}>{roostatus}</div>
       )}
 
-      <TabContainer activeTab={activeTab} onTabClick={setActiveTab} />
+      {conflictCount > 0 && (
+        <div className="conflict-warning-box">
+          ⚠ {conflictCount} event{conflictCount !== 1 ? 's' : ''} have scheduling conflicts
+        </div>
+      )}
 
-      <div style={{ margin: '15px 0' }}>
-        <button type="button" onClick={selectAll}>
-          Select all
+      <TabContainer
+        activeTab={activeTab}
+        onTabClick={setActiveTab}
+        selectionCounts={selectionCounts}
+      />
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        <button type="button" className="btn btn-select-all" onClick={selectAll}>
+          Select All
         </button>
-        <button type="button" onClick={deselectAll}>
-          Deselect all
+        <button type="button" className="btn btn-deselect-all" onClick={deselectAll}>
+          Deselect All
         </button>
       </div>
 
@@ -141,12 +189,30 @@ export default function PlannerBuilder({ year, setYear, onBuild, initialSchedule
           type={activeTab}
           currentSelections={currentSelections}
           onToggleSelection={toggleSelection}
+          conflictKeys={conflictKeys}
         />
       )}
 
-      <button id="buildBtn" type="button" onClick={handleBuild}>
-        Build My Planner!
-      </button>
-    </div>
+      <div className="builder-bottom-padding" />
+
+      <div className="selection-summary-bar">
+        <span className="summary-text">
+          {totalCount} event{totalCount !== 1 ? 's' : ''} selected
+          {conflictCount > 0 && (
+            <span className="conflict-count">
+              &nbsp;&nbsp;⚠ {conflictCount} conflict{conflictCount !== 1 ? 's' : ''}
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          className="btn btn-build"
+          onClick={handleBuild}
+          disabled={!totalCount}
+        >
+          Build My Planner →
+        </button>
+      </div>
+    </>
   );
 }

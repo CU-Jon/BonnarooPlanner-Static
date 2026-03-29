@@ -81,25 +81,26 @@ export const APP_TITLE_PLANNER = 'Your Bonnaroo {year} Planner - {tab}';
 // -------------------------------------------------
 // Filename templates for exported files
 // -------------------------------------------------
-export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}_{orientation}.pdf';
+export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{label}_{orientation}.pdf';
 export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
 export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
 export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
+export const SAVE_FILENAME_TEMPLATE = 'bonnaroo-planner-{year}-{date}.json';
 
 // -------------------------------------------------
 // Toggle showing/hiding the “Print” button in PlannerView
 // (This does not disable printing, just the button.)
 // -------------------------------------------------
-export const SHOW_PRINT_BUTTON = false;
+export const SHOW_PRINT_BUTTON = true;
 
 // -------------------------------------------------
 // Footer HTML for the planner view (We obfuscate the email address to prevent basic web crawlers from getting it.)
 // Email address needs to be set in your environment variables wherever you're deploying this app.
 // Use {{EMAIL_LINK}} as a placeholder for the obfuscated email link.
 // -------------------------------------------------
-export const EMAIL_USER = process.env.REACT_APP_EMAIL_USER || '';
-export const EMAIL_DOMAIN = process.env.REACT_APP_EMAIL_DOMAIN || '';
-export const EMAIL_SUBJECT = process.env.REACT_APP_EMAIL_SUBJECT || '';
+export const EMAIL_USER = import.meta.env.VITE_EMAIL_USER || '';
+export const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN || '';
+export const EMAIL_SUBJECT = import.meta.env.VITE_EMAIL_SUBJECT || '';
 export const EMAIL_LINK_TEXT = 'email me.';
 export const FOOTER_HTML = `
 Made with ❤️ by <a href="https://github.com/CU-Jon/BonnarooPlanner-Static" target="_blank" rel="noopener noreferrer">CU-Jon</a><br><br>

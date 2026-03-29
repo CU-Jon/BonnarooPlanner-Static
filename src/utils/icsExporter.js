@@ -33,12 +33,12 @@ export function formatICSDate(day, time, year) {
 /**
  * @param {Array<{ type, day, location, event: { name, start, end } }>} selections
  * @param {number} year
- * @param {string} activeTab  // "Centeroo" or "Outeroo"
+ * @param {string} label  e.g. "Centeroo", "Outeroo", or "Centeroo & Outeroo"
  */
-export function generateICS(selections, year, activeTab) {
+export function generateICS(selections, year, label) {
   const calendarName = ICS_CALENDARNAME_TEMPLATE
     .replace('{year}', year)
-    .replace('{tab}', activeTab);
+    .replace('{tab}', label);
 
   const lines = [];
 
