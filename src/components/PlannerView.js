@@ -195,6 +195,67 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     ));
   }
 
+  function buildPDFTableData(type, day) {
+    if (!grouped[type] || !grouped[type][day]) return null;
+
+    const locations = grouped[type][day];
+    const stageNames = Object.keys(locations);
+
+    let minTime = 1440;
+    let maxTime = 0;
+    Object.values(locations).forEach(events => {
+      events.forEach(ev => {
+        minTime = Math.min(minTime, timeToMinutes(ev.start));
+        maxTime = Math.max(maxTime, timeToMinutes(ev.end));
+      });
+    });
+    minTime = Math.floor(minTime / 15) * 15;
+    maxTime = Math.ceil(maxTime / 15) * 15;
+
+    const stageEvents = {};
+    stageNames.forEach(stg => {
+      stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
+    });
+
+    const columns = ['Time', ...stageNames];
+    const body = [];
+    const rowSpanRemaining = {};
+    stageNames.forEach(s => { rowSpanRemaining[s] = 0; });
+
+    for (let tm = minTime; tm < maxTime; tm += 15) {
+      const row = [{ content: minutesToTime(tm) }];
+
+      stageNames.forEach(stg => {
+        if (rowSpanRemaining[stg] > 0) {
+          rowSpanRemaining[stg]--;
+          return;
+        }
+
+        const found = stageEvents[stg].find(ev => timeToMinutes(ev.start) === tm);
+        if (found) {
+          const span = (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
+          const cleanName = found.name
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/?small>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+          if (span > 1) {
+            row.push({ content: cleanName, rowSpan: span });
+            rowSpanRemaining[stg] = span - 1;
+          } else {
+            row.push({ content: cleanName });
+          }
+        } else {
+          row.push({ content: '' });
+        }
+      });
+
+      body.push(row);
+    }
+
+    return { columns, body };
+  }
+
   function downloadPDF(orientation = 'portrait') {
     const TABLE_MARGIN = 70;
     const FOOTER_MARGIN_BOTTOM = 20;
@@ -207,61 +268,67 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const plannerTitle = `Bonnaroo ${year} Planner \u2014 ${typeLabel}`;
 
     const doc = new jsPDF({ orientation, unit: 'pt', format: 'letter' });
-    const tables = document.querySelectorAll('.day-section');
+    let pageIdx = 0;
 
-    tables.forEach((table, idx) => {
-      if (idx > 0) doc.addPage();
-      const day = table.dataset.day;
-      const tableType = table.dataset.type || typeLabel;
-      const firstPage = doc.internal.getNumberOfPages();
+    typesPresent.forEach(type => {
+      if (!grouped[type]) return;
+      Object.keys(grouped[type]).forEach(day => {
+        if (pageIdx > 0) doc.addPage();
+        pageIdx++;
 
-      autoTable(doc, {
-        html: table,
-        pageBreak: 'auto',
-        rowPageBreak: 'avoid',
-        startY: TABLE_MARGIN,
-        margin: { top: TABLE_MARGIN },
-        theme: 'grid',
-        headStyles: {
-          fillColor: ORANGE,
-          textColor: PDF_WHITE,
-          fontStyle: 'bold'
-        },
-        alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          halign: 'center',
-          valign: 'middle',
-          fillColor: PDF_WHITE,
-          textColor: PDF_DARK_TEXT,
-          overflow: 'hidden'
-        },
-        columnStyles: {
-          0: {
-            fillColor: PDF_TIME_BG,
-            textColor: PDF_TIME_TEXT,
-            fontStyle: 'bold',
-            cellWidth: 50
+        const tableData = buildPDFTableData(type, day);
+        if (!tableData) return;
+
+        const firstPage = doc.internal.getNumberOfPages();
+
+        autoTable(doc, {
+          columns: tableData.columns,
+          body: tableData.body,
+          pageBreak: 'auto',
+          rowPageBreak: 'avoid',
+          startY: TABLE_MARGIN,
+          margin: { top: TABLE_MARGIN },
+          theme: 'grid',
+          headStyles: {
+            fillColor: ORANGE,
+            textColor: PDF_WHITE,
+            fontStyle: 'bold'
+          },
+          alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
+          styles: {
+            font: 'helvetica',
+            fontSize: 9,
+            halign: 'center',
+            valign: 'middle',
+            fillColor: PDF_WHITE,
+            textColor: PDF_DARK_TEXT
+          },
+          columnStyles: {
+            0: {
+              fillColor: PDF_TIME_BG,
+              textColor: PDF_TIME_TEXT,
+              fontStyle: 'bold',
+              cellWidth: 50
+            }
+          },
+          didDrawPage: () => {
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageInfo = doc.internal.getCurrentPageInfo();
+            doc.setFontSize(12);
+            doc.setTextColor(...ORANGE);
+            doc.text(plannerTitle, pageWidth / 2, 26, { align: 'center' });
+            doc.setFontSize(16);
+            doc.setTextColor(...PDF_DARK_TEXT);
+            const dayLabel =
+              pageInfo.pageNumber === firstPage
+                ? `${type} \u2014 ${day}`
+                : `${type} \u2014 ${day} (Continued)`;
+            doc.text(dayLabel, 40, 52);
+            doc.setDrawColor(...ORANGE);
+            doc.setLineWidth(1.5);
+            doc.line(40, 58, pageWidth - 40, 58);
           }
-        },
-        didDrawPage: () => {
-          const pageWidth = doc.internal.pageSize.getWidth();
-          const pageInfo = doc.internal.getCurrentPageInfo();
-          doc.setFontSize(12);
-          doc.setTextColor(...ORANGE);
-          doc.text(plannerTitle, pageWidth / 2, 26, { align: 'center' });
-          doc.setFontSize(16);
-          doc.setTextColor(...PDF_DARK_TEXT);
-          const dayLabel =
-            pageInfo.pageNumber === firstPage
-              ? `${tableType} \u2014 ${day}`
-              : `${tableType} \u2014 ${day} (Continued)`;
-          doc.text(dayLabel, 40, 52);
-          doc.setDrawColor(...ORANGE);
-          doc.setLineWidth(1.5);
-          doc.line(40, 58, pageWidth - 40, 58);
-        }
+        });
       });
     });
 
