@@ -23,7 +23,6 @@ export default function PlannerBuilder({
   initialSchedule,
   initialSelections,
   lastModified,
-  onSave,
   onLoad
 }) {
   const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
@@ -153,14 +152,6 @@ export default function PlannerBuilder({
           )}
         </div>
         <div className="builder-toolbar-right">
-          <button
-            type="button"
-            className="btn btn-save"
-            onClick={onSave}
-            disabled={!totalCount}
-          >
-            Save Plan
-          </button>
           <button type="button" className="btn btn-load" onClick={onLoad}>
             Load Plan
           </button>

@@ -972,6 +972,7 @@ table.day-section tr:nth-child(even) td {
     font-size: 0.825rem;
     color: #666;
     letter-spacing: 0.02em;
+    margin-bottom: 80px;
 }
 
 .app-footer a {
