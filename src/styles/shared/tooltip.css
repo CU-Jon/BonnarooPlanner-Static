@@ -57,3 +57,17 @@
 .has-tooltip:focus-visible::before {
     opacity: 1;
 }
+
+@media (max-width: 600px) {
+    .has-tooltip::after {
+        left: auto;
+        right: 0;
+        transform: translateX(0) translateY(4px);
+        width: min(260px, calc(100vw - 1rem));
+    }
+
+    .has-tooltip:hover::after,
+    .has-tooltip:focus-visible::after {
+        transform: translateX(0) translateY(0);
+    }
+}
