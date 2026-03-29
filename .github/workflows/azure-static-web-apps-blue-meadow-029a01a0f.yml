@@ -25,7 +25,7 @@ jobs:
       id-token: write # for Azure login
       pull-requests: write # for creating a comment on the PR
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
@@ -45,9 +45,9 @@ jobs:
           output_location: "build" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
         env:
-          REACT_APP_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
-          REACT_APP_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
-          REACT_APP_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
+          VITE_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
+          VITE_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
+          VITE_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

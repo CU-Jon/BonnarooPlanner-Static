@@ -98,9 +98,9 @@ export const SHOW_PRINT_BUTTON = true;
 // Email address needs to be set in your environment variables wherever you're deploying this app.
 // Use {{EMAIL_LINK}} as a placeholder for the obfuscated email link.
 // -------------------------------------------------
-export const EMAIL_USER = process.env.REACT_APP_EMAIL_USER || '';
-export const EMAIL_DOMAIN = process.env.REACT_APP_EMAIL_DOMAIN || '';
-export const EMAIL_SUBJECT = process.env.REACT_APP_EMAIL_SUBJECT || '';
+export const EMAIL_USER = import.meta.env.VITE_EMAIL_USER || '';
+export const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN || '';
+export const EMAIL_SUBJECT = import.meta.env.VITE_EMAIL_SUBJECT || '';
 export const EMAIL_LINK_TEXT = 'email me.';
 export const FOOTER_HTML = `
 Made with ❤️ by <a href="https://github.com/CU-Jon/BonnarooPlanner-Static" target="_blank" rel="noopener noreferrer">CU-Jon</a><br><br>
