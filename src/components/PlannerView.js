@@ -1,5 +1,5 @@
 // src/components/PlannerView.js
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import {
   timeToMinutes,
   mergeOverlapsWithDetail,
@@ -37,6 +37,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   const [shareURL, setShareURL] = useState('');
   const shareWrapperRef = useRef(null);
   const shareInputRef = useRef(null);
+  const sharePopoverRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -58,6 +59,16 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
+  }, [sharePopoverVisible]);
+
+  useLayoutEffect(() => {
+    if (!sharePopoverVisible || !sharePopoverRef.current) return;
+    const el = sharePopoverRef.current;
+    el.style.transform = '';
+    const rect = el.getBoundingClientRect();
+    if (rect.left < 8) {
+      el.style.transform = `translateX(${8 - rect.left}px)`;
+    }
   }, [sharePopoverVisible]);
 
   const conflictKeys = useMemo(() => detectConflicts(selections), [selections]);
@@ -488,7 +499,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
               Share Link
             </button>
             {sharePopoverVisible && (
-              <div className="share-popover" role="dialog" aria-label="Share link">
+              <div className="share-popover" role="dialog" aria-label="Share link" ref={sharePopoverRef}>
                 <div className="share-popover-row">
                   <input
                     ref={shareInputRef}
