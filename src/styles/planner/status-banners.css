@@ -1,0 +1,33 @@
+/* ─────────────────────────────────────────
+   STATUS BANNERS
+───────────────────────────────────────── */
+
+.bonnaroo-status {
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.bonnaroo-status--not-started {
+    background: rgba(255, 195, 47, 0.12);
+    color: var(--roo-yellow);
+    border-color: rgba(255, 195, 47, 0.35);
+}
+
+.bonnaroo-status--started {
+    background: rgba(121, 197, 49, 0.12);
+    color: var(--roo-green);
+    border-color: rgba(121, 197, 49, 0.35);
+}
+
+.bonnaroo-status--ended,
+.bonnaroo-status--not-available {
+    background: rgba(243, 120, 140, 0.12);
+    color: var(--roo-pink);
+    border-color: rgba(243, 120, 140, 0.35);
+}

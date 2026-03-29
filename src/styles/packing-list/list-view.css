@@ -1,0 +1,112 @@
+/* ─────────────────────────────────────────
+   LIST VIEW
+───────────────────────────────────────── */
+
+.list-view-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.list-view-header h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--roo-orange);
+}
+
+.list-view-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.list-output-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.list-category-card {
+    background-color: var(--roo-card-bg);
+    border: 1px solid var(--roo-card-border);
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--roo-orange);
+    overflow: hidden;
+}
+
+.list-category-card:nth-child(7n+1) { border-left-color: var(--card-accent-1); }
+.list-category-card:nth-child(7n+2) { border-left-color: var(--card-accent-2); }
+.list-category-card:nth-child(7n+3) { border-left-color: var(--card-accent-3); }
+.list-category-card:nth-child(7n+4) { border-left-color: var(--card-accent-4); }
+.list-category-card:nth-child(7n+5) { border-left-color: var(--card-accent-5); }
+.list-category-card:nth-child(7n+6) { border-left-color: var(--card-accent-6); }
+.list-category-card:nth-child(7n+0) { border-left-color: var(--card-accent-7); }
+
+.list-category-block {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.list-category-block thead th {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--roo-cream);
+    background-color: var(--roo-card-bg);
+    text-align: left;
+    padding: 0.75rem 1rem 0.5rem;
+    border-bottom: 1px solid var(--roo-card-border);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.list-category-block tbody td {
+    font-size: 0.875rem;
+    color: #ccc;
+    line-height: 1.35;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+    padding: 0.15rem 1rem 0.15rem 0;
+}
+
+.list-category-block tbody td:not(.print-box-cell) {
+    padding-left: 0.5rem;
+}
+
+.list-category-block .print-box-col {
+    width: 2rem;
+}
+
+.list-category-block .print-box-cell {
+    width: 2rem;
+    padding-left: 1rem;
+    padding-right: 0;
+    vertical-align: top;
+}
+
+.list-category-block tbody tr:first-child td {
+    padding-top: 0.5rem;
+}
+
+.list-category-block tbody tr:last-child td {
+    padding-bottom: 0.75rem;
+}
+
+.empty-list-message {
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+    padding: 3rem 1rem;
+    grid-column: 1 / -1;
+}

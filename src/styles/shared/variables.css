@@ -1,0 +1,26 @@
+/* ─────────────────────────────────────────
+   CSS VARIABLES
+───────────────────────────────────────── */
+
+:root {
+    --roo-black:       #161616;
+    --roo-cream:       #f8f1d4;
+    --roo-orange:      #f26922;
+    --roo-yellow:      #ffc32f;
+    --roo-green:       #79c531;
+    --roo-pink:        #f3788c;
+    --roo-purple:      #7a5fbc;
+    --roo-blue:        #7ebfbc;
+    --roo-bronze:      #efe3af;
+    --roo-dark:        #0e0e0e;
+    --roo-card-bg:     #1e1e1e;
+    --roo-card-border: #2e2e2e;
+
+    --card-accent-1: var(--roo-orange);
+    --card-accent-2: var(--roo-yellow);
+    --card-accent-3: var(--roo-green);
+    --card-accent-4: var(--roo-pink);
+    --card-accent-5: var(--roo-purple);
+    --card-accent-6: var(--roo-blue);
+    --card-accent-7: var(--roo-bronze);
+}

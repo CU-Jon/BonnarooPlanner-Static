@@ -1,0 +1,54 @@
+/* ─────────────────────────────────────────
+   MODAL OVERLAY
+───────────────────────────────────────── */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+}
+
+.modal {
+    background-color: var(--roo-card-bg);
+    border: 1px solid var(--roo-card-border);
+    border-top: 3px solid var(--roo-yellow);
+    border-radius: 0.75rem;
+    padding: 1.75rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--roo-yellow);
+    margin-bottom: 0.75rem;
+}
+
+.modal p {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 1.5rem;
+    line-height: 1.55;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 1.25rem 1rem;
+    }
+}

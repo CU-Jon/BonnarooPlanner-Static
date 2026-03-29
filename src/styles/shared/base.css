@@ -1,0 +1,31 @@
+/* ─────────────────────────────────────────
+   RESET + BASE
+───────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--roo-black);
+    color: var(--roo-cream);
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 1rem;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--roo-blue);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover {
+    color: var(--roo-cream);
+    text-decoration: underline;
+}

@@ -1,0 +1,152 @@
+@media print {
+    /* ─── Reset to ink-friendly defaults ─── */
+    *,
+    *::before,
+    *::after {
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        border-color: #ccc !important;
+    }
+
+    body {
+        font-family: 'Lexend Deca', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 10pt;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ─── Hide screen-only elements ─── */
+    .site-header,
+    .toolbar,
+    .generate-summary-bar,
+    .list-view-actions,
+    .modal-backdrop,
+    .app-footer,
+    .no-print {
+        display: none !important;
+    }
+
+    /* ─── Show the list view ─── */
+    .packing-selection-view {
+        display: none !important;
+    }
+
+    .packing-list-view {
+        display: block !important;
+    }
+
+    main {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* ─── Print-only title ─── */
+    .print-title {
+        display: block !important;
+        font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 900;
+        font-size: 18pt;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 0.4rem;
+    }
+
+    .print-date {
+        display: block !important;
+        text-align: center;
+        font-size: 8pt;
+        color: #555 !important;
+        margin-bottom: 1rem;
+    }
+
+    /* ─── Category grid: 2 columns ─── */
+    .list-output-grid {
+        display: block !important;
+        columns: 2;
+        column-gap: 1.5rem;
+        orphans: 3;
+        widows: 3;
+    }
+
+    .list-category-card {
+        display: contents;
+    }
+
+    .list-category-block {
+        break-inside: avoid-column;
+        display: table;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        border: none !important;
+        border-left: 2px solid #000 !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        margin-bottom: 0.75rem;
+        width: 100%;
+    }
+
+    .list-category-block thead {
+        display: table-header-group;
+    }
+
+    .list-category-block thead th {
+        font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 10pt;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid #bbb !important;
+        padding: 0.2rem 0.5rem 0.2rem 0.75rem;
+        text-align: left;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    .list-category-block tbody td {
+        font-size: 9pt;
+        padding: 0.1rem 0.5rem 0.1rem 0;
+        line-height: 1.4;
+        color: #000 !important;
+        vertical-align: top;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .list-category-block tbody td:not(.print-box-cell) {
+        padding-left: 4pt;
+    }
+
+    .list-category-block .print-box-col {
+        width: 14pt;
+    }
+
+    .list-category-block .print-box-cell {
+        width: 14pt;
+        padding-left: 0.75rem;
+        padding-right: 0;
+    }
+
+    /* ─── Pen-checkable □ box ─── */
+    .print-box {
+        display: inline-block !important;
+        width: 12pt;
+        height: 12pt;
+        min-width: 12pt;
+        border: 1.5pt solid #000 !important;
+        background: #fff !important;
+        border-radius: 2pt;
+        flex-shrink: 0;
+    }
+
+    @page {
+        size: letter portrait;
+        margin: 0.75in 0.65in 0.75in 0.65in;
+    }
+}
