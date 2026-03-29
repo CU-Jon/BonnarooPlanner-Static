@@ -1014,6 +1014,7 @@ table.day-section tr:nth-child(even) td {
     .view-mode-toggle,
     .planner-actions,
     .no-print,
+    .day-heading-row,
     .day-heading-screen {
         display: none !important;
     }

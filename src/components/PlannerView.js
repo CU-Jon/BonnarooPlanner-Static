@@ -12,13 +12,15 @@ import {
   PDF_FILENAME_TEMPLATE,
   CSV_FILENAME_TEMPLATE,
   ICS_FILENAME_TEMPLATE,
-  SHOW_PRINT_BUTTON
+  SHOW_PRINT_BUTTON,
+  dayOffsets
 } from '../config';
 import { generateCSV } from '../utils/csvExporter';
 import { buildShareURL } from '../utils/shareUtils';
 import { detectConflicts, getSelectionKey } from '../utils/conflictUtils';
 
 const TYPE_ORDER = ['Centeroo', 'Outeroo'];
+const DAY_ORDER = Object.keys(dayOffsets);
 const ORANGE = [242, 105, 34];
 const PDF_WHITE = [255, 255, 255];
 const PDF_LIGHT_ROW = [247, 247, 247];
@@ -167,11 +169,10 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   function buildCompactForType(type) {
     if (!grouped[type]) return null;
     const typeSelections = selections.filter(s => s.type === type);
-    const dayOrder = Object.keys(grouped[type]);
 
     const sorted = [...typeSelections].sort((a, b) => {
-      const dA = dayOrder.indexOf(a.day);
-      const dB = dayOrder.indexOf(b.day);
+      const dA = DAY_ORDER.indexOf(a.day);
+      const dB = DAY_ORDER.indexOf(b.day);
       if (dA !== dB) return dA - dB;
       return timeToMinutes(a.event.start) - timeToMinutes(b.event.start);
     });
@@ -432,7 +433,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const fileName = CSV_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', typeLabel);
-    const csvData = generateCSV(selections, year);
+    const csvData = generateCSV(selections);
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);

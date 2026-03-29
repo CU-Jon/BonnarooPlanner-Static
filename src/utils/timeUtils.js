@@ -21,6 +21,15 @@ export function minutesToTime(mins) {
   return `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function mergeOverlapsWithDetail(events) {
   const sorted = [...events].sort(
     (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)
@@ -33,12 +42,12 @@ export function mergeOverlapsWithDetail(events) {
       buckets.push({
         start: s,
         end: e,
-        lines: [`${ev.name}<br><small>${ev.start} – ${ev.end}</small>`]
+        lines: [`${escapeHTML(ev.name)}<br><small>${escapeHTML(ev.start)} – ${escapeHTML(ev.end)}</small>`]
       });
     } else {
       const b = buckets[buckets.length - 1];
       b.end = Math.max(b.end, e);
-      b.lines.push(`${ev.name}<br><small>${ev.start} – ${ev.end}</small>`);
+      b.lines.push(`${escapeHTML(ev.name)}<br><small>${escapeHTML(ev.start)} – ${escapeHTML(ev.end)}</small>`);
     }
   });
   return buckets.map(b => ({
