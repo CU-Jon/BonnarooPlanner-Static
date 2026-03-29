@@ -256,6 +256,11 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
             .replace(/<br\s*\/?>/gi, '\n')
             .replace(/<\/?small>/gi, '')
             .replace(/<[^>]+>/g, '')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
             .trim();
           return { state: 'start', content: cleanName };
         }

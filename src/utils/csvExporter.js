@@ -29,7 +29,8 @@ export function generateCSV(selections) {
     ]);
   });
 
-  return rows.map(row =>
+  const csv = rows.map(row =>
     row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
   ).join('\r\n');
+  return '\uFEFF' + csv;
 }
