@@ -200,6 +200,66 @@ main {
     color: var(--roo-cream);
 }
 
+/* ─────────────────────────────────────────
+   TOOLTIP
+───────────────────────────────────────── */
+
+.has-tooltip {
+    position: relative;
+}
+
+.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: 260px;
+    background-color: #111;
+    color: var(--roo-cream);
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.5;
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--roo-yellow);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 200;
+    white-space: normal;
+    text-align: left;
+}
+
+.has-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--roo-yellow);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 200;
+}
+
+.has-tooltip:hover::after,
+.has-tooltip:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.has-tooltip:hover::before,
+.has-tooltip:focus-visible::before {
+    opacity: 1;
+}
+
 .btn-select-all,
 .btn-deselect-all {
     background-color: transparent;
@@ -939,6 +999,15 @@ table.day-section tr:nth-child(even) td {
     }
 
     .planner-type-header + * {
+        page-break-before: avoid;
+        break-before: avoid;
+    }
+
+    /* Target the first table of each type section, which sits two siblings
+       after the header (header → hidden .day-heading-row → table). Without
+       this, the higher-specificity table.day-section rule forces a page break
+       that orphans the type heading on its own page. */
+    .planner-type-header + * + table.day-section {
         page-break-before: avoid;
         break-before: avoid;
     }

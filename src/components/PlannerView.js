@@ -329,6 +329,8 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
             }
             if (state === 'start') {
               data.cell.styles.overflow = 'linebreak';
+              data.cell.styles.fontSize = 8;
+              data.cell.styles.cellPadding = 3;
             }
           },
           didDrawCell: (data) => {
@@ -436,11 +438,48 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           </button>
         </div>
         <div className="builder-toolbar-right">
-          <button type="button" className="btn btn-save" onClick={onSave}>
+          <button
+            type="button"
+            className="btn btn-save has-tooltip"
+            onClick={onSave}
+            data-tooltip="Saves your plan to a file on your device so you can pick up right where you left off. Next time you visit, hit &ldquo;Load Plan&rdquo; to bring your whole lineup back instantly."
+          >
             Save Plan
           </button>
           <button type="button" className="btn btn-share" onClick={handleShare}>
             Share Link
+          </button>
+          {SHOW_PRINT_BUTTON && (
+            <button
+              type="button"
+              className="btn btn-print"
+              onClick={() => window.print()}
+            >
+              Print
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn btn-pdf"
+            onClick={() => downloadPDF('portrait')}
+          >
+            PDF (Portrait)
+          </button>
+          <button
+            type="button"
+            className="btn btn-pdf"
+            onClick={() => downloadPDF('landscape')}
+          >
+            PDF (Landscape)
+          </button>
+          <button type="button" className="btn btn-ics" onClick={exportICS}>
+            Export to Calendar (.ics)
+          </button>
+          <button type="button" className="btn btn-csv" onClick={exportCSV}>
+            Export to CSV
+          </button>
+          <button type="button" className="btn btn-start-over" onClick={onRestart}>
+            Start Over
           </button>
         </div>
       </div>
@@ -473,40 +512,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
         </React.Fragment>
       ))}
 
-      <div className="planner-actions no-print">
-        {SHOW_PRINT_BUTTON && (
-          <button
-            type="button"
-            className="btn btn-print"
-            onClick={() => window.print()}
-          >
-            Print
-          </button>
-        )}
-        <button
-          type="button"
-          className="btn btn-pdf"
-          onClick={() => downloadPDF('portrait')}
-        >
-          PDF (Portrait)
-        </button>
-        <button
-          type="button"
-          className="btn btn-pdf"
-          onClick={() => downloadPDF('landscape')}
-        >
-          PDF (Landscape)
-        </button>
-        <button type="button" className="btn btn-ics" onClick={exportICS}>
-          Export to Calendar (.ics)
-        </button>
-        <button type="button" className="btn btn-csv" onClick={exportCSV}>
-          Export to CSV
-        </button>
-        <button type="button" className="btn btn-start-over" onClick={onRestart}>
-          Start Over
-        </button>
-      </div>
+
     </>
   );
 }
