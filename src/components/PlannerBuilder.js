@@ -42,6 +42,10 @@ export default function PlannerBuilder({
     hasInitializedSchedule.current = true;
   }, [initialSchedule]);
 
+  useEffect(() => {
+    setCurrentSelections(initialSelections || []);
+  }, [initialSelections]);
+
   const conflictKeys = useMemo(
     () => detectConflicts(currentSelections),
     [currentSelections]
@@ -178,7 +182,6 @@ export default function PlannerBuilder({
             type="button"
             className="btn btn-share"
             onClick={handleShare}
-            disabled={!totalCount}
           >
             Share Link
           </button>
