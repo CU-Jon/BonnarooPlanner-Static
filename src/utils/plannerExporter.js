@@ -38,6 +38,19 @@ export function loadPlan(file) {
           reject('Invalid file: missing selections or year.');
           return;
         }
+        const isValidSelection = sel =>
+          sel &&
+          typeof sel.type === 'string' &&
+          typeof sel.day === 'string' &&
+          typeof sel.location === 'string' &&
+          sel.event &&
+          typeof sel.event.name === 'string' &&
+          typeof sel.event.start === 'string' &&
+          typeof sel.event.end === 'string';
+        if (!data.selections.every(isValidSelection)) {
+          reject('Invalid file: one or more selections have an unexpected format.');
+          return;
+        }
         resolve({ year: data.year, selections: data.selections });
       } catch {
         reject('Invalid file: could not parse JSON.');

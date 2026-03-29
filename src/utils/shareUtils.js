@@ -31,7 +31,7 @@ export function decodeSelections(encoded, schedule) {
       const day = CODE_TO_DAY[dayCode] ?? dayCode;
       const slots = schedule?.[type]?.[day]?.[location];
       const event = (slots && slots.find(e => e.start === start)) ??
-        { name: '(Unknown)', start, end: '' };
+        { name: '(Unknown)', start, end: start };
       return { type, day, location, event };
     });
     return { year: y, selections };

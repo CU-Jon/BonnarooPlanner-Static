@@ -60,7 +60,7 @@ export default function App() {
             setSelections(decoded.selections);
             setView('builder');
           } else {
-            setPendingLoad(decoded);
+            setPendingLoad({ ...decoded, shareParam });
           }
         }
       }
@@ -120,20 +120,24 @@ export default function App() {
   async function applyPendingWithYear(useYear) {
     const pending = pendingLoad;
     setPendingLoad(null);
+    let resolvedSelections = pending.selections;
     if (useYear !== year) {
       setLoading(true);
       const { exists, centeroo, outeroo, lastModified: lm } = await fetchSchedule(useYear);
-      if (exists) {
-        setInitialSchedule({ Centeroo: centeroo, Outeroo: outeroo });
-        setLastModified(lm || null);
-      } else {
-        setInitialSchedule({ Centeroo: null, Outeroo: null });
-        setLastModified(null);
-      }
+      const newSchedule = {
+        Centeroo: exists ? centeroo : null,
+        Outeroo: exists ? outeroo : null
+      };
+      setInitialSchedule(newSchedule);
+      setLastModified(exists ? (lm || null) : null);
       setYear(useYear);
       setLoading(false);
+      if (pending.shareParam) {
+        const reDecoded = decodeSelections(pending.shareParam, newSchedule);
+        if (reDecoded) resolvedSelections = reDecoded.selections;
+      }
     }
-    setSelections(pending.selections);
+    setSelections(resolvedSelections);
     setView('builder');
   }
 

@@ -1,5 +1,5 @@
 // src/components/PlannerView.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   timeToMinutes,
   mergeOverlapsWithDetail,
@@ -58,7 +58,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     };
   }, [sharePopoverVisible]);
 
-  const conflictKeys = detectConflicts(selections);
+  const conflictKeys = useMemo(() => detectConflicts(selections), [selections]);
   const typesPresent = TYPE_ORDER.filter(t => selections.some(s => s.type === t));
   const typeLabel =
     typesPresent.length === 0
@@ -194,7 +194,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
             const isConflict = conflictKeys.has(key);
             return (
               <div
-                key={idx}
+                key={key}
                 className="compact-event-card"
                 style={isConflict ? { borderLeftColor: 'var(--roo-pink)' } : {}}
               >
