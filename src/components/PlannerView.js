@@ -20,9 +20,11 @@ import { detectConflicts, getSelectionKey } from '../utils/conflictUtils';
 
 const TYPE_ORDER = ['Centeroo', 'Outeroo'];
 const ORANGE = [242, 105, 34];
-const DARK_BG = [30, 30, 30];
-const CREAM = [248, 241, 212];
-const BRONZE = [239, 227, 175];
+const PDF_WHITE = [255, 255, 255];
+const PDF_LIGHT_ROW = [247, 247, 247];
+const PDF_TIME_BG = [255, 237, 220];
+const PDF_DARK_TEXT = [30, 30, 30];
+const PDF_TIME_TEXT = [160, 60, 0];
 
 export default function PlannerView({ selections, year, onRestart, onBack, onSave }) {
   const [viewMode, setViewMode] = useState('table');
@@ -222,22 +224,23 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
         theme: 'grid',
         headStyles: {
           fillColor: ORANGE,
-          textColor: DARK_BG,
+          textColor: PDF_WHITE,
           fontStyle: 'bold'
         },
-        alternateRowStyles: { fillColor: [32, 32, 32] },
+        alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
         styles: {
           font: 'helvetica',
           fontSize: 9,
           halign: 'center',
           valign: 'middle',
-          fillColor: DARK_BG,
-          textColor: CREAM
+          fillColor: PDF_WHITE,
+          textColor: PDF_DARK_TEXT,
+          overflow: 'hidden'
         },
         columnStyles: {
           0: {
-            fillColor: [20, 20, 20],
-            textColor: BRONZE,
+            fillColor: PDF_TIME_BG,
+            textColor: PDF_TIME_TEXT,
             fontStyle: 'bold',
             cellWidth: 50
           }
@@ -249,7 +252,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           doc.setTextColor(...ORANGE);
           doc.text(plannerTitle, pageWidth / 2, 26, { align: 'center' });
           doc.setFontSize(16);
-          doc.setTextColor(...CREAM);
+          doc.setTextColor(...PDF_DARK_TEXT);
           const dayLabel =
             pageInfo.pageNumber === firstPage
               ? `${tableType} \u2014 ${day}`
