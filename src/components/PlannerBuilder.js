@@ -6,7 +6,6 @@ import SelectionGrid from './SelectionGrid';
 import { getBonnarooStatus } from '../utils/bonnarooStatus';
 import { SCHEDULE_NOT_AVAILABLE_TEMPLATE } from '../config';
 import { detectConflicts } from '../utils/conflictUtils';
-import { buildShareURL } from '../utils/shareUtils';
 
 function getStatusClass(roostatus, scheduleMissing) {
   if (scheduleMissing) return 'bonnaroo-status bonnaroo-status--not-available';
@@ -114,19 +113,6 @@ export default function PlannerBuilder({
     onBuild(currentSelections, year);
   }
 
-  function handleShare() {
-    if (!currentSelections.length) {
-      alert('Select at least one event to share.');
-      return;
-    }
-    const url = buildShareURL(currentSelections, year);
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Share link copied to clipboard!');
-    }).catch(() => {
-      prompt('Copy this share link:', url);
-    });
-  }
-
   if (!initialSchedule) {
     return null;
   }
@@ -177,13 +163,6 @@ export default function PlannerBuilder({
           </button>
           <button type="button" className="btn btn-load" onClick={onLoad}>
             Load Plan
-          </button>
-          <button
-            type="button"
-            className="btn btn-share"
-            onClick={handleShare}
-          >
-            Share Link
           </button>
         </div>
       </div>

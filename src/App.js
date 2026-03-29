@@ -34,7 +34,7 @@ export default function App() {
         setSelections([]);
         setView('builder');
         setLoading(false);
-        return y;
+        return { year: y, schedule: { Centeroo: centeroo, Outeroo: outeroo } };
       }
     }
     const fallback = availableYears[availableYears.length - 1];
@@ -44,20 +44,21 @@ export default function App() {
     setSelections([]);
     setView('builder');
     setLoading(false);
-    return fallback;
+    return { year: fallback, schedule: { Centeroo: null, Outeroo: null } };
   }
 
   useEffect(() => {
     async function init() {
-      const loadedYear = await pickDefaultYearAndSchedule();
-      const params = new URLSearchParams(window.location.search);
-      const shareParam = params.get('share');
+      const { year: loadedYear, schedule: loadedSchedule } = await pickDefaultYearAndSchedule();
+      const hash = window.location.hash.replace(/^#/, '');
+      const hashParams = new URLSearchParams(hash);
+      const shareParam = hashParams.get('share');
       if (shareParam) {
-        const decoded = decodeSelections(shareParam);
+        const decoded = decodeSelections(shareParam, loadedSchedule);
         if (decoded) {
           if (decoded.year === loadedYear) {
             setSelections(decoded.selections);
-            setView('planner');
+            setView('builder');
           } else {
             setPendingLoad(decoded);
           }

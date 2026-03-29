@@ -1,5 +1,5 @@
 // src/components/PlannerView.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   timeToMinutes,
   mergeOverlapsWithDetail,
@@ -30,10 +30,33 @@ const PDF_EVENT_TEXT = [120, 40, 0];
 
 export default function PlannerView({ selections, year, onRestart, onBack, onSave }) {
   const [viewMode, setViewMode] = useState('table');
+  const [sharePopoverVisible, setSharePopoverVisible] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [shareURL, setShareURL] = useState('');
+  const shareWrapperRef = useRef(null);
+  const shareInputRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  useEffect(() => {
+    if (!sharePopoverVisible) return;
+    function handleClickOutside(e) {
+      if (shareWrapperRef.current && !shareWrapperRef.current.contains(e.target)) {
+        setSharePopoverVisible(false);
+      }
+    }
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') setSharePopoverVisible(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [sharePopoverVisible]);
 
   const conflictKeys = detectConflicts(selections);
   const typesPresent = TYPE_ORDER.filter(t => selections.some(s => s.type === t));
@@ -422,10 +445,18 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
   function handleShare() {
     const url = buildShareURL(selections, year);
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Share link copied to clipboard!');
+    setShareURL(url);
+    setShareCopied(false);
+    setSharePopoverVisible(prev => !prev);
+  }
+
+  function handleCopyToClipboard() {
+    navigator.clipboard.writeText(shareURL).then(() => {
+      setShareCopied(true);
     }).catch(() => {
-      prompt('Copy this share link:', url);
+      if (shareInputRef.current) {
+        shareInputRef.current.select();
+      }
     });
   }
 
@@ -446,9 +477,47 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           >
             Save Plan
           </button>
-          <button type="button" className="btn btn-share" onClick={handleShare}>
-            Share Link
-          </button>
+          <div className="share-popover-wrapper" ref={shareWrapperRef}>
+            <button type="button" className="btn btn-share-link" onClick={handleShare}>
+              Share Link
+            </button>
+            {sharePopoverVisible && (
+              <div className="share-popover" role="dialog" aria-label="Share link">
+                <div className="share-popover-row">
+                  <input
+                    ref={shareInputRef}
+                    type="text"
+                    className="share-url-input"
+                    value={shareURL}
+                    readOnly
+                    onFocus={e => e.target.select()}
+                    aria-label="Share URL"
+                  />
+                  <button
+                    type="button"
+                    className={`btn-icon btn-copy${shareCopied ? ' copied' : ''}`}
+                    onClick={handleCopyToClipboard}
+                    aria-label={shareCopied ? 'Copied!' : 'Copy to clipboard'}
+                    title={shareCopied ? 'Copied!' : 'Copy to clipboard'}
+                  >
+                    {shareCopied ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                {shareCopied && (
+                  <p className="share-copied-msg">Copied to clipboard!</p>
+                )}
+              </div>
+            )}
+          </div>
           {SHOW_PRINT_BUTTON && (
             <button
               type="button"
