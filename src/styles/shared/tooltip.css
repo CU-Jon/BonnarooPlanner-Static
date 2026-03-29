@@ -60,8 +60,8 @@
 
 @media (max-width: 600px) {
     .has-tooltip::after {
-        left: auto;
-        right: 0;
+        left: 0;
+        right: auto;
         transform: translateX(0) translateY(4px);
         width: min(260px, calc(100vw - 1rem));
     }
@@ -69,5 +69,9 @@
     .has-tooltip:hover::after,
     .has-tooltip:focus-visible::after {
         transform: translateX(0) translateY(0);
+    }
+
+    .has-tooltip::before {
+        display: none;
     }
 }
