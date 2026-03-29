@@ -24,8 +24,10 @@ export function exportToJson(categories, filename) {
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
 /**
@@ -72,12 +74,14 @@ export function mergeImportedData(currentCategories, imported) {
             const match = Object.entries(v2cats).find(([k]) => toKey(k) === catKey);
             if (match) {
                 const [, data] = match;
-                selectedSet = new Set(
-                    data.items.filter((i) => i.selected).map((i) => toKey(i.name))
-                );
-                extraItems = data.items
-                    .filter((i) => i.source === 'custom')
-                    .map((i) => ({ name: i.name, isCustomItem: true, selected: i.selected }));
+                if (Array.isArray(data.items)) {
+                    selectedSet = new Set(
+                        data.items.filter((i) => i.selected).map((i) => toKey(i.name))
+                    );
+                    extraItems = data.items
+                        .filter((i) => i.source === 'custom')
+                        .map((i) => ({ name: i.name, isCustomItem: true, selected: i.selected }));
+                }
             }
         } else if (raw && Array.isArray(raw[cat.name])) {
             selectedSet = new Set(raw[cat.name].map(toKey));
@@ -101,11 +105,13 @@ export function mergeImportedData(currentCategories, imported) {
             .map(([name, data]) => ({
                 name,
                 isCustomCategory: true,
-                items: data.items.map((i) => ({
-                    name: i.name,
-                    isCustomItem: true,
-                    selected: i.selected
-                }))
+                items: Array.isArray(data.items)
+                    ? data.items.map((i) => ({
+                          name: i.name,
+                          isCustomItem: true,
+                          selected: i.selected
+                      }))
+                    : []
             }));
         return [...updatedCategories, ...toAdd];
     }

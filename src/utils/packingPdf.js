@@ -42,20 +42,22 @@ export function generatePackingPdf(categories, filename) {
     doc.line(MARGIN_X, titleBottom, PAGE_W - MARGIN_X, titleBottom);
 
     let col = 0;
-    let y = titleBottom + CAT_GAP;
+    let colStartY = titleBottom + CAT_GAP;
+    let y = colStartY;
 
     const colX = () => MARGIN_X + col * (COL_W + COL_GAP);
 
     const addPage = () => {
         doc.addPage();
         col = 0;
+        colStartY = MARGIN_Y;
         y = MARGIN_Y;
     };
 
     const nextCol = () => {
         if (col === 0) {
             col = 1;
-            y = titleBottom + CAT_GAP;
+            y = colStartY;
         } else {
             addPage();
         }
@@ -87,8 +89,6 @@ export function generatePackingPdf(categories, filename) {
             nextCol();
         }
 
-        const x = colX();
-
         // Category header
         drawCatHeader(cat.name.toUpperCase());
 
@@ -101,7 +101,6 @@ export function generatePackingPdf(categories, filename) {
             const rowH = ITEM_H + Math.max(0, lines.length - 1) * LINE_H;
             if (y + rowH > pageBottom) {
                 nextCol();
-                y = col === 0 ? MARGIN_Y : titleBottom + CAT_GAP;
                 drawCatHeader(`${cat.name.toUpperCase()} (CONT'D)`);
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);

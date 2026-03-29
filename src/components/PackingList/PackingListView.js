@@ -29,7 +29,7 @@ export default function PackingListView({ selectedCategories, onBack, onStartOve
                         className="btn btn-export-json has-tooltip"
                         type="button"
                         onClick={onExport}
-                        data-tooltip="Saves all your checked items to a file on your device. Next time you visit, hit &ldquo;Load Saved List&rdquo; to restore everything instantly &mdash; great for planning ahead or sharing your list with a friend!"
+                        data-tooltip="Saves all your checked items to a file on your device. Next time you visit, hit “Load Saved List” to restore everything instantly — great for planning ahead or sharing your list with a friend!"
                     >
                         Save My List
                     </button>

@@ -16,7 +16,10 @@ export default function PackingListApp() {
 
     useEffect(() => {
         fetch(PACKING_JSON_PATH)
-            .then((r) => r.json())
+            .then((r) => {
+                if (!r.ok) throw new Error(`Failed to load packing list: ${r.status}`);
+                return r.json();
+            })
             .then((data) => {
                 const loaded = Object.entries(data).map(([name, items]) => ({
                     name,
@@ -28,7 +31,8 @@ export default function PackingListApp() {
                     }))
                 }));
                 setCategories(loaded);
-            });
+            })
+            .catch((err) => console.error(err));
     }, []);
 
     // ── Item selection ──────────────────────────────────────────────
@@ -134,7 +138,14 @@ export default function PackingListApp() {
         e.target.value = '';
         try {
             const imported = await readJsonFile(file);
-            setCategories((prev) => mergeImportedData(prev, imported));
+            setCategories((prev) => {
+                try {
+                    return mergeImportedData(prev, imported);
+                } catch (error) {
+                    console.error('Failed to merge imported packing data', error);
+                    return prev;
+                }
+            });
         } catch {
             // Silent fail — invalid file
         }
