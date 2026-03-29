@@ -938,6 +938,16 @@ table.day-section tr:nth-child(even) td {
         break-after: avoid;
     }
 
+    .planner-type-header + * {
+        page-break-before: avoid;
+        break-before: avoid;
+    }
+
+    .planner-type-header ~ .planner-type-header {
+        page-break-before: always;
+        break-before: page;
+    }
+
     .compact-event-card {
         border: 1px solid #bbb !important;
         border-left: 3px solid #000 !important;

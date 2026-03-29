@@ -293,6 +293,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           columns,
           body,
           pageBreak: 'auto',
+          rowPageBreak: 'avoid',
           startY: TABLE_MARGIN,
           margin: { top: TABLE_MARGIN },
           theme: 'grid',
@@ -324,6 +325,10 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
             if (state === 'start' || state === 'continue') {
               data.cell.styles.fillColor = PDF_EVENT_BG;
               data.cell.styles.textColor = PDF_EVENT_TEXT;
+              data.cell.styles.valign = 'middle';
+            }
+            if (state === 'start') {
+              data.cell.styles.overflow = 'linebreak';
             }
           },
           didDrawCell: (data) => {
