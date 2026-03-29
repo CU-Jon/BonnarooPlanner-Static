@@ -1,20 +1,26 @@
 import React from 'react';
 
-export default function TabContainer({ activeTab, onTabClick }) {
+export default function TabContainer({
+  activeTab,
+  onTabClick,
+  selectionCounts = {}
+}) {
+  const tabs = ['Centeroo', 'Outeroo'];
   return (
-    <div className="tab">
-      <button
-        className={`tablinks ${activeTab === 'Centeroo' ? 'active' : ''}`}
-        onClick={() => onTabClick('Centeroo')}
-      >
-        Centeroo
-      </button>
-      <button
-        className={`tablinks ${activeTab === 'Outeroo' ? 'active' : ''}`}
-        onClick={() => onTabClick('Outeroo')}
-      >
-        Outeroo
-      </button>
+    <div className="tab-container">
+      {tabs.map(tab => (
+        <button
+          key={tab}
+          type="button"
+          className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+          onClick={() => onTabClick(tab)}
+        >
+          {tab}
+          {selectionCounts[tab] > 0 && (
+            <span className="tab-badge">{selectionCounts[tab]}</span>
+          )}
+        </button>
+      ))}
     </div>
   );
 }

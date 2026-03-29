@@ -81,16 +81,17 @@ export const APP_TITLE_PLANNER = 'Your Bonnaroo {year} Planner - {tab}';
 // -------------------------------------------------
 // Filename templates for exported files
 // -------------------------------------------------
-export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}_{orientation}.pdf';
+export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{label}_{orientation}.pdf';
 export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
 export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
 export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
+export const SAVE_FILENAME_TEMPLATE = 'bonnaroo-planner-{year}-{date}.json';
 
 // -------------------------------------------------
 // Toggle showing/hiding the “Print” button in PlannerView
 // (This does not disable printing, just the button.)
 // -------------------------------------------------
-export const SHOW_PRINT_BUTTON = false;
+export const SHOW_PRINT_BUTTON = true;
 
 // -------------------------------------------------
 // Footer HTML for the planner view (We obfuscate the email address to prevent basic web crawlers from getting it.)

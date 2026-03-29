@@ -3,7 +3,7 @@ import { dayOffsets } from '../config';
 
 const DAY_ORDER = Object.keys(dayOffsets);
 
-export function generateCSV(selections, year, activeTab) {
+export function generateCSV(selections, year) {
   const rows = [
     ['Artist/Event', 'Location', 'Sublocation', 'Day', 'Start', 'End']
   ];
@@ -21,7 +21,7 @@ export function generateCSV(selections, year, activeTab) {
   sorted.forEach(sel => {
     rows.push([
       sel.event.name,
-      activeTab,
+      sel.type,
       sel.location,
       sel.day,
       sel.event.start,

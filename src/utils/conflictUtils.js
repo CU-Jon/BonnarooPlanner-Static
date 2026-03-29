@@ -1,0 +1,40 @@
+import { timeToMinutes } from './timeUtils';
+
+export function getSelectionKey(sel) {
+  return `${sel.type}|${sel.day}|${sel.location}|${sel.event.name}|${sel.event.start}`;
+}
+
+export function detectConflicts(selections) {
+  const conflictKeys = new Set();
+
+  // Group by type + day
+  const groups = {};
+  selections.forEach(sel => {
+    const key = `${sel.type}|${sel.day}`;
+    groups[key] = groups[key] || [];
+    groups[key].push(sel);
+  });
+
+  Object.values(groups).forEach(group => {
+    const sorted = [...group].sort(
+      (a, b) => timeToMinutes(a.event.start) - timeToMinutes(b.event.start)
+    );
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const a = sorted[i];
+      const aEnd = timeToMinutes(a.event.end);
+
+      for (let j = i + 1; j < sorted.length; j++) {
+        const b = sorted[j];
+        const bStart = timeToMinutes(b.event.start);
+
+        if (bStart >= aEnd) break;
+
+        conflictKeys.add(getSelectionKey(a));
+        conflictKeys.add(getSelectionKey(b));
+      }
+    }
+  });
+
+  return conflictKeys;
+}

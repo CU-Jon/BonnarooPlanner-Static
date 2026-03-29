@@ -10,13 +10,12 @@ export default function YearSelector({ onYearChange, defaultYear }) {
   }, []);
 
   return (
-    <form style={{ marginBottom: '20px' }}>
-      <label htmlFor="year">Select Year:</label>
+    <div className="year-selector">
+      <label htmlFor="year-select">Year:</label>
       <select
-        id="year"
+        id="year-select"
         value={defaultYear ?? ''}
         onChange={(e) => onYearChange(Number(e.target.value))}
-        style={{ marginLeft: '10px' }}
       >
         <option value="" disabled>
           -- Select Year --
@@ -27,6 +26,6 @@ export default function YearSelector({ onYearChange, defaultYear }) {
           </option>
         ))}
       </select>
-    </form>
+    </div>
   );
 }
