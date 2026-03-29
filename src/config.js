@@ -44,6 +44,7 @@ export const LATE_NIGHT_CUTOFF = 7 * 60;
 export const bonnarooMondayOverrides = {
   // Example:
   // 2027: '2027-06-07'
+  2026: '2026-06-08'
 };
 
 // -------------------------------------------------
