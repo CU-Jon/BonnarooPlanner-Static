@@ -109,7 +109,7 @@ export default function App() {
         setPendingLoad(data);
       } else {
         setSelections(data.selections);
-        setView('planner');
+        setView('builder');
       }
     } catch (err) {
       alert(`Could not load plan: ${err}`);
@@ -133,7 +133,7 @@ export default function App() {
       setLoading(false);
     }
     setSelections(pending.selections);
-    setView('planner');
+    setView('builder');
   }
 
   useEffect(() => {
@@ -166,6 +166,7 @@ export default function App() {
             setYear={handleYearChange}
             onBuild={handleBuild}
             initialSchedule={initialSchedule}
+            initialSelections={selections}
             lastModified={lastModified}
             onSave={handleSavePlan}
             onLoad={triggerLoadPlan}

@@ -1,5 +1,5 @@
 // src/components/PlannerBuilder.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
@@ -22,18 +22,24 @@ export default function PlannerBuilder({
   setYear,
   onBuild,
   initialSchedule,
+  initialSelections,
   lastModified,
   onSave,
   onLoad
 }) {
   const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
   const [activeTab, setActiveTab] = useState('Centeroo');
-  const [currentSelections, setCurrentSelections] = useState([]);
+  const [currentSelections, setCurrentSelections] = useState(() => initialSelections || []);
+  const hasInitializedSchedule = useRef(false);
 
   useEffect(() => {
     setScheduleData(initialSchedule || { Centeroo: null, Outeroo: null });
     setActiveTab('Centeroo');
-    setCurrentSelections([]);
+    if (hasInitializedSchedule.current) {
+      // Year changed after initial mount — clear selections for the new year
+      setCurrentSelections([]);
+    }
+    hasInitializedSchedule.current = true;
   }, [initialSchedule]);
 
   const conflictKeys = useMemo(
