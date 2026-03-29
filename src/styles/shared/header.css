@@ -1,0 +1,32 @@
+/* ─────────────────────────────────────────
+   SITE HEADER
+───────────────────────────────────────── */
+
+.site-header {
+    background-color: var(--roo-dark);
+    border-bottom: 3px solid var(--roo-orange);
+    padding: 1.5rem 2rem 1.25rem;
+    text-align: center;
+}
+
+.site-header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--roo-orange);
+}
+
+.site-header h1 span {
+    color: var(--roo-cream);
+}
+
+.site-header p {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--roo-bronze);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}

@@ -1,0 +1,23 @@
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+
+.app-footer {
+    background-color: var(--roo-dark);
+    border-top: 1px solid var(--roo-card-border);
+    padding: 1.25rem 2rem;
+    text-align: center;
+    font-size: 0.825rem;
+    color: #666;
+    letter-spacing: 0.02em;
+    margin-bottom: 80px;
+}
+
+.app-footer a {
+    color: var(--roo-blue);
+    font-weight: 600;
+}
+
+.app-footer a:hover {
+    color: var(--roo-cream);
+}

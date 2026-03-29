@@ -1,0 +1,18 @@
+/* ─────────────────────────────────────────
+   PRINT HELPERS (screen-hidden, print-shown)
+───────────────────────────────────────── */
+
+.print-title,
+.print-date {
+    display: none;
+}
+
+.print-box {
+    display: inline-block;
+    width: 12pt;
+    height: 12pt;
+    min-width: 12pt;
+    border: 1.5pt solid currentColor;
+    border-radius: 2pt;
+    flex-shrink: 0;
+}

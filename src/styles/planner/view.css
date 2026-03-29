@@ -1,0 +1,180 @@
+/* ─────────────────────────────────────────
+   VIEW MODE TOGGLE (Table / Compact)
+───────────────────────────────────────── */
+
+.view-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background-color: #2a2a2a;
+    border-radius: 100px;
+    padding: 0.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--roo-card-border);
+    width: fit-content;
+}
+
+.view-mode-btn {
+    background: none;
+    border: none;
+    border-radius: 100px;
+    color: #888;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.35rem 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+}
+
+.view-mode-btn.active {
+    background-color: var(--roo-orange);
+    color: var(--roo-black);
+}
+
+.view-mode-btn:not(.active):hover {
+    color: var(--roo-cream);
+}
+
+/* ─────────────────────────────────────────
+   PLANNER VIEW HEADER
+───────────────────────────────────────── */
+
+.planner-type-header {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.2rem, 3vw, 1.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--roo-orange);
+    border-bottom: 2px solid var(--roo-card-border);
+    padding-bottom: 0.5rem;
+    margin: 2rem 0 1.25rem;
+}
+
+.planner-type-header:first-child {
+    margin-top: 1rem;
+}
+
+/* ─────────────────────────────────────────
+   PLANNER TABLE
+───────────────────────────────────────── */
+
+table.day-section {
+    width: 100%;
+    margin: 0 0 1.5rem;
+    border-collapse: collapse;
+    background-color: var(--roo-card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--roo-card-border);
+}
+
+table.day-section th,
+table.day-section td {
+    padding: 9px 10px;
+    text-align: center;
+    border: 1px solid var(--roo-card-border);
+    font-size: 0.875rem;
+    word-break: normal;
+    color: var(--roo-cream);
+}
+
+table.day-section th {
+    background-color: var(--roo-orange);
+    color: var(--roo-black);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.825rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+table.day-section tr:nth-child(even) td {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.left-time-col {
+    text-align: center;
+    color: var(--roo-bronze);
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.25) !important;
+    white-space: nowrap;
+    width: 72px;
+    min-width: 72px;
+}
+
+/* ─────────────────────────────────────────
+   COMPACT VIEW
+───────────────────────────────────────── */
+
+.compact-view-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.compact-event-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--roo-card-bg);
+    border: 1px solid var(--roo-card-border);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    border-left: 4px solid var(--roo-orange);
+}
+
+.compact-event-card:nth-child(7n+1) { border-left-color: var(--card-accent-1); }
+.compact-event-card:nth-child(7n+2) { border-left-color: var(--card-accent-2); }
+.compact-event-card:nth-child(7n+3) { border-left-color: var(--card-accent-3); }
+.compact-event-card:nth-child(7n+4) { border-left-color: var(--card-accent-4); }
+.compact-event-card:nth-child(7n+5) { border-left-color: var(--card-accent-5); }
+.compact-event-card:nth-child(7n+6) { border-left-color: var(--card-accent-6); }
+.compact-event-card:nth-child(7n+0) { border-left-color: var(--card-accent-7); }
+
+.compact-event-name {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.925rem;
+    color: var(--roo-cream);
+    flex: 1;
+}
+
+.compact-event-meta {
+    font-size: 0.8rem;
+    color: #888;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.compact-event-meta span {
+    display: block;
+}
+
+.compact-event-meta .meta-time {
+    color: var(--roo-bronze);
+    font-weight: 600;
+}
+
+.compact-event-meta .meta-loc {
+    color: #666;
+}
+
+/* ─────────────────────────────────────────
+   PLANNER ACTION BUTTONS
+───────────────────────────────────────── */
+
+.planner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--roo-card-border);
+}

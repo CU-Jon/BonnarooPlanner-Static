@@ -14,7 +14,8 @@ export function encodeSelections(selections, year) {
     sel.type.charAt(0),
     DAY_CODES[sel.day] ?? sel.day,
     sel.location,
-    sel.event.start
+    sel.event.start,
+    sel.event.name
   ]);
   const payload = JSON.stringify({ y: year, s: minified });
   return LZString.compressToEncodedURIComponent(payload);
@@ -26,12 +27,14 @@ export function decodeSelections(encoded, schedule) {
     if (!raw) return null;
     const { y, s } = JSON.parse(raw);
     if (!y || !Array.isArray(s)) return null;
-    const selections = s.map(([typeCode, dayCode, location, start]) => {
+    const selections = s.map(([typeCode, dayCode, location, start, name]) => {
       const type = typeCode === 'C' ? 'Centeroo' : 'Outeroo';
       const day = CODE_TO_DAY[dayCode] ?? dayCode;
       const slots = schedule?.[type]?.[day]?.[location];
-      const event = (slots && slots.find(e => e.start === start)) ??
-        { name: '(Unknown)', start, end: start };
+      const event = (slots && (
+        (name && slots.find(e => e.start === start && e.name === name)) ||
+        slots.find(e => e.start === start)
+      )) ?? { name: name || '(Unknown)', start, end: start };
       return { type, day, location, event };
     });
     return { year: y, selections };

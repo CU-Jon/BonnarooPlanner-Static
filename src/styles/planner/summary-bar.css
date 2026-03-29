@@ -1,0 +1,36 @@
+/* ─────────────────────────────────────────
+   SELECTION SUMMARY BAR (sticky bottom)
+───────────────────────────────────────── */
+
+.selection-summary-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--roo-dark);
+    border-top: 2px solid var(--roo-orange);
+    padding: 0.85rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    z-index: 100;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.selection-summary-bar .summary-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--roo-cream);
+}
+
+.selection-summary-bar .summary-text .conflict-count {
+    color: var(--roo-pink);
+    margin-left: 0.75rem;
+}
+
+.builder-bottom-padding {
+    height: 80px;
+}

@@ -1,0 +1,35 @@
+/* ─────────────────────────────────────────
+   YEAR SELECTOR
+───────────────────────────────────────── */
+
+.year-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--roo-bronze);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.year-selector select {
+    background-color: #2a2a2a;
+    border: 1px solid var(--roo-orange);
+    border-radius: 100px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--roo-cream);
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+    appearance: none;
+}
+
+.year-selector select:hover,
+.year-selector select:focus {
+    border-color: var(--roo-cream);
+}

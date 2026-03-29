@@ -8,7 +8,7 @@ export const HTML_TITLE_FALLBACK = 'Bonnaroo Planner';
 // -------------------------------------------------
 // Path to the folder containing event schedule JSON files
 // -------------------------------------------------
-export const jsonBase = 'assets/schedules';
+export const jsonBase = '/assets/schedules';
 
 // -------------------------------------------------
 // List of years available for selection in the dropdown.
@@ -86,6 +86,13 @@ export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
 export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
 export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
 export const SAVE_FILENAME_TEMPLATE = 'bonnaroo-planner-{year}-{date}.json';
+
+// -------------------------------------------------
+// Packing list data and export config
+// -------------------------------------------------
+export const PACKING_JSON_PATH = '/assets/data/packing_list.json';
+export const PACKING_PDF_FILENAME = 'bonnaroo-packing-list.pdf';
+export const PACKING_SAVE_FILENAME_TEMPLATE = 'bonnaroo-packing-list-{date}.json';
 
 // -------------------------------------------------
 // Toggle showing/hiding the “Print” button in PlannerView

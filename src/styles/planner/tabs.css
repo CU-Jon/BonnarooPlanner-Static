@@ -1,0 +1,58 @@
+/* ─────────────────────────────────────────
+   TABS
+───────────────────────────────────────── */
+
+.tab-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--roo-card-border);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    background: none;
+    border: 2px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    color: #888;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+    position: relative;
+    bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: var(--roo-cream);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.tab-btn.active {
+    color: var(--roo-orange);
+    background-color: var(--roo-card-bg);
+    border-color: var(--roo-card-border);
+    border-bottom-color: var(--roo-card-bg);
+}
+
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--roo-orange);
+    color: var(--roo-black);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 100px;
+    margin-left: 0.35rem;
+    min-width: 1.3em;
+}

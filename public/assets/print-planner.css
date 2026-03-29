@@ -1,0 +1,120 @@
+@media print {
+    *,
+    *::before,
+    *::after {
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        border-color: #bbb !important;
+    }
+
+    body {
+        font-family: 'Lexend Deca', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 10pt;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .site-header,
+    .app-footer,
+    .builder-toolbar,
+    .selection-summary-bar,
+    .view-mode-toggle,
+    .planner-actions,
+    .no-print,
+    .day-heading-row,
+    .day-heading-screen {
+        display: none !important;
+    }
+
+    main {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    table.day-section {
+        break-before: page;
+        page-break-before: always;
+        width: 100%;
+        margin: 0 !important;
+        border-collapse: collapse !important;
+        background: #fff !important;
+    }
+
+    table.day-section:first-of-type {
+        break-before: auto;
+        page-break-before: auto;
+    }
+
+    table.day-section th {
+        background-color: #e8e8e8 !important;
+        color: #000 !important;
+        font-size: 9pt;
+        font-weight: bold;
+    }
+
+    table.day-section th,
+    table.day-section td {
+        padding: 5px 6px !important;
+        font-size: 9pt !important;
+        border: 1px solid #bbb !important;
+    }
+
+    .left-time-col {
+        background-color: #f4f4f4 !important;
+        color: #555 !important;
+        font-size: 8pt !important;
+    }
+
+    .day-heading-print th {
+        text-align: center;
+        font-size: 14pt;
+        padding: 4px 0;
+        font-weight: bold;
+        text-decoration: underline;
+        color: #000 !important;
+        background: #fff !important;
+    }
+
+    .planner-type-header {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 14pt;
+        margin: 12pt 0 8pt !important;
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .planner-type-header + * {
+        page-break-before: avoid;
+        break-before: avoid;
+    }
+
+    /* Target the first table of each type section, which sits two siblings
+       after the header (header → hidden .day-heading-row → table). Without
+       this, the higher-specificity table.day-section rule forces a page break
+       that orphans the type heading on its own page. */
+    .planner-type-header + * + table.day-section {
+        page-break-before: avoid;
+        break-before: avoid;
+    }
+
+    .planner-type-header ~ .planner-type-header {
+        page-break-before: always;
+        break-before: page;
+    }
+
+    .compact-event-card {
+        border: 1px solid #bbb !important;
+        border-left: 3px solid #000 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    @page {
+        size: landscape;
+        margin: 12mm 8mm;
+    }
+}
