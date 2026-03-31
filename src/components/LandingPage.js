@@ -6,6 +6,7 @@ export default function LandingPage() {
     return (
         <div className="page-wrap">
             <header className="site-header">
+                <img src="/assets/logo.svg" alt="The Arch" className="site-header-logo" />
                 <h1>Bonnaroo <span>Festival Tools</span></h1>
                 <p>Plan your schedule &bull; Pack your bags</p>
             </header>

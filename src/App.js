@@ -154,11 +154,12 @@ export default function App() {
   return (
     <div className="page-wrap">
       <header className="site-header">
-        <div className="no-print" style={{ marginBottom: '0.5rem' }}>
+        <div className="site-header-home no-print">
           <a href="/" className="btn btn-home">
             &larr; Home
           </a>
         </div>
+        <img src="/assets/logo.svg" alt="The Arch" className="site-header-logo" />
         <h1>
           Bonnaroo <span>{year || ''}</span> Planner
         </h1>

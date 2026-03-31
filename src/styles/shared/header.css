@@ -7,6 +7,20 @@
     border-bottom: 3px solid var(--roo-orange);
     padding: 1.5rem 2rem 1.25rem;
     text-align: center;
+    position: relative;
+}
+
+.site-header-home {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+}
+
+.site-header-logo {
+    display: block;
+    margin: 0 auto 0.5rem;
+    height: 100px;
+    width: auto;
 }
 
 .site-header h1 {

@@ -480,9 +480,12 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   return (
     <>
       <div className="builder-toolbar no-print">
-        <div className="builder-toolbar-left">
+        <div className="builder-toolbar-left" style={{ flexWrap: 'nowrap' }}>
           <button type="button" className="btn btn-back" onClick={onBack}>
             &larr; Edit Selections
+          </button>
+          <button type="button" className="btn btn-start-over" onClick={onRestart}>
+            Start Over
           </button>
         </div>
         <div className="builder-toolbar-right">
@@ -563,9 +566,6 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           </button>
           <button type="button" className="btn btn-csv" onClick={exportCSV}>
             Export to CSV
-          </button>
-          <button type="button" className="btn btn-start-over" onClick={onRestart}>
-            Start Over
           </button>
         </div>
       </div>

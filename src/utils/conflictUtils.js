@@ -7,10 +7,10 @@ export function getSelectionKey(sel) {
 export function detectConflicts(selections) {
   const conflictKeys = new Set();
 
-  // Group by type + day
+  // Group by day only so cross-stage (Centeroo vs Outeroo) overlaps are also detected
   const groups = {};
   selections.forEach(sel => {
-    const key = `${sel.type}|${sel.day}`;
+    const key = sel.day;
     groups[key] = groups[key] || [];
     groups[key].push(sel);
   });
