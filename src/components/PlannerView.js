@@ -66,27 +66,45 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
   useLayoutEffect(() => {
     if (!sharePopoverVisible || !sharePopoverRef.current) return;
-    const el = sharePopoverRef.current;
 
-    if (window.innerWidth <= 600) {
-      const wrapperRect = shareWrapperRef.current.getBoundingClientRect();
-      el.style.position = 'fixed';
-      el.style.top = `${wrapperRect.bottom + 8}px`;
-      el.style.left = '0.5rem';
-      el.style.right = '0.5rem';
-      el.style.transform = 'none';
-      el.style.minWidth = 'unset';
-      return;
+    function positionSharePopover() {
+      const el = sharePopoverRef.current;
+      if (!el) return;
+
+      if (window.innerWidth <= 600) {
+        const wrapperRect = shareWrapperRef.current.getBoundingClientRect();
+        el.style.position = 'fixed';
+        el.style.top = `${wrapperRect.bottom + 8}px`;
+        el.style.left = '0.5rem';
+        el.style.right = '0.5rem';
+        el.style.transform = 'none';
+        el.style.minWidth = 'unset';
+        return;
+      }
+
+      el.style.position = '';
+      el.style.top = '';
+      el.style.left = '';
+      el.style.right = '';
+      el.style.transform = '';
+      el.style.minWidth = '';
+
+      const rect = el.getBoundingClientRect();
+      const vw = window.innerWidth;
+      if (rect.left < 8) {
+        el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
+      } else if (rect.right > vw - 8) {
+        el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
+      }
     }
 
-    el.style.transform = '';
-    const rect = el.getBoundingClientRect();
-    const vw = window.innerWidth;
-    if (rect.left < 8) {
-      el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
-    } else if (rect.right > vw - 8) {
-      el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
-    }
+    positionSharePopover();
+    window.addEventListener('resize', positionSharePopover);
+    window.addEventListener('orientationchange', positionSharePopover);
+    return () => {
+      window.removeEventListener('resize', positionSharePopover);
+      window.removeEventListener('orientationchange', positionSharePopover);
+    };
   }, [sharePopoverVisible]);
 
   useEffect(() => {
