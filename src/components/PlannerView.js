@@ -66,15 +66,45 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
   useLayoutEffect(() => {
     if (!sharePopoverVisible || !sharePopoverRef.current) return;
-    const el = sharePopoverRef.current;
-    el.style.transform = '';
-    const rect = el.getBoundingClientRect();
-    const vw = window.innerWidth;
-    if (rect.left < 8) {
-      el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
-    } else if (rect.right > vw - 8) {
-      el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
+
+    function positionSharePopover() {
+      const el = sharePopoverRef.current;
+      if (!el) return;
+
+      if (window.innerWidth <= 600) {
+        const wrapperRect = shareWrapperRef.current.getBoundingClientRect();
+        el.style.position = 'fixed';
+        el.style.top = `${wrapperRect.bottom + 8}px`;
+        el.style.left = '0.5rem';
+        el.style.right = '0.5rem';
+        el.style.transform = 'none';
+        el.style.minWidth = 'unset';
+        return;
+      }
+
+      el.style.position = '';
+      el.style.top = '';
+      el.style.left = '';
+      el.style.right = '';
+      el.style.transform = '';
+      el.style.minWidth = '';
+
+      const rect = el.getBoundingClientRect();
+      const vw = window.innerWidth;
+      if (rect.left < 8) {
+        el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
+      } else if (rect.right > vw - 8) {
+        el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
+      }
     }
+
+    positionSharePopover();
+    window.addEventListener('resize', positionSharePopover);
+    window.addEventListener('orientationchange', positionSharePopover);
+    return () => {
+      window.removeEventListener('resize', positionSharePopover);
+      window.removeEventListener('orientationchange', positionSharePopover);
+    };
   }, [sharePopoverVisible]);
 
   useEffect(() => {
@@ -150,65 +180,67 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           <div className="day-heading-row">
             <span className="day-heading-screen">{day}</span>
           </div>
-          <table className="day-section" data-day={day} data-type={type}>
-            <thead>
-              <tr className="day-heading-print">
-                <th colSpan={stageNames.length + 1}>{day}</th>
-              </tr>
-              <tr>
-                <th>Time</th>
-                {stageNames.map(stg => (
-                  <th key={stg}>{stg}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                const rows = [];
-                const stageEvents = {};
-                stageNames.forEach(stg => {
-                  stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
-                });
-                const rowSpanTracker = {};
-
-                for (let tm = timeGrid.start; tm < timeGrid.end; tm += 15) {
-                  const cells = [];
-                  cells.push(
-                    <td className="left-time-col" key={`${day}-time-${tm}`}>
-                      {minutesToTime(tm)}
-                    </td>
-                  );
-
+          <div className="table-scroll-wrap">
+            <table className="day-section" data-day={day} data-type={type}>
+              <thead>
+                <tr className="day-heading-print">
+                  <th colSpan={stageNames.length + 1}>{day}</th>
+                </tr>
+                <tr>
+                  <th>Time</th>
+                  {stageNames.map(stg => (
+                    <th key={stg}>{stg}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const rows = [];
+                  const stageEvents = {};
                   stageNames.forEach(stg => {
-                    if (rowSpanTracker[stg] > 0) {
-                      rowSpanTracker[stg]--;
-                      return;
-                    }
-                    const found = stageEvents[stg].find(
-                      ev => timeToMinutes(ev.start) === tm
-                    );
-                    if (found) {
-                      const span =
-                        (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
-                      cells.push(
-                        <td
-                          key={`${day}-${stg}-${tm}`}
-                          rowSpan={span}
-                          dangerouslySetInnerHTML={{ __html: found.name }}
-                        />
-                      );
-                      rowSpanTracker[stg] = span - 1;
-                    } else {
-                      cells.push(<td key={`${day}-${stg}-${tm}`} />);
-                    }
+                    stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
                   });
+                  const rowSpanTracker = {};
 
-                  rows.push(<tr key={`${day}-row-${tm}`}>{cells}</tr>);
-                }
-                return rows;
-              })()}
-            </tbody>
-          </table>
+                  for (let tm = timeGrid.start; tm < timeGrid.end; tm += 15) {
+                    const cells = [];
+                    cells.push(
+                      <td className="left-time-col" key={`${day}-time-${tm}`}>
+                        {minutesToTime(tm)}
+                      </td>
+                    );
+
+                    stageNames.forEach(stg => {
+                      if (rowSpanTracker[stg] > 0) {
+                        rowSpanTracker[stg]--;
+                        return;
+                      }
+                      const found = stageEvents[stg].find(
+                        ev => timeToMinutes(ev.start) === tm
+                      );
+                      if (found) {
+                        const span =
+                          (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
+                        cells.push(
+                          <td
+                            key={`${day}-${stg}-${tm}`}
+                            rowSpan={span}
+                            dangerouslySetInnerHTML={{ __html: found.name }}
+                          />
+                        );
+                        rowSpanTracker[stg] = span - 1;
+                      } else {
+                        cells.push(<td key={`${day}-${stg}-${tm}`} />);
+                      }
+                    });
+
+                    rows.push(<tr key={`${day}-row-${tm}`}>{cells}</tr>);
+                  }
+                  return rows;
+                })()}
+              </tbody>
+            </table>
+          </div>
         </React.Fragment>
       );
     });
