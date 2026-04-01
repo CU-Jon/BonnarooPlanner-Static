@@ -139,6 +139,24 @@ export default function PackingListApp() {
         e.target.value = '';
         try {
             const imported = await readJsonFile(file);
+
+            const isV2 = imported
+                && typeof imported === 'object'
+                && !Array.isArray(imported)
+                && imported.version === 2
+                && imported.categories
+                && typeof imported.categories === 'object';
+            const isLegacy = imported
+                && typeof imported === 'object'
+                && !Array.isArray(imported)
+                && imported.version === undefined
+                && Object.values(imported).every((v) => Array.isArray(v));
+
+            if (!isV2 && !isLegacy) {
+                alert('Could not load list: not a valid packing list file.');
+                return;
+            }
+
             setCategories((prev) => {
                 try {
                     return mergeImportedData(prev, imported);
@@ -147,8 +165,8 @@ export default function PackingListApp() {
                     return prev;
                 }
             });
-        } catch {
-            // Silent fail — invalid file
+        } catch (err) {
+            alert(`Could not load list: ${err.message}`);
         }
     };
 
