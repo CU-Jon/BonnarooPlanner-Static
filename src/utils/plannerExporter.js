@@ -1,7 +1,7 @@
 import { SAVE_FILENAME_TEMPLATE } from '../config';
 
 export function savePlan(selections, year) {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const today = new Date().toLocaleDateString('en-CA');
   const fileName = SAVE_FILENAME_TEMPLATE
     .replace('{year}', year)
     .replace('{date}', today);

@@ -35,9 +35,12 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   const [sharePopoverVisible, setSharePopoverVisible] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [shareURL, setShareURL] = useState('');
+  const [pdfPopoverVisible, setPdfPopoverVisible] = useState(false);
   const shareWrapperRef = useRef(null);
   const shareInputRef = useRef(null);
   const sharePopoverRef = useRef(null);
+  const pdfWrapperRef = useRef(null);
+  const pdfPopoverRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -66,10 +69,44 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const el = sharePopoverRef.current;
     el.style.transform = '';
     const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
     if (rect.left < 8) {
-      el.style.transform = `translateX(${8 - rect.left}px)`;
+      el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
+    } else if (rect.right > vw - 8) {
+      el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
     }
   }, [sharePopoverVisible]);
+
+  useEffect(() => {
+    if (!pdfPopoverVisible) return;
+    function handleClickOutside(e) {
+      if (pdfWrapperRef.current && !pdfWrapperRef.current.contains(e.target)) {
+        setPdfPopoverVisible(false);
+      }
+    }
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') setPdfPopoverVisible(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [pdfPopoverVisible]);
+
+  useLayoutEffect(() => {
+    if (!pdfPopoverVisible || !pdfPopoverRef.current) return;
+    const el = pdfPopoverRef.current;
+    el.style.transform = '';
+    const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    if (rect.left < 8) {
+      el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
+    } else if (rect.right > vw - 8) {
+      el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
+    }
+  }, [pdfPopoverVisible]);
 
   const conflictKeys = useMemo(() => detectConflicts(selections), [selections]);
   const typesPresent = TYPE_ORDER.filter(t => selections.some(s => s.type === t));
@@ -428,6 +465,167 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     doc.save(fileName);
   }
 
+  function downloadCompactPDF(orientation = 'portrait') {
+    const TABLE_MARGIN = 70;
+    const FOOTER_MARGIN_BOTTOM = 20;
+    const DAY_HEADING_HEIGHT = 24;
+
+    const fileName = PDF_FILENAME_TEMPLATE
+      .replace('{year}', year)
+      .replace('{label}', `${typeLabel}_Compact`)
+      .replace('{orientation}', orientation);
+
+    const plannerTitle = `Bonnaroo ${year} Planner \u2014 ${typeLabel} (Compact)`;
+
+    const doc = new jsPDF({ orientation, unit: 'pt', format: 'letter' });
+
+    typesPresent.forEach((type, typeIdx) => {
+      const typeSelections = selections.filter(s => s.type === type);
+      if (!typeSelections.length) return;
+
+      if (typeIdx > 0) {
+        doc.addPage();
+      }
+
+      const sorted = [...typeSelections].sort((a, b) => {
+        const dA = DAY_ORDER.indexOf(a.day);
+        const dB = DAY_ORDER.indexOf(b.day);
+        if (dA !== dB) return dA - dB;
+        return timeToMinutes(a.event.start) - timeToMinutes(b.event.start);
+      });
+
+      const byDay = {};
+      sorted.forEach(sel => {
+        byDay[sel.day] = byDay[sel.day] || [];
+        byDay[sel.day].push(sel);
+      });
+
+      let currentY = TABLE_MARGIN;
+
+      Object.entries(byDay).forEach(([day, daySelections]) => {
+        const conflictBodyRows = new Set();
+        daySelections.forEach((sel, idx) => {
+          if (conflictKeys.has(getSelectionKey(sel))) conflictBodyRows.add(idx);
+        });
+
+        const body = daySelections.map((sel, idx) => [
+          `${sel.event.start} \u2013 ${sel.event.end}`,
+          conflictBodyRows.has(idx)
+            ? { content: `${sel.event.name}\n `, styles: { halign: 'left' } }
+            : sel.event.name,
+          sel.location
+        ]);
+
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const MIN_TABLE_HEIGHT = 50;
+        if (currentY + DAY_HEADING_HEIGHT + MIN_TABLE_HEIGHT > pageHeight - FOOTER_MARGIN_BOTTOM) {
+          doc.addPage();
+          currentY = TABLE_MARGIN;
+        }
+
+        doc.setFontSize(13);
+        doc.setTextColor(...PDF_DARK_TEXT);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${type} \u2014 ${day}`, 40, currentY + 14);
+        doc.setDrawColor(...ORANGE);
+        doc.setLineWidth(1.0);
+        doc.line(40, currentY + 19, doc.internal.pageSize.getWidth() - 40, currentY + 19);
+
+        const firstPage = doc.internal.getNumberOfPages();
+
+        autoTable(doc, {
+          head: [['Time', 'Artist/Event', 'Location']],
+          body,
+          startY: currentY + DAY_HEADING_HEIGHT,
+          margin: { top: TABLE_MARGIN, left: 40, right: 40 },
+          pageBreak: 'auto',
+          rowPageBreak: 'avoid',
+          theme: 'grid',
+          headStyles: {
+            fillColor: ORANGE,
+            textColor: PDF_WHITE,
+            fontStyle: 'bold'
+          },
+          alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
+          styles: {
+            font: 'helvetica',
+            fontSize: 9,
+            halign: 'center',
+            valign: 'middle',
+            fillColor: PDF_WHITE,
+            textColor: PDF_DARK_TEXT
+          },
+          columnStyles: {
+            0: {
+              fillColor: PDF_TIME_BG,
+              textColor: PDF_TIME_TEXT,
+              fontStyle: 'bold',
+              cellWidth: 90
+            },
+            1: { halign: 'left' },
+            2: { cellWidth: 90 }
+          },
+          didDrawCell: (data) => {
+            if (data.section !== 'body' || data.column.index !== 1) return;
+            if (!conflictBodyRows.has(data.row.index)) return;
+            const CELL_PAD = 4;
+            const r = 3.5;
+            const badgeY = data.cell.y + data.cell.height - CELL_PAD - r;
+            const cx = data.cell.x + CELL_PAD + r;
+            data.doc.setFillColor(243, 120, 140);
+            data.doc.circle(cx, badgeY, r, 'F');
+            data.doc.setFontSize(5.5);
+            data.doc.setFont('helvetica', 'bold');
+            data.doc.setTextColor(255, 255, 255);
+            data.doc.text('!', cx, badgeY + 1.5, { align: 'center' });
+            data.doc.setFontSize(7);
+            data.doc.setFont('helvetica', 'bold');
+            data.doc.setTextColor(243, 120, 140);
+            data.doc.text('CONFLICT', cx + r + 3, badgeY + 1.5);
+          },
+          didDrawPage: () => {
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageInfo = doc.internal.getCurrentPageInfo();
+            doc.setFontSize(12);
+            doc.setTextColor(...ORANGE);
+            doc.text(plannerTitle, pageWidth / 2, 26, { align: 'center' });
+            doc.setDrawColor(...ORANGE);
+            doc.setLineWidth(1.5);
+            doc.line(40, 34, pageWidth - 40, 34);
+            if (pageInfo.pageNumber > firstPage) {
+              doc.setFontSize(13);
+              doc.setTextColor(...PDF_DARK_TEXT);
+              doc.setFont('helvetica', 'bold');
+              doc.text(`${type} \u2014 ${day} (Continued)`, 40, 52);
+              doc.setDrawColor(...ORANGE);
+              doc.setLineWidth(1.0);
+              doc.line(40, 57, pageWidth - 40, 57);
+            }
+          }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 20;
+      });
+    });
+
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontSize(9);
+    doc.setTextColor(150);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        pageWidth - 40,
+        pageHeight - FOOTER_MARGIN_BOTTOM,
+        { align: 'right' }
+      );
+    }
+
+    doc.save(fileName);
+  }
+
   function exportICS() {
     const icsLabel =
       typesPresent.length === 1 ? typesPresent[0] : 'Centeroo & Outeroo';
@@ -460,6 +658,10 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     URL.revokeObjectURL(link.href);
   }
 
+  function handlePDFClick() {
+    setPdfPopoverVisible(prev => !prev);
+  }
+
   function handleShare() {
     const url = buildShareURL(selections, year);
     setShareURL(url);
@@ -480,19 +682,114 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   return (
     <>
       <div className="builder-toolbar no-print">
-        <div className="builder-toolbar-left">
+        <div className="builder-toolbar-left" style={{ flexWrap: 'nowrap' }}>
           <button type="button" className="btn btn-back" onClick={onBack}>
-            &larr; Edit Selections
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Edit Selections
+          </button>
+          <button type="button" className="btn btn-start-over" onClick={onRestart}>
+            Start Over
           </button>
         </div>
         <div className="builder-toolbar-right">
-          <button
-            type="button"
-            className="btn btn-save has-tooltip"
-            onClick={onSave}
-            data-tooltip="Saves your plan to a file on your device so you can pick up right where you left off. Next time you visit, hit &ldquo;Load Plan&rdquo; to bring your whole lineup back instantly."
-          >
-            Save Plan
+          {SHOW_PRINT_BUTTON && (
+            <button
+              type="button"
+              className="btn btn-print"
+              onClick={() => window.print()}
+            >
+              Print
+            </button>
+          )}
+          <div className="pdf-popover-wrapper" ref={pdfWrapperRef}>
+            <button
+              type="button"
+              className="btn btn-pdf"
+              onClick={handlePDFClick}
+              aria-haspopup="dialog"
+              aria-expanded={pdfPopoverVisible}
+            >
+              Save as PDF
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {pdfPopoverVisible && (
+              <div
+                className="pdf-popover"
+                role="dialog"
+                aria-label="PDF export options"
+                ref={pdfPopoverRef}
+              >
+                <div className="pdf-export-grid">
+                  <span className="pdf-grid-header">Table View</span>
+                  <span className="pdf-grid-header">Compact View</span>
+
+                  <button
+                    type="button"
+                    className="pdf-download-btn"
+                    onClick={() => downloadPDF('portrait')}
+                  >
+                    <span className="sr-only">Download Table View Portrait PDF</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Portrait
+                  </button>
+                  <button
+                    type="button"
+                    className="pdf-download-btn"
+                    onClick={() => downloadCompactPDF('portrait')}
+                  >
+                    <span className="sr-only">Download Compact View Portrait PDF</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Portrait
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pdf-download-btn"
+                    onClick={() => downloadPDF('landscape')}
+                  >
+                    <span className="sr-only">Download Table View Landscape PDF</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Landscape
+                  </button>
+                  <button
+                    type="button"
+                    className="pdf-download-btn"
+                    onClick={() => downloadCompactPDF('landscape')}
+                  >
+                    <span className="sr-only">Download Compact View Landscape PDF</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Landscape
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <button type="button" className="btn btn-ics" onClick={exportICS}>
+            Export to Calendar (.ics)
+          </button>
+          <button type="button" className="btn btn-csv" onClick={exportCSV}>
+            Export to CSV
           </button>
           <div className="share-popover-wrapper" ref={shareWrapperRef}>
             <button type="button" className="btn btn-share-link" onClick={handleShare}>
@@ -535,37 +832,13 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
               </div>
             )}
           </div>
-          {SHOW_PRINT_BUTTON && (
-            <button
-              type="button"
-              className="btn btn-print"
-              onClick={() => window.print()}
-            >
-              Print
-            </button>
-          )}
           <button
             type="button"
-            className="btn btn-pdf"
-            onClick={() => downloadPDF('portrait')}
+            className="btn btn-save has-tooltip tooltip-align-right"
+            onClick={onSave}
+            data-tooltip="Saves your plan to a file on your device so you can pick up right where you left off. Next time you visit, hit &ldquo;Load Plan&rdquo; to bring your whole lineup back instantly."
           >
-            PDF (Portrait)
-          </button>
-          <button
-            type="button"
-            className="btn btn-pdf"
-            onClick={() => downloadPDF('landscape')}
-          >
-            PDF (Landscape)
-          </button>
-          <button type="button" className="btn btn-ics" onClick={exportICS}>
-            Export to Calendar (.ics)
-          </button>
-          <button type="button" className="btn btn-csv" onClick={exportCSV}>
-            Export to CSV
-          </button>
-          <button type="button" className="btn btn-start-over" onClick={onRestart}>
-            Start Over
+            Save Plan
           </button>
         </div>
       </div>

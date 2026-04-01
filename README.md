@@ -8,10 +8,7 @@
 
 # Bonnaroo Festival Tools
 
-A modern, mobile-friendly suite of tools for your Bonnaroo experience — plan your schedule and pack your bags, all in one place.
-
-- **Schedule Planner** — Browse the lineup, pick your must-see acts, and build a personalized schedule you can export to PDF, CSV, or `.ics`.
-- **Packing List** — Check off everything you need to bring, add custom items and categories, then export or print your list.
+A modern, mobile-friendly suite of tools for Bonnaroo — browse the lineup, build your personal schedule, and pack your bags, all in one place.
 
 ---
 
@@ -19,31 +16,27 @@ A modern, mobile-friendly suite of tools for your Bonnaroo experience — plan y
 
 ### Schedule Planner
 
-- Browse and select events across Centeroo and Outeroo by day, stage, and time
+- Browse and select sets across Centeroo and Outeroo by day, stage, and time
 - Visual conflict detection highlights overlapping selections
-- Export your schedule as:
-  - PDF (portrait or landscape)
-  - CSV (Artist/Event, Location, Sublocation, Day, Start, End — sorted by day and time)
-  - Calendar file (`.ics`) with proper America/Chicago timezone
-- Save your plan to a JSON file and reload it later
-- Share your plan via a compressed, URL-safe hash link
-- Live festival status banner (not started / in progress / ended) with color coding
-- Responsive layout for phones, tablets, and desktops
-- Optimized print styles for a clean hard copy
+- Export your schedule as PDF (portrait or landscape), CSV, or `.ics` calendar file with proper `America/Chicago` timezone handling
+- Save your plan to JSON and reload it in a future session
+- Share your plan via a compressed, URL-safe hash link (no server required)
+- Live festival status banner — color-coded for not started, in progress, and ended
+- Responsive layout and optimized print styles
 
 ### Packing List
 
 - Pre-loaded checklist organized by category
-- Add custom categories and items
-- Per-category select-all / deselect-all controls
-- Export selected items as a PDF or save/load the full list as JSON
+- Add custom categories and items; per-category select-all / deselect-all controls
+- Export checked items as a PDF or CSV, or save/load the full list as JSON
 
 ### General
 
-- Automatic festival week calculation based on the third Sunday in June (Father's Day weekend) — no manual date updates needed year to year
-- Schedules are fetched on demand; the app defaults to the latest year with available data
+- Automatic festival-week calculation based on the Father's Day weekend rule — no manual date updates needed from year to year
+- Per-year Monday overrides for years where Bonnaroo falls off the standard schedule
+- Schedules are fetched on demand; the app defaults to the latest year with data
 - Date/time spoofing via `?now=YYYY-MM-DDTHH:mm:ss` for testing status states
-- Obfuscated footer email link to prevent bot scraping
+- Obfuscated footer email link to deter bot scraping
 
 ---
 
@@ -56,40 +49,35 @@ A modern, mobile-friendly suite of tools for your Bonnaroo experience — plan y
 
 ### Installation
 
-1. Clone the repository:
+```sh
+git clone https://github.com/CU-Jon/BonnarooPlanner-Static.git
+cd BonnarooPlanner-Static
+npm install
+```
 
-   ```sh
-   git clone https://github.com/CU-Jon/BonnarooPlanner-Static.git
-   cd BonnarooPlanner-Static
-   ```
+Create a `.env.local` file with the required email configuration:
 
-2. Install dependencies:
+```
+VITE_EMAIL_USER=youruser
+VITE_EMAIL_DOMAIN=yourdomain.com
+VITE_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
+```
 
-   ```sh
-   npm install
-   ```
+### Development
 
-3. *(Optional)* Set up a `.env.local` file for the footer email link:
+```sh
+npm start
+```
 
-   ```
-   VITE_EMAIL_USER=youruser
-   VITE_EMAIL_DOMAIN=yourdomain.com
-   VITE_EMAIL_SUBJECT=Reporting an issue with Bonnaroo Planner
-   ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-4. Start the development server:
+### Production build
 
-   ```sh
-   npm start
-   ```
+```sh
+npm run build
+```
 
-   Then open [http://localhost:5173](http://localhost:5173) in your browser.
-
-5. To create a production build:
-
-   ```sh
-   npm run build
-   ```
+Output is written to the `build/` directory.
 
 ---
 
@@ -98,11 +86,16 @@ A modern, mobile-friendly suite of tools for your Bonnaroo experience — plan y
 ```
 public/
   assets/
-    style.css                        # Main styles
-    schedules/
-      centeroo_XXXX.json             # Centeroo schedule for year XXXX
-      outeroo_XXXX.json              # Outeroo schedule for year XXXX
-    favicon/                         # Favicons and PWA icons
+    logo.svg                         # Site header logo
+    style.css                        # Base styles (served as-is)
+    print-planner.css                # Print styles for the planner
+    print-packing.css                # Print styles for the packing list
+    data/
+      packing_list.json              # Default packing list data
+      schedules/
+        centeroo_XXXX.json           # Centeroo schedule for year XXXX
+        outeroo_XXXX.json            # Outeroo schedule for year XXXX
+    favicon/                         # Favicons and PWA manifest
 src/
   components/
     LandingPage.js                   # Landing page / tool hub
@@ -120,15 +113,15 @@ src/
   utils/
     bonnarooStatus.js                # Festival status logic
     conflictUtils.js                 # Schedule conflict detection
-    csvExporter.js                   # CSV export
+    csvExporter.js                   # CSV export (planner and packing list)
     icsExporter.js                   # iCalendar (.ics) export
-    packingExporter.js               # Packing list JSON save/load
+    packingExporter.js               # Packing list JSON save/load/merge
     packingPdf.js                    # Packing list PDF export
     plannerExporter.js               # Planner plan save/load
     scheduleUtils.js                 # Schedule JSON fetching
     shareUtils.js                    # URL share encode/decode (LZ-string)
     timeUtils.js                     # Time parsing, late-night logic, festival date math
-  config.js                          # All app-wide settings and templates
+  config.js                          # All app-wide settings and filename templates
   App.js                             # Planner app root
   index.js                           # Planner entry point
   landing.js                         # Landing page entry point
@@ -136,7 +129,7 @@ src/
 index.html                           # Landing page HTML shell
 planner/index.html                   # Planner HTML shell
 packing-list/index.html              # Packing list HTML shell
-vite.config.js                       # Vite build config (multi-page)
+vite.config.js                       # Vite multi-page build config
 package.json
 ```
 
@@ -144,40 +137,40 @@ package.json
 
 ## Configuration (`src/config.js`)
 
-All app-wide settings live in `src/config.js`. Key options:
+All app-wide settings and filename templates live in `src/config.js`.
 
 | Setting | Description |
 |---|---|
-| `availableYears` | Years shown in the year dropdown. Add new years here. |
-| `jsonBase` | Path to the schedule JSON folder. |
-| `dayOffsets` | Maps day names to their offset from the festival's Monday. |
-| `LATE_NIGHT_CUTOFF` | Minutes after midnight at which a set still counts as the previous day (default: `420` = 7:00 AM). |
-| `bonnarooMondayOverrides` | Per-year override for the festival Monday, for years that fall outside the Father's Day rule. |
-| `BUILDER_TITLE_TEMPLATE` | Heading template for the builder page. Supports `{yearPart}`. |
-| `HTML_TITLE_TEMPLATE` | Browser tab title template. Supports `{year}` and `{tabPart}`. |
-| `APP_TITLE_PLANNER` | Planner view heading template. Supports `{year}` and `{tab}`. |
-| `PDF_FILENAME_TEMPLATE` | PDF export filename template. Supports `{year}`, `{label}`, `{orientation}`. |
-| `CSV_FILENAME_TEMPLATE` | CSV export filename template. Supports `{year}`, `{tab}`. |
-| `ICS_FILENAME_TEMPLATE` | ICS export filename template. Supports `{year}`, `{tab}`. |
-| `ICS_CALENDARNAME_TEMPLATE` | Calendar name inside `.ics` files. Supports `{year}`, `{tab}`. |
-| `SAVE_FILENAME_TEMPLATE` | Saved plan JSON filename template. Supports `{year}`, `{date}`. |
-| `SHOW_PRINT_BUTTON` | Show/hide the browser print button in the planner view. |
-| `BONNAROO_STATUS_*_TEMPLATE` | Status banner text for ended / not started / in progress states. |
-| `SCHEDULE_NOT_AVAILABLE_TEMPLATE` | Message shown when no schedule data is available for the selected year. |
+| `availableYears` | Years shown in the year selector. Add new years here. |
+| `jsonBase` | Base path for schedule JSON files. |
+| `dayOffsets` | Maps day names to their offset from the festival's opening Monday. |
+| `LATE_NIGHT_CUTOFF` | Minutes past midnight at which a set still counts as the prior day (default: `420` = 7:00 AM). |
+| `bonnarooMondayOverrides` | Per-year override of the opening Monday for years that fall outside the Father's Day rule. |
+| `HTML_TITLE_FALLBACK` | Browser tab title shown before React hydrates. |
+| `HTML_TITLE_TEMPLATE` | Browser tab title template. Supports `{year}`. |
+| `BONNAROO_STATUS_*_TEMPLATE` | Status banner text for ended / not started / in progress. |
+| `SCHEDULE_NOT_AVAILABLE_TEMPLATE` | Message when no schedule file exists for the selected year. |
+| `PDF_FILENAME_TEMPLATE` | Planner PDF filename. Supports `{year}`, `{label}`, `{orientation}`. |
+| `CSV_FILENAME_TEMPLATE` | Planner CSV filename. Supports `{year}`, `{tab}`. |
+| `ICS_FILENAME_TEMPLATE` | Calendar file filename. Supports `{year}`, `{tab}`. |
+| `ICS_CALENDARNAME_TEMPLATE` | Calendar name embedded in `.ics` files. Supports `{year}`, `{tab}`. |
+| `SAVE_FILENAME_TEMPLATE` | Saved plan JSON filename. Supports `{year}`, `{date}`. |
+| `SHOW_PRINT_BUTTON` | Show or hide the browser Print button. |
 | `FOOTER_HTML` | Footer HTML. Use `{{EMAIL_LINK}}` as a placeholder for the obfuscated email link. |
 | `EMAIL_USER`, `EMAIL_DOMAIN`, `EMAIL_SUBJECT`, `EMAIL_LINK_TEXT` | Footer email config — `USER` and `DOMAIN` are read from environment variables. |
-| `PACKING_JSON_PATH` | Path to the packing list JSON data file. |
-| `PACKING_PDF_FILENAME` | Filename for exported packing list PDFs. |
-| `PACKING_SAVE_FILENAME_TEMPLATE` | Filename template for saved packing list JSON. |
+| `PACKING_JSON_PATH` | Path to the default packing list data file. |
+| `PACKING_PDF_FILENAME_TEMPLATE` | Packing list PDF filename. Supports `{date}`. |
+| `PACKING_CSV_FILENAME_TEMPLATE` | Packing list CSV filename. Supports `{date}`. |
+| `PACKING_SAVE_FILENAME_TEMPLATE` | Saved packing list JSON filename. Supports `{date}`. |
 
 ### Adding a new year
 
-1. Add schedule JSON files to `public/assets/schedules/`:
+1. Add schedule JSON files to `public/assets/data/schedules/`:
    - `centeroo_XXXX.json`
    - `outeroo_XXXX.json`
 2. Add the year to `availableYears` in `src/config.js`.
 
-The app will automatically calculate the festival dates. If Bonnaroo falls on a non-standard week for that year, add an override:
+The app calculates festival dates automatically. If Bonnaroo falls on a non-standard week for that year, add a `bonnarooMondayOverrides` entry:
 
 ```js
 export const bonnarooMondayOverrides = {
@@ -187,41 +180,14 @@ export const bonnarooMondayOverrides = {
 
 ### Late-night cutoff
 
-Sets that end before `LATE_NIGHT_CUTOFF` (default 7:00 AM) are grouped with the previous day to match Bonnaroo's official schedule presentation. Exported `.ics` files always use the real calendar date and time.
-
----
-
-## Environment Variables
-
-The footer email link is optional. If you want a contact link in the footer, set these variables so the email address is never hard-coded in source:
-
-| Variable | Description |
-|---|---|
-| `VITE_EMAIL_USER` | The username part of the email address. |
-| `VITE_EMAIL_DOMAIN` | The domain part (e.g. `example.com`). |
-| `VITE_EMAIL_SUBJECT` | Pre-filled subject line for the mailto link. |
-
-For local development, put these in a `.env.local` file (not committed to git).
-
-### Azure Static Web Apps deployment
-
-Azure SWA does not inject environment variables into the Vite build automatically. Set these as **GitHub repository variables** (not Secrets), then pass them in your workflow:
-
-```yaml
-env:
-  VITE_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
-  VITE_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
-  VITE_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
-```
-
-> [!NOTE]
-> The GitHub repository variable names use the `REACT_APP_` prefix for legacy reasons. The build maps them to the correct `VITE_` prefix in the workflow file.
+Sets that end before `LATE_NIGHT_CUTOFF` (default 7:00 AM) are grouped with the previous calendar day to match Bonnaroo's official schedule presentation. Exported `.ics` files always use the actual calendar date and time.
 
 ---
 
 ## Schedule JSON Format
 
-Schedules are stored as JSON files in `public/assets/schedules/`. The expected structure is a nested object:
+Schedules live in `public/assets/data/schedules/` as one file per stage area per year.
+The expected structure is a nested object keyed by day, then stage:
 
 ```json
 {
@@ -233,22 +199,54 @@ Schedules are stored as JSON files in `public/assets/schedules/`. The expected s
 }
 ```
 
-See the predecessor project [BonnarooPlanner/jsonbuilder](https://github.com/CU-Jon/BonnarooPlanner/blob/main/jsonbuilder) for PHP tooling to build and edit schedule files.
+See the predecessor project [BonnarooPlanner/jsonbuilder](https://github.com/CU-Jon/BonnarooPlanner/blob/main/jsonbuilder) for PHP tooling to build and validate schedule files.
+
+---
+
+## Environment Variables
+
+The footer contact link is optional. Set these variables so the email address is never hard-coded in source:
+
+| Variable | Description |
+|---|---|
+| `VITE_EMAIL_USER` | The username part of the email address. |
+| `VITE_EMAIL_DOMAIN` | The domain (e.g. `example.com`). |
+| `VITE_EMAIL_SUBJECT` | Pre-filled subject line for the mailto link. |
+
+For local development, put these in a `.env.local` file (not committed to source control). The app requires all three to be set.
+
+### Azure Static Web Apps deployment
+
+Azure SWA does not inject environment variables into the Vite build automatically.
+Set these as **GitHub repository variables** (not Secrets), then pass them in the workflow:
+
+```yaml
+env:
+  VITE_EMAIL_USER: ${{ vars.REACT_APP_EMAIL_USER }}
+  VITE_EMAIL_DOMAIN: ${{ vars.REACT_APP_EMAIL_DOMAIN }}
+  VITE_EMAIL_SUBJECT: ${{ vars.REACT_APP_EMAIL_SUBJECT }}
+```
+
+> [!NOTE]
+> The repository variable names use the `REACT_APP_` prefix for legacy reasons.
+> The workflow maps them to the correct `VITE_` prefix at build time.
 
 ---
 
 ## Testing Status States
 
-You can simulate any date/time to test the festival status banner without changing your system clock:
+Simulate any date and time to test the festival status banner without touching your system clock:
 
 ```
 http://localhost:5173/?now=2025-06-12T10:00:00
 ```
 
-- Before festival start → yellow banner
-- During the festival → green banner
-- After the festival ends → red banner
-- No schedule available → red banner
+| Scenario | Banner color |
+|---|---|
+| Before festival start | Yellow |
+| During the festival | Green |
+| After the festival ends | Red |
+| No schedule available for year | Red |
 
 ---
 

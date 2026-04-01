@@ -22,7 +22,7 @@
 @import './planner/tabs.css';
 @import './planner/selection-grid.css';
 @import './planner/summary-bar.css';
-@import './planner/share-popover.css';
+@import './planner/popover.css';
 @import './planner/view.css';
 
 /* Packing list feature */
