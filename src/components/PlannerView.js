@@ -478,7 +478,6 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const plannerTitle = `Bonnaroo ${year} Planner \u2014 ${typeLabel} (Compact)`;
 
     const doc = new jsPDF({ orientation, unit: 'pt', format: 'letter' });
-    let firstTypeOnPage = true;
 
     typesPresent.forEach((type, typeIdx) => {
       const typeSelections = selections.filter(s => s.type === type);
@@ -486,7 +485,6 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
       if (typeIdx > 0) {
         doc.addPage();
-        firstTypeOnPage = true;
       }
 
       const sorted = [...typeSelections].sort((a, b) => {
@@ -517,6 +515,13 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
             : sel.event.name,
           sel.location
         ]);
+
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const MIN_TABLE_HEIGHT = 50;
+        if (currentY + DAY_HEADING_HEIGHT + MIN_TABLE_HEIGHT > pageHeight - FOOTER_MARGIN_BOTTOM) {
+          doc.addPage();
+          currentY = TABLE_MARGIN;
+        }
 
         doc.setFontSize(13);
         doc.setTextColor(...PDF_DARK_TEXT);
@@ -601,8 +606,6 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
         currentY = doc.lastAutoTable.finalY + 20;
       });
-
-      firstTypeOnPage = false;
     });
 
     const pageCount = doc.internal.getNumberOfPages();
