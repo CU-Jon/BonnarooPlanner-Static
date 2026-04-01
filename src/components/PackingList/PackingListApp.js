@@ -6,7 +6,8 @@ import AddCategoryModal from './AddCategoryModal';
 import PackingListView from './PackingListView';
 import { exportToJson, readJsonFile, mergeImportedData } from '../../utils/packingExporter';
 import { generatePackingPdf } from '../../utils/packingPdf';
-import { PACKING_JSON_PATH, PACKING_PDF_FILENAME, PACKING_SAVE_FILENAME_TEMPLATE } from '../../config';
+import { generatePackingCSV } from '../../utils/csvExporter';
+import { PACKING_JSON_PATH, PACKING_PDF_FILENAME_TEMPLATE, PACKING_CSV_FILENAME_TEMPLATE, PACKING_SAVE_FILENAME_TEMPLATE } from '../../config';
 
 export default function PackingListApp() {
     const [categories, setCategories] = useState([]);
@@ -123,7 +124,7 @@ export default function PackingListApp() {
     // ── Import / Export ─────────────────────────────────────────────
 
     const handleExport = () => {
-        const date = new Date().toISOString().slice(0, 10);
+        const date = new Date().toLocaleDateString('en-CA');
         const filename = PACKING_SAVE_FILENAME_TEMPLATE.replace('{date}', date);
         exportToJson(categories, filename);
     };
@@ -190,9 +191,23 @@ export default function PackingListApp() {
     const handlePrint = () => window.print();
 
     const handlePdf = () => {
-        const date = new Date().toISOString().slice(0, 10);
-        const filename = PACKING_PDF_FILENAME.replace('.pdf', `-${date}.pdf`);
+        const date = new Date().toLocaleDateString('en-CA');
+        const filename = PACKING_PDF_FILENAME_TEMPLATE.replace('{date}', date);
         generatePackingPdf(getSelectedCategories(), filename);
+    };
+
+    const handleExportCsv = () => {
+        const date = new Date().toLocaleDateString('en-CA');
+        const filename = PACKING_CSV_FILENAME_TEMPLATE.replace('{date}', date);
+        const csvData = generatePackingCSV(getSelectedCategories());
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
     };
 
     // ── Render ──────────────────────────────────────────────────────
@@ -202,7 +217,11 @@ export default function PackingListApp() {
             <header className="site-header">
                 <div className="site-header-home no-print">
                     <a href="/" className="btn btn-home">
-                        &larr; Home
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                        Home
                     </a>
                 </div>
                 <img src="/assets/logo.svg" alt="The Arch" className="site-header-logo" />
@@ -281,6 +300,7 @@ export default function PackingListApp() {
                         onStartOver={handleStartOver}
                         onPrint={handlePrint}
                         onPdf={handlePdf}
+                        onExportCsv={handleExportCsv}
                         onExport={handleExport}
                     />
                 )}
@@ -301,7 +321,11 @@ export default function PackingListApp() {
                         disabled={selectedCount === 0}
                         onClick={handleGenerate}
                     >
-                        Generate My List →
+                        Generate My List
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
                     </button>
                 </div>
             )}

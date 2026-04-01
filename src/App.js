@@ -145,9 +145,7 @@ export default function App() {
     if (!year) {
       document.title = HTML_TITLE_FALLBACK;
     } else {
-      document.title = HTML_TITLE_TEMPLATE
-        .replace('{year}', year)
-        .replace('{tabPart}', '');
+      document.title = HTML_TITLE_TEMPLATE.replace('{year}', year);
     }
   }, [view, year]);
 
@@ -156,7 +154,11 @@ export default function App() {
       <header className="site-header">
         <div className="site-header-home no-print">
           <a href="/" className="btn btn-home">
-            &larr; Home
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Home
           </a>
         </div>
         <img src="/assets/logo.svg" alt="The Arch" className="site-header-logo" />

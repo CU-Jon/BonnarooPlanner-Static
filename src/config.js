@@ -1,109 +1,20 @@
 // src/config.js
 
-// -------------------------------------------------
-// Fallback window/title before React loads (index.html’s <title> shows briefly)
-// -------------------------------------------------
-export const HTML_TITLE_FALLBACK = 'Bonnaroo Planner';
+// =================================================
+// SHARED
+// =================================================
 
 // -------------------------------------------------
-// Path to the folder containing event schedule JSON files
-// -------------------------------------------------
-export const jsonBase = '/assets/schedules';
-
-// -------------------------------------------------
-// List of years available for selection in the dropdown.
-// The app will default to the latest year in this list that has schedule files available.
-// -------------------------------------------------
-export const availableYears = [2025, 2026]; // Add more years as needed
-
-// -------------------------------------------------
-// Maps day names to their offset from the festival’s Monday.
-// Used for date calculations throughout the app.
-// -------------------------------------------------
-export const dayOffsets = {
-  Monday: 0,
-  Tuesday: 1,
-  Wednesday: 2,
-  Thursday: 3,
-  Friday: 4,
-  Saturday: 5,
-  Sunday: 6
-};
-
-// -------------------------------------------------
-// The cutoff (in minutes after midnight) for “late night” sets to count as the previous day.
-// Default is 7:00 AM (420 minutes).
-// -------------------------------------------------
-export const LATE_NIGHT_CUTOFF = 7 * 60;
-
-// -------------------------------------------------
-// For rare years where the festival does NOT follow the usual Father's Day rule,
-// specify the starting Monday as an override here (YYYY: 'YYYY-MM-DD').
-// For all other years, the app will automatically calculate the Monday before the third Sunday in June.
-// -------------------------------------------------
-export const bonnarooMondayOverrides = {
-  // Example:
-  // 2027: '2027-06-07'
-  2026: '2026-06-08'
-};
-
-// -------------------------------------------------
-// Status message templates for different festival states.
-// These are shown in the colored status box above the schedule.
-// -------------------------------------------------
-export const BONNAROO_STATUS_ENDED_TEMPLATE = 'Bonnaroo {year} has ended.';
-export const BONNAROO_STATUS_NOT_STARTED_TEMPLATE = 'Bonnaroo {year} begins on {date}.';
-export const BONNAROO_STATUS_STARTED_TEMPLATE = 'Bonnaroo {year} has begun!';
-
-// -------------------------------------------------
-// Message shown if schedule is not available for the selected year.
-// -------------------------------------------------
-export const SCHEDULE_NOT_AVAILABLE_TEMPLATE = 'The schedule for {year} is not available yet. Check back once Bonnaroo releases the official schedule.';
-
-// -------------------------------------------------
-// On‐screen builder heading (we’ll inject “ 2025” when year is set)
-// -------------------------------------------------
-export const BUILDER_TITLE_TEMPLATE = 'Select Your Bonnaroo{yearPart} Events for Your Planner';
-
-// -------------------------------------------------
-// Runtime template for the browser’s tab title, once React knows year & tab.
-// Examples:
-//   “Bonnaroo Planner - 2025”    (view === 'builder', year set to 2025)
-//   “Bonnaroo Planner - 2025 - Centeroo”  (view === 'planner')
-// -------------------------------------------------
-export const HTML_TITLE_TEMPLATE = 'Bonnaroo Planner - {year}{tabPart}';
-
-// -------------------------------------------------
-// On‐screen planner heading
-// -------------------------------------------------
-export const APP_TITLE_PLANNER = 'Your Bonnaroo {year} Planner - {tab}';
-
-// -------------------------------------------------
-// Filename templates for exported files
-// -------------------------------------------------
-export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{label}_{orientation}.pdf';
-export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
-export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
-export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
-export const SAVE_FILENAME_TEMPLATE = 'bonnaroo-planner-{year}-{date}.json';
-
-// -------------------------------------------------
-// Packing list data and export config
-// -------------------------------------------------
-export const PACKING_JSON_PATH = '/assets/data/packing_list.json';
-export const PACKING_PDF_FILENAME = 'bonnaroo-packing-list.pdf';
-export const PACKING_SAVE_FILENAME_TEMPLATE = 'bonnaroo-packing-list-{date}.json';
-
-// -------------------------------------------------
-// Toggle showing/hiding the “Print” button in PlannerView
+// Toggle showing/hiding the "Print" button in PlannerView and PackingListView.
 // (This does not disable printing, just the button.)
 // -------------------------------------------------
 export const SHOW_PRINT_BUTTON = true;
 
 // -------------------------------------------------
-// Footer HTML for the planner view (We obfuscate the email address to prevent basic web crawlers from getting it.)
-// Email address needs to be set in your environment variables wherever you're deploying this app.
-// Use {{EMAIL_LINK}} as a placeholder for the obfuscated email link.
+// Footer content shown in both the planner and packing list.
+// The email address is split across env vars and assembled at runtime to deter
+// basic web crawlers. Use {{EMAIL_LINK}} in FOOTER_HTML as the placeholder.
+// Set VITE_EMAIL_USER, VITE_EMAIL_DOMAIN, and VITE_EMAIL_SUBJECT at deploy time.
 // -------------------------------------------------
 export const EMAIL_USER = import.meta.env.VITE_EMAIL_USER || '';
 export const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN || '';
@@ -120,3 +31,103 @@ Or you can simply {{EMAIL_LINK}}
   This project is not affiliated with Bonnaroo or Live Nation.
 </span>
 `;
+
+// =================================================
+// SCHEDULE PLANNER
+// =================================================
+
+// --- Data & years ------------------------------------
+
+// -------------------------------------------------
+// Path prefix for schedule JSON files.
+// Files are expected at {jsonBase}/centeroo_{year}.json and outeroo_{year}.json.
+// -------------------------------------------------
+export const jsonBase = '/assets/data/schedules';
+
+// -------------------------------------------------
+// Years available in the year selector.
+// The app defaults to the latest year that has schedule files available.
+// -------------------------------------------------
+export const availableYears = [2025, 2026]; // Add more years as needed
+
+// --- Date & time -------------------------------------
+
+// -------------------------------------------------
+// Maps day names to their offset from the festival's opening Monday.
+// Used for date calculations throughout the app.
+// -------------------------------------------------
+export const dayOffsets = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  Sunday: 6
+};
+
+// -------------------------------------------------
+// Cutoff (in minutes after midnight) for "late night" sets to count as the
+// previous calendar day. Default is 7:00 AM (420 minutes).
+// -------------------------------------------------
+export const LATE_NIGHT_CUTOFF = 7 * 60;
+
+// -------------------------------------------------
+// For years where the festival does NOT follow the usual Father's Day rule,
+// specify the opening Monday as an override (YYYY: 'YYYY-MM-DD').
+// The app calculates the Monday before the third Sunday in June for all other years.
+// -------------------------------------------------
+export const bonnarooMondayOverrides = {
+  // Example:
+  // 2027: '2027-06-07'
+  2026: '2026-06-08'
+};
+
+// --- UI text & status messages -----------------------
+
+// -------------------------------------------------
+// Fallback browser tab title shown before React loads
+// (the index.html <title> displays this briefly on first paint).
+// -------------------------------------------------
+export const HTML_TITLE_FALLBACK = 'Bonnaroo Planner';
+
+// -------------------------------------------------
+// Browser tab title template once the planner year is known.
+// Example: "Bonnaroo Planner - 2025"
+// -------------------------------------------------
+export const HTML_TITLE_TEMPLATE = 'Bonnaroo Planner - {year}';
+
+// -------------------------------------------------
+// Status messages shown in the colored box above the schedule.
+// -------------------------------------------------
+export const BONNAROO_STATUS_ENDED_TEMPLATE = 'Bonnaroo {year} has ended.';
+export const BONNAROO_STATUS_NOT_STARTED_TEMPLATE = 'Bonnaroo {year} begins on {date}.';
+export const BONNAROO_STATUS_STARTED_TEMPLATE = 'Bonnaroo {year} has begun!';
+
+// -------------------------------------------------
+// Shown when no schedule file is available for the selected year.
+// -------------------------------------------------
+export const SCHEDULE_NOT_AVAILABLE_TEMPLATE = 'The schedule for {year} is not available yet. Check back once Bonnaroo releases the official schedule.';
+
+// --- Export filenames --------------------------------
+
+export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{label}_{orientation}.pdf';
+export const CSV_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.csv';
+export const ICS_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{tab}.ics';
+export const ICS_CALENDARNAME_TEMPLATE = 'Bonnaroo {year} Planner - {tab}';
+export const SAVE_FILENAME_TEMPLATE = 'bonnaroo_planner_{year}_{date}.json';
+
+// =================================================
+// PACKING LIST
+// =================================================
+
+// -------------------------------------------------
+// Path to the default packing list data file.
+// -------------------------------------------------
+export const PACKING_JSON_PATH = '/assets/data/packing_list.json';
+
+// --- Export filenames --------------------------------
+
+export const PACKING_PDF_FILENAME_TEMPLATE = 'bonnaroo_packing_list_{date}.pdf';
+export const PACKING_CSV_FILENAME_TEMPLATE = 'bonnaroo_packing_list_{date}.csv';
+export const PACKING_SAVE_FILENAME_TEMPLATE = 'bonnaroo_packing_list_{date}.json';

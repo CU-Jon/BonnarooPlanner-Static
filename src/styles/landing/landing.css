@@ -81,6 +81,9 @@
 }
 
 .feature-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     margin-top: auto;
     font-family: 'Poppins', sans-serif;
     font-weight: 700;

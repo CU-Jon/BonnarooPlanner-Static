@@ -58,6 +58,18 @@
     opacity: 1;
 }
 
+/* Right-edge buttons: anchor tooltip to right so it doesn't clip offscreen */
+.has-tooltip.tooltip-align-right::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0) translateY(4px);
+}
+
+.has-tooltip.tooltip-align-right:hover::after,
+.has-tooltip.tooltip-align-right:focus-visible::after {
+    transform: translateX(0) translateY(0);
+}
+
 @media (max-width: 600px) {
     .has-tooltip::after {
         left: 0;
@@ -73,5 +85,12 @@
 
     .has-tooltip::before {
         display: none;
+    }
+
+    /* Reset right-anchoring on mobile — fall back to left-anchored with viewport width cap */
+    .has-tooltip.tooltip-align-right::after {
+        left: 0;
+        right: auto;
+        width: min(260px, calc(100vw - 1rem));
     }
 }
