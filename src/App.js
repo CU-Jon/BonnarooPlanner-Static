@@ -147,7 +147,7 @@ export default function App() {
     } else {
       document.title = HTML_TITLE_TEMPLATE.replace('{year}', year);
     }
-  }, [view, year]);
+  }, [year]);
 
   return (
     <div className="page-wrap">
