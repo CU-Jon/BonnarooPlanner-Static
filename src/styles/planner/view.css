@@ -63,9 +63,16 @@
    PLANNER TABLE
 ───────────────────────────────────────── */
 
+.table-scroll-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin: 0 0 1.5rem;
+    border-radius: 8px;
+}
+
 table.day-section {
     width: 100%;
-    margin: 0 0 1.5rem;
+    margin: 0;
     border-collapse: collapse;
     background-color: var(--roo-card-bg);
     border-radius: 8px;
