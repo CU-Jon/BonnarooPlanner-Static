@@ -24,8 +24,12 @@ export default function PlannerBuilder({
   lastModified,
   onLoad
 }) {
-  const [scheduleData, setScheduleData] = useState({ Centeroo: null, Outeroo: null });
-  const [activeTab, setActiveTab] = useState('Centeroo');
+  const [scheduleData, setScheduleData] = useState(() => initialSchedule || { Centeroo: null, Outeroo: null });
+  const [activeTab, setActiveTab] = useState(() => {
+    const data = initialSchedule || { Centeroo: null, Outeroo: null };
+    const centerooAvail = data.Centeroo && Object.keys(data.Centeroo).length > 0;
+    return centerooAvail ? 'Centeroo' : 'Outeroo';
+  });
   const [currentSelections, setCurrentSelections] = useState(() => initialSelections || []);
   const hasInitializedSchedule = useRef(false);
 
