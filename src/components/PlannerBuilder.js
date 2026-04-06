@@ -4,11 +4,10 @@ import YearSelector from './YearSelector';
 import TabContainer from './TabContainer';
 import SelectionGrid from './SelectionGrid';
 import { getBonnarooStatus } from '../utils/bonnarooStatus';
-import { SCHEDULE_NOT_AVAILABLE_TEMPLATE } from '../config';
+import { SCHEDULE_NOT_AVAILABLE_TEMPLATE, PARTIAL_SCHEDULE_NOT_AVAILABLE_TEMPLATE } from '../config';
 import { detectConflicts } from '../utils/conflictUtils';
 
-function getStatusClass(roostatus, scheduleMissing) {
-  if (scheduleMissing) return 'bonnaroo-status bonnaroo-status--not-available';
+function getStatusClass(roostatus) {
   if (!roostatus) return 'bonnaroo-status';
   if (roostatus.includes('has ended')) return 'bonnaroo-status bonnaroo-status--ended';
   if (roostatus.includes('has begun')) return 'bonnaroo-status bonnaroo-status--started';
@@ -31,8 +30,10 @@ export default function PlannerBuilder({
   const hasInitializedSchedule = useRef(false);
 
   useEffect(() => {
-    setScheduleData(initialSchedule || { Centeroo: null, Outeroo: null });
-    setActiveTab('Centeroo');
+    const newData = initialSchedule || { Centeroo: null, Outeroo: null };
+    setScheduleData(newData);
+    const centerooAvail = newData.Centeroo && Object.keys(newData.Centeroo).length > 0;
+    setActiveTab(centerooAvail ? 'Centeroo' : 'Outeroo');
     if (hasInitializedSchedule.current) {
       // Year changed after initial mount — clear selections for the new year
       setCurrentSelections([]);
@@ -56,6 +57,11 @@ export default function PlannerBuilder({
     }),
     [currentSelections]
   );
+
+  const centerooAvailable =
+    !!scheduleData.Centeroo && Object.keys(scheduleData.Centeroo).length > 0;
+  const outerooAvailable =
+    !!scheduleData.Outeroo && Object.keys(scheduleData.Outeroo).length > 0;
 
   function toggleSelection(payload) {
     setCurrentSelections(prev => {
@@ -84,7 +90,8 @@ export default function PlannerBuilder({
   }
 
   function selectAll() {
-    if (!scheduleData[activeTab]) return;
+    const isAvail = activeTab === 'Centeroo' ? centerooAvailable : outerooAvailable;
+    if (!isAvail) return;
     const all = [];
     const data = scheduleData[activeTab];
     Object.entries(data).forEach(([day, locations]) => {
@@ -116,13 +123,9 @@ export default function PlannerBuilder({
     return null;
   }
 
-  const scheduleMissing =
-    !scheduleData.Centeroo ||
-    !scheduleData.Outeroo ||
-    Object.keys(scheduleData.Centeroo).length === 0 ||
-    Object.keys(scheduleData.Outeroo).length === 0;
+  const bothMissing = !centerooAvailable && !outerooAvailable;
 
-  if (scheduleMissing) {
+  if (bothMissing) {
     return (
       <>
         <div className="builder-toolbar">
@@ -138,9 +141,11 @@ export default function PlannerBuilder({
   }
 
   const roostatus = getBonnarooStatus(year, scheduleData);
-  const statusClass = getStatusClass(roostatus, scheduleMissing);
+  const statusClass = getStatusClass(roostatus);
   const totalCount = currentSelections.length;
   const conflictCount = conflictKeys.size;
+  const activeTabAvailable = activeTab === 'Centeroo' ? centerooAvailable : outerooAvailable;
+  const inactiveTab = activeTab === 'Centeroo' ? 'Outeroo' : 'Centeroo';
 
   return (
     <>
@@ -183,7 +188,7 @@ export default function PlannerBuilder({
         </button>
       </div>
 
-      {scheduleData[activeTab] && (
+      {activeTabAvailable ? (
         <SelectionGrid
           data={scheduleData[activeTab]}
           type={activeTab}
@@ -191,6 +196,13 @@ export default function PlannerBuilder({
           onToggleSelection={toggleSelection}
           conflictKeys={conflictKeys}
         />
+      ) : (
+        <p className="bonnaroo-status bonnaroo-status--not-available">
+          {PARTIAL_SCHEDULE_NOT_AVAILABLE_TEMPLATE
+            .replace('{missing}', activeTab)
+            .replace('{year}', year)
+            .replace(/\{available\}/g, inactiveTab)}
+        </p>
       )}
 
       <div className="builder-bottom-padding" />
