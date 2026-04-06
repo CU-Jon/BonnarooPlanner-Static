@@ -265,7 +265,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
     return Object.entries(byDay).map(([day, daySelections]) => (
       <React.Fragment key={`compact-${type}-${day}`}>
-        <div className="day-heading-row">
+        <div className="day-heading-row day-heading-compact">
           <span className="day-heading-screen">{day}</span>
           <span className="day-select-badge">{daySelections.length} selected</span>
         </div>

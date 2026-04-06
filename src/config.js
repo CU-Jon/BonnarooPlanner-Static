@@ -109,6 +109,12 @@ export const BONNAROO_STATUS_STARTED_TEMPLATE = 'Bonnaroo {year} has begun!';
 // -------------------------------------------------
 export const SCHEDULE_NOT_AVAILABLE_TEMPLATE = 'The schedule for {year} is not available yet. Check back once Bonnaroo releases the official schedule.';
 
+// -------------------------------------------------
+// Shown when only one of the two schedules is available.
+// {missing} = unavailable tab name, {available} = available tab name, {year} = festival year
+// -------------------------------------------------
+export const PARTIAL_SCHEDULE_NOT_AVAILABLE_TEMPLATE = 'The {missing} schedule for {year} is not yet available. Check back once Bonnaroo releases the official schedule. The {available} schedule is available — switch to the {available} tab.';
+
 // --- Export filenames --------------------------------
 
 export const PDF_FILENAME_TEMPLATE = 'Bonnaroo_{year}_Planner_{label}_{orientation}.pdf';

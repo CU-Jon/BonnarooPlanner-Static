@@ -1,0 +1,627 @@
+{
+  "Thursday": {
+    "What Stage": [
+      {
+        "name": "Spiritual Cramp",
+        "start": "5:30 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "name": "Vince Staples",
+        "start": "7:00 PM",
+        "end": "8:00 PM"
+      },
+      {
+        "name": "Four Tet",
+        "start": "8:30 PM",
+        "end": "10:00 PM"
+      },
+      {
+        "name": "Skrillex",
+        "start": "10:30 PM",
+        "end": "12:00 AM"
+      }
+    ],
+    "Which Stage": [],
+    "This Tent": [],
+    "That Tent": [],
+    "The Other": [],
+    "Where Stage": []
+  },
+  "Friday": {
+    "What Stage": [
+      {
+        "name": "Villanelle",
+        "start": "1:45 PM",
+        "end": "2:30 PM"
+      },
+      {
+        "name": "Amble",
+        "start": "3:15 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "Blues Traveler",
+        "start": "4:45 PM",
+        "end": "5:45 PM"
+      },
+      {
+        "name": "YUNGBLUD",
+        "start": "6:45 PM",
+        "end": "7:45 PM"
+      },
+      {
+        "name": "GRiZ",
+        "start": "8:45 PM",
+        "end": "10:00 PM"
+      },
+      {
+        "name": "The Strokes",
+        "start": "11:00 PM",
+        "end": "12:15 AM"
+      }
+    ],
+    "Which Stage": [
+      {
+        "name": "Lambrini Girls",
+        "start": "1:15 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Wolfmother",
+        "start": "2:30 PM",
+        "end": "3:15 PM"
+      },
+      {
+        "name": "bbno$",
+        "start": "4:00 PM",
+        "end": "5:00 PM"
+      },
+      {
+        "name": "Wet Leg",
+        "start": "6:00 PM",
+        "end": "7:00 PM"
+      },
+      {
+        "name": "Jessie Murph",
+        "start": "8:00 PM",
+        "end": "9:00 PM"
+      },
+      {
+        "name": "Mt. Joy",
+        "start": "10:00 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "Turnstile",
+        "start": "12:30 AM",
+        "end": "1:45 AM"
+      }
+    ],
+    "This Tent": [
+      {
+        "name": "PawPaw Rod",
+        "start": "1:30 PM",
+        "end": "2:15 PM"
+      },
+      {
+        "name": "Goldie Boutilier",
+        "start": "2:45 PM",
+        "end": "3:30 PM"
+      },
+      {
+        "name": "Rachel Chinouriri",
+        "start": "4:15 PM",
+        "end": "5:15 PM"
+      },
+      {
+        "name": "Mother Mother",
+        "start": "6:00 PM",
+        "end": "7:00 PM"
+      },
+      {
+        "name": "Smino",
+        "start": "7:45 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "Hot Mulligan",
+        "start": "9:30 PM",
+        "end": "10:30 PM"
+      },
+      {
+        "name": "Lil Jon",
+        "start": "12:45 AM",
+        "end": "2:00 AM"
+      }
+    ],
+    "That Tent": [
+      {
+        "name": "Dora Jar",
+        "start": "1:00 PM",
+        "end": "1:45 PM"
+      },
+      {
+        "name": "Wednesday",
+        "start": "2:30 PM",
+        "end": "3:15 PM"
+      },
+      {
+        "name": "The Chats",
+        "start": "4:00 PM",
+        "end": "4:45 PM"
+      },
+      {
+        "name": "Zack Fox",
+        "start": "5:45 PM",
+        "end": "6:45 PM"
+      },
+      {
+        "name": "Geese",
+        "start": "7:45 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "Blood Orange",
+        "start": "10:00 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "The Dare",
+        "start": "12:15 AM",
+        "end": "1:30 AM"
+      }
+    ],
+    "The Other": [
+      {
+        "name": "Jackie Hollander",
+        "start": "4:00 PM",
+        "end": "5:00 PM"
+      },
+      {
+        "name": "Daniel Allan",
+        "start": "5:15 PM",
+        "end": "6:15 PM"
+      },
+      {
+        "name": "Łaszewo",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "NOTION",
+        "start": "7:45 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "Adventure Club",
+        "start": "9:00 PM",
+        "end": "10:00 PM"
+      },
+      {
+        "name": "SIDEPIECE",
+        "start": "10:15 PM",
+        "end": "11:15 PM"
+      },
+      {
+        "name": "Cloonee",
+        "start": "12:00 AM",
+        "end": "1:00 AM"
+      },
+      {
+        "name": "Major Lazer",
+        "start": "1:15 AM",
+        "end": "2:15 AM"
+      },
+      {
+        "name": "Ganja White Night",
+        "start": "2:30 AM",
+        "end": "3:45 AM"
+      },
+      {
+        "name": "INZO (Sunrise Set)",
+        "start": "4:00 AM",
+        "end": "5:15 AM"
+      }
+    ],
+    "Where Stage": [
+      {
+        "name": "ProbCause",
+        "start": "11:15 PM",
+        "end": "12:00 AM"
+      },
+      {
+        "name": "Mary Droppinz",
+        "start": "2:15 AM",
+        "end": "3:00 AM"
+      },
+      {
+        "name": "Richard Finger",
+        "start": "3:15 AM",
+        "end": "4:00 AM"
+      },
+      {
+        "name": "Eazybaked",
+        "start": "4:15 AM",
+        "end": "5:00 AM"
+      },
+      {
+        "name": "Lumasi",
+        "start": "5:15 AM",
+        "end": "6:00 AM"
+      }
+    ]
+  },
+  "Saturday": {
+    "What Stage": [
+      {
+        "name": "Midnight Generation",
+        "start": "1:45 PM",
+        "end": "2:30 PM"
+      },
+      {
+        "name": "Arcy Drive",
+        "start": "3:15 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "Tash Sultana",
+        "start": "4:45 PM",
+        "end": "5:45 PM"
+      },
+      {
+        "name": "Alabama Shakes",
+        "start": "6:45 PM",
+        "end": "7:45 PM"
+      },
+      {
+        "name": "The Neighbourhood",
+        "start": "8:45 PM",
+        "end": "10:00 PM"
+      },
+      {
+        "name": "RÜFÜS DU SOL",
+        "start": "11:10 PM",
+        "end": "12:40 AM"
+      }
+    ],
+    "Which Stage": [
+      {
+        "name": "Steph Strings",
+        "start": "1:15 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Mountain Grass Unit",
+        "start": "2:30 PM",
+        "end": "3:15 PM"
+      },
+      {
+        "name": "Holly Humberstone",
+        "start": "4:00 PM",
+        "end": "5:00 PM"
+      },
+      {
+        "name": "Amyl and The Sniffers",
+        "start": "5:45 PM",
+        "end": "6:45 PM"
+      },
+      {
+        "name": "Rainbow Kitten Surprise",
+        "start": "7:45 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "Teddy Swims",
+        "start": "9:45 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "\"Weird Al\" Yankovic (Bigger & Weirder Saturday Late Night Rooview)",
+        "start": "12:40 AM",
+        "end": "2:10 AM"
+      }
+    ],
+    "This Tent": [
+      {
+        "name": "Sunami",
+        "start": "12:45 PM",
+        "end": "1:30 PM"
+      },
+      {
+        "name": "Congress The Band",
+        "start": "2:00 PM",
+        "end": "2:45 PM"
+      },
+      {
+        "name": "Waylon Wyatt",
+        "start": "3:30 PM",
+        "end": "4:15 PM"
+      },
+      {
+        "name": "The Runarounds",
+        "start": "5:00 PM",
+        "end": "6:00 PM"
+      },
+      {
+        "name": "Passion Pit",
+        "start": "6:45 PM",
+        "end": "7:45 PM"
+      },
+      {
+        "name": "Kesha Presents: Superjâm Esoterica (The Alchemy of Pop)",
+        "start": "8:45 PM",
+        "end": "10:30 PM"
+      },
+      {
+        "name": "Osees",
+        "start": "12:30 AM",
+        "end": "1:30 AM"
+      },
+      {
+        "name": "Snow Strippers",
+        "start": "2:00 AM",
+        "end": "2:45 AM"
+      }
+    ],
+    "That Tent": [
+      {
+        "name": "The Stews",
+        "start": "1:00 PM",
+        "end": "1:45 PM"
+      },
+      {
+        "name": "Confidence Man",
+        "start": "2:30 PM",
+        "end": "3:15 PM"
+      },
+      {
+        "name": "Trixie Mattel",
+        "start": "4:00 PM",
+        "end": "4:45 PM"
+      },
+      {
+        "name": "Wyatt Flores",
+        "start": "5:45 PM",
+        "end": "6:45 PM"
+      },
+      {
+        "name": "SG Lewis",
+        "start": "7:45 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "flipturn",
+        "start": "10:00 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "Freddie Gibbs & The Alchemist",
+        "start": "12:50 AM",
+        "end": "2:05 AM"
+      }
+    ],
+    "The Other": [
+      {
+        "name": "Nikita, the Wicked",
+        "start": "3:45 PM",
+        "end": "4:45 PM"
+      },
+      {
+        "name": "Juelz",
+        "start": "5:00 PM",
+        "end": "6:00 PM"
+      },
+      {
+        "name": "Deathpact",
+        "start": "6:15 PM",
+        "end": "7:15 PM"
+      },
+      {
+        "name": "Boys Noize",
+        "start": "7:30 PM",
+        "end": "8:30 PM"
+      },
+      {
+        "name": "Sub Focus",
+        "start": "8:45 PM",
+        "end": "9:45 PM"
+      },
+      {
+        "name": "Sara Landry",
+        "start": "10:00 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "Chase & Status",
+        "start": "12:40 AM",
+        "end": "1:55 AM"
+      },
+      {
+        "name": "Gorgon City (Sunrise Set)",
+        "start": "2:15 AM",
+        "end": "5:15 AM"
+      }
+    ],
+    "Where Stage": [
+      {
+        "name": "Steve & Cory Are Dead",
+        "start": "6:30 PM",
+        "end": "8:00 PM"
+      },
+      {
+        "name": "Costa",
+        "start": "11:30 PM",
+        "end": "12:15 AM"
+      },
+      {
+        "name": "CloZee",
+        "start": "2:45 AM",
+        "end": "3:30 AM"
+      },
+      {
+        "name": "Big Gigantic",
+        "start": "3:45 AM",
+        "end": "4:30 AM"
+      },
+      {
+        "name": "Smoakland",
+        "start": "4:45 AM",
+        "end": "5:30 AM"
+      },
+      {
+        "name": "Effin",
+        "start": "5:45 AM",
+        "end": "6:30 AM"
+      }
+    ]
+  },
+  "Sunday": {
+    "What Stage": [
+      {
+        "name": "Aly & AJ",
+        "start": "2:15 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Trombone Shorty",
+        "start": "3:45 PM",
+        "end": "4:45 PM"
+      },
+      {
+        "name": "Tedeschi Trucks Band",
+        "start": "5:30 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "name": "Role Model",
+        "start": "7:30 PM",
+        "end": "8:30 PM"
+      },
+      {
+        "name": "Noah Kahan",
+        "start": "9:30 PM",
+        "end": "11:00 PM"
+      }
+    ],
+    "Which Stage": [
+      {
+        "name": "Little Stranger",
+        "start": "1:15 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Spacey Jane",
+        "start": "2:45 PM",
+        "end": "3:45 PM"
+      },
+      {
+        "name": "Japanese Breakfast",
+        "start": "4:30 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "Clipse",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Kesha",
+        "start": "8:30 PM",
+        "end": "9:30 PM"
+      }
+    ],
+    "This Tent": [
+      {
+        "name": "Nat Myers",
+        "start": "12:30 PM",
+        "end": "1:15 PM"
+      },
+      {
+        "name": "Buffalo Traffic Jam",
+        "start": "1:45 PM",
+        "end": "2:30 PM"
+      },
+      {
+        "name": "Hemlocke Springs",
+        "start": "3:20 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "Fcukers",
+        "start": "4:45 PM",
+        "end": "5:45 PM"
+      },
+      {
+        "name": "Turnover",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Modest Mouse",
+        "start": "8:15 PM",
+        "end": "9:30 PM"
+      }
+    ],
+    "That Tent": [
+      {
+        "name": "Girl Tones",
+        "start": "1:30 PM",
+        "end": "2:15 PM"
+      },
+      {
+        "name": "Blondshell",
+        "start": "3:00 PM",
+        "end": "3:45 PM"
+      },
+      {
+        "name": "Audrey Hobert",
+        "start": "4:45 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "Del Water Gap",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Mariah the Scientist",
+        "start": "8:30 PM",
+        "end": "9:30 PM"
+      }
+    ],
+    "The Other": [
+      {
+        "name": "Motifv",
+        "start": "1:45 PM",
+        "end": "2:45 PM"
+      },
+      {
+        "name": "A Hundred Drums",
+        "start": "3:00 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "San Holo",
+        "start": "4:15 PM",
+        "end": "5:15 PM"
+      },
+      {
+        "name": "Big Gigantic",
+        "start": "5:30 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "name": "Daily Bread",
+        "start": "6:45 PM",
+        "end": "7:45 PM"
+      },
+      {
+        "name": "LSZEE",
+        "start": "8:15 PM",
+        "end": "9:30 PM"
+      }
+    ],
+    "Where Stage": []
+  }
+}

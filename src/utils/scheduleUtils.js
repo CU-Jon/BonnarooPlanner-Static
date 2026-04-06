@@ -26,10 +26,8 @@ export async function fetchSchedule(year) {
   }
 
   const exists =
-    centerooResp.ok &&
-    outerooResp.ok &&
-    Object.keys(centeroo).length > 0 &&
-    Object.keys(outeroo).length > 0;
+    (centerooResp.ok && Object.keys(centeroo).length > 0) ||
+    (outerooResp.ok && Object.keys(outeroo).length > 0);
 
   // Get latest Last-Modified
   const lmCent = centerooResp.headers.get('Last-Modified');
