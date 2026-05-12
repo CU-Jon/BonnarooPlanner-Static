@@ -1,0 +1,544 @@
+{
+  "Wednesday": {
+    "Groop (Plaza 5)": [
+      {
+        "name": "Totem Purple Carpet",
+        "start": "4:30 PM",
+        "end": "5:00 PM"
+      },
+      {
+        "name": "birdranger",
+        "start": "5:00 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "HYPNO",
+        "start": "5:30 PM",
+        "end": "6:00 PM"
+      },
+      {
+        "name": "VINE-III",
+        "start": "6:00 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "name": "Valleria",
+        "start": "6:30 PM",
+        "end": "7:00 PM"
+      },
+      {
+        "name": "Ravedad",
+        "start": "7:00 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Shakedown Six",
+        "start": "7:30 PM",
+        "end": "8:30 PM"
+      },
+      {
+        "name": "LSDaniel",
+        "start": "8:30 PM",
+        "end": "9:00 PM"
+      },
+      {
+        "name": "SUSTO",
+        "start": "9:00 PM",
+        "end": "10:15 PM"
+      },
+      {
+        "name": "The Snozzberries",
+        "start": "10:15 PM",
+        "end": "11:00 PM"
+      },
+      {
+        "name": "Majora",
+        "start": "11:00 PM",
+        "end": "11:45 PM"
+      },
+      {
+        "name": "Fractal Bloom",
+        "start": "11:45 PM",
+        "end": "12:30 AM"
+      },
+      {
+        "name": "?????",
+        "start": "12:30 AM",
+        "end": "1:45 AM"
+      },
+      {
+        "name": "Hyist.",
+        "start": "1:45 AM",
+        "end": "2:30 AM"
+      }
+    ]
+  },
+  "Thursday": {
+    "Why (Plaza 2)": [
+      {
+        "name": "Wishing Fish and the Five Waters",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "When (Plaza 3)": [
+      {
+        "name": "Route 69 with House of Yes & Ultra Violet",
+        "start": "3:00 AM",
+        "end": "6:00 AM"
+      }
+    ],
+    "Groop (Plaza 5)": [
+      {
+        "name": "Tobacco Road",
+        "start": "11:30 AM",
+        "end": "11:55 AM"
+      },
+      {
+        "name": "Allegory",
+        "start": "12:10 PM",
+        "end": "12:35 PM"
+      },
+      {
+        "name": "Meadowglade",
+        "start": "12:50 PM",
+        "end": "1:15 PM"
+      },
+      {
+        "name": "Michael Alan Scott",
+        "start": "1:30 PM",
+        "end": "1:55 PM"
+      },
+      {
+        "name": "Prince of Eden",
+        "start": "2:10 PM",
+        "end": "2:40 PM"
+      },
+      {
+        "name": "Disappearing Teeth Trick",
+        "start": "3:00 PM",
+        "end": "3:30 PM"
+      },
+      {
+        "name": "Mercury",
+        "start": "3:50 PM",
+        "end": "4:25 PM"
+      },
+      {
+        "name": "Druzin",
+        "start": "4:45 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "CATLO",
+        "start": "12:15 AM",
+        "end": "1:00 AM"
+      },
+      {
+        "name": "Future Joy",
+        "start": "1:00 AM",
+        "end": "2:00 AM"
+      },
+      {
+        "name": "???",
+        "start": "2:00 AM",
+        "end": "3:00 AM"
+      }
+    ],
+    "Silent Disco (Plaza 9)": [
+      {
+        "name": "Heelturn x MadSpinnz",
+        "start": "12:00 AM",
+        "end": "4:00 AM"
+      }
+    ],
+    "The Grove (Plaza 7)": [
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "2:30 AM",
+        "end": "4:00 AM"
+      }
+    ]
+  },
+  "Friday": {
+    "Why (Plaza 2)": [
+      {
+        "name": "Bend & Zen Yoga: Glow Yoga Flow",
+        "start": "10:00 AM",
+        "end": "11:00 AM"
+      },
+      {
+        "name": "Journal Making with The Bottom Knox",
+        "start": "11:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Narcan Training with TMBTP",
+        "start": "2:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Sock Puppet Making Workshop with Cattywampus",
+        "start": "3:00 PM",
+        "end": "6:00 PM"
+      },
+      {
+        "name": "Wishing Fish and the Five Waters",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "When (Plaza 3)": [
+      {
+        "name": "Narcan Training with TMBTP",
+        "start": "11:00 AM",
+        "end": "12:00 PM"
+      },
+      {
+        "name": "Space Casino hosted by Igrac HogGoblin Chopper Gang",
+        "start": "12:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Motherborg with House of Yes & N*S*F*W",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "Groop (Plaza 5)": [
+      {
+        "name": "Narcan Training with TMBTP",
+        "start": "10:00 AM",
+        "end": "11:00 AM"
+      },
+      {
+        "name": "Redaroo Beer Exchange",
+        "start": "11:00 AM",
+        "end": "12:00 PM"
+      },
+      {
+        "name": "Crumbsnatchers",
+        "start": "12:00 PM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga: Move & Groove",
+        "start": "2:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Watchchild",
+        "start": "3:30 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "G.L.O.V.E",
+        "start": "4:00 PM",
+        "end": "4:30 PM"
+      },
+      {
+        "name": "Digital Blunts",
+        "start": "4:30 PM",
+        "end": "5:00 PM"
+      },
+      {
+        "name": "Valleria",
+        "start": "5:00 PM",
+        "end": "5:40 PM"
+      },
+      {
+        "name": "Fractal Hyist. (Fractal Bloom B2B Hyist.)",
+        "start": "5:45 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "name": "Angela Autumn",
+        "start": "10:00 PM",
+        "end": "10:45 PM"
+      },
+      {
+        "name": "Baby Wave",
+        "start": "11:00 PM",
+        "end": "11:45 PM"
+      },
+      {
+        "name": "The Sewing Club",
+        "start": "12:00 AM",
+        "end": "12:45 AM"
+      },
+      {
+        "name": "Vlad Holiday",
+        "start": "1:00 AM",
+        "end": "1:45 AM"
+      },
+      {
+        "name": "book NOT brooke",
+        "start": "2:00 AM",
+        "end": "2:45 AM"
+      }
+    ],
+    "Silent Disco (Plaza 9)": [
+      {
+        "name": "CamHoncho x C'est Funk",
+        "start": "10:00 AM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Sana x Haoran Chen",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "The Grove (Plaza 7)": [
+      {
+        "name": "Yomí­ That Harpist & Paperhand Puppets",
+        "start": "10:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga",
+        "start": "1:00 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "2:30 AM",
+        "end": "4:00 AM"
+      }
+    ]
+  },
+  "Saturday": {
+    "Why (Plaza 2)": [
+      {
+        "name": "Bend & Zen Yoga: Glow Yoga Flow",
+        "start": "10:00 AM",
+        "end": "11:00 AM"
+      },
+      {
+        "name": "Book & Art Swap with The Bottom Knox",
+        "start": "11:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Giant Puppet Making 101: Puppet Making Workshop with Cattywampus",
+        "start": "3:00 PM",
+        "end": "6:00 PM"
+      },
+      {
+        "name": "Wishing Fish and the Five Waters",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "When (Plaza 3)": [
+      {
+        "name": "Leather Baddies hosted by Igrac HogGoblin Chopper Gang",
+        "start": "12:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "From Dusk Til Dawn with House of Yes, Freak POV & AAAB: Demonic Disco",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "Groop (Plaza 5)": [
+      {
+        "name": "Drew Morgan's Wook Court",
+        "start": "11:00 AM",
+        "end": "12:00 PM"
+      },
+      {
+        "name": "Sourbeer Groop Carnival Games",
+        "start": "12:00 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga: Move & Groove",
+        "start": "2:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Kitty Coen",
+        "start": "3:00 PM",
+        "end": "3:45 PM"
+      },
+      {
+        "name": "Common People",
+        "start": "4:00 PM",
+        "end": "4:45 PM"
+      },
+      {
+        "name": "Willa Mae",
+        "start": "5:00 PM",
+        "end": "5:45 PM"
+      },
+      {
+        "name": "Veaux",
+        "start": "6:00 PM",
+        "end": "6:45 PM"
+      },
+      {
+        "name": "Total Wife",
+        "start": "7:00 PM",
+        "end": "7:45 PM"
+      },
+      {
+        "name": "she's green",
+        "start": "8:00 PM",
+        "end": "8:45 PM"
+      },
+      {
+        "name": "Joiner",
+        "start": "9:00 PM",
+        "end": "9:45 PM"
+      },
+      {
+        "name": "Billy!",
+        "start": "10:00 PM",
+        "end": "10:45 PM"
+      },
+      {
+        "name": "massie99",
+        "start": "11:00 PM",
+        "end": "11:45 PM"
+      },
+      {
+        "name": "EmoRoo AfterDark: Presented by RooHamm",
+        "start": "1:00 AM",
+        "end": "3:00 AM"
+      }
+    ],
+    "Silent Disco (Plaza 9)": [
+      {
+        "name": "Tiger City DJs",
+        "start": "10:00 AM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "BOYTOY x Jiminy Kick-It",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      }
+    ],
+    "The Grove (Plaza 7)": [
+      {
+        "name": "Yomí­ That Harpist & Paperhand Puppets",
+        "start": "10:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga",
+        "start": "1:00 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      },
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "2:30 AM",
+        "end": "4:00 AM"
+      }
+    ]
+  },
+  "Sunday": {
+    "Why (Plaza 2)": [
+      {
+        "name": "Wishing Fish and the Five Waters",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      },
+      {
+        "name": "Bend & Zen Yoga: Glow Yoga Flow",
+        "start": "10:00 AM",
+        "end": "11:00 AM"
+      },
+      {
+        "name": "Patch Making with The Bottom Knox",
+        "start": "11:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Giant Puppet Parade with Cattywampus, The Knox Honkers & Bangers Brass Band, and Paperhand Puppets",
+        "start": "1:00 PM",
+        "end": "4:00 PM"
+      }
+    ],
+    "When (Plaza 3)": [
+      {
+        "name": "From Dusk Til Dawn with House of Yes, Freak POV & AAAB: Demonic Disco",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
+      },
+      {
+        "name": "Igrac: HogGoblin Chopper Gang's Ratchet Roadhouse",
+        "start": "12:00 PM",
+        "end": "3:00 PM"
+      }
+    ],
+    "Groop (Plaza 5)": [
+      {
+        "name": "EmoRoo AfterDark: Presented by RooHamm",
+        "start": "1:00 AM",
+        "end": "3:00 AM"
+      },
+      {
+        "name": "The Belonging Co.",
+        "start": "10:00 AM",
+        "end": "11:00 AM"
+      },
+      {
+        "name": "Mike Sabath on Top of His Bus",
+        "start": "1:00 PM",
+        "end": "1:50 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga: Move & Groove",
+        "start": "2:00 PM",
+        "end": "3:00 PM"
+      }
+    ],
+    "Silent Disco (Plaza 9)": [
+      {
+        "name": "BOYTOY x Jiminy Kick-It",
+        "start": "2:00 AM",
+        "end": "5:00 AM"
+      },
+      {
+        "name": "Chore Boys x N*S*F*W",
+        "start": "10:00 AM",
+        "end": "2:00 PM"
+      }
+    ],
+    "The Grove (Plaza 7)": [
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "2:30 AM",
+        "end": "4:00 AM"
+      },
+      {
+        "name": "Stefan, The Saxman & Paperhand Puppets",
+        "start": "10:00 AM",
+        "end": "1:00 PM"
+      },
+      {
+        "name": "Bend & Zen Yoga",
+        "start": "1:00 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Soundscape Harmony with Soularium",
+        "start": "6:30 PM",
+        "end": "7:30 PM"
+      }
+    ]
+  }
+}

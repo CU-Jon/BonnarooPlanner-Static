@@ -22,11 +22,21 @@
         "end": "12:00 AM"
       }
     ],
-    "Which Stage": [],
-    "This Tent": [],
-    "That Tent": [],
-    "The Other": [],
-    "Where Stage": []
+    "Which Stage": [
+      
+    ],
+    "This Tent": [
+      
+    ],
+    "That Tent": [
+      
+    ],
+    "The Other": [
+      
+    ],
+    "Where Stage": [
+      
+    ]
   },
   "Friday": {
     "What Stage": [
@@ -210,18 +220,18 @@
       },
       {
         "name": "Major Lazer",
-        "start": "1:15 AM",
-        "end": "2:15 AM"
+        "start": "1:30 AM",
+        "end": "2:30 AM"
       },
       {
         "name": "Ganja White Night",
-        "start": "2:30 AM",
-        "end": "3:45 AM"
+        "start": "2:45 AM",
+        "end": "4:00 AM"
       },
       {
         "name": "INZO (Sunrise Set)",
-        "start": "4:00 AM",
-        "end": "5:15 AM"
+        "start": "4:15 AM",
+        "end": "5:30 AM"
       }
     ],
     "Where Stage": [
@@ -249,6 +259,23 @@
         "name": "Lumasi",
         "start": "5:15 AM",
         "end": "6:00 AM"
+      }
+    ],
+    "Snake & Jake's": [
+      {
+        "name": "Air & Fire Signs Astrology Readings with Meridian Projects",
+        "start": "12:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "This Is Why We're Single Talent Show with TFB",
+        "start": "4:30 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "Geriatrica: Til Death Do Us Party! with House of Yes & Chore Boys: Rusty Lazer + Messy",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
       }
     ]
   },
@@ -474,6 +501,33 @@
         "start": "5:45 AM",
         "end": "6:30 AM"
       }
+    ],
+    "Snake & Jake's": [
+      {
+        "name": "Water & Earth Signs Astrology Readings with Meridian Projects",
+        "start": "12:00 PM",
+        "end": "3:00 PM"
+      },
+      {
+        "name": "Super Soakin' Wet & Wild Pride Parade with Hoy & Softserve",
+        "start": "3:00 PM",
+        "end": "4:30 PM"
+      },
+      {
+        "name": "Ride 'em Cowboy EDM Linedancing with TFB",
+        "start": "4:30 PM",
+        "end": "5:30 PM"
+      },
+      {
+        "name": "Club Felt: An Intergalactic Puppet Strip Joint with Songco, Antlers, and MC Blue",
+        "start": "11:00 PM",
+        "end": "1:00 AM"
+      },
+      {
+        "name": "Robe Rage with House of Yes & DJ Nico",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
+      }
     ]
   },
   "Sunday": {
@@ -565,6 +619,11 @@
     ],
     "That Tent": [
       {
+        "name": "Soupless",
+        "start": "12:30 PM",
+        "end": "1:00 PM"
+      },
+      {
         "name": "Girl Tones",
         "start": "1:30 PM",
         "end": "2:15 PM"
@@ -622,6 +681,30 @@
         "end": "9:30 PM"
       }
     ],
-    "Where Stage": []
+    "Where Stage": [
+      
+    ],
+    "Snake & Jake's": [
+      {
+        "name": "Robe Rage with House of Yes & DJ Nico",
+        "start": "1:00 AM",
+        "end": "5:00 AM"
+      },
+      {
+        "name": "Hot Dogs & Hot Dads with TFB",
+        "start": "12:00 PM",
+        "end": "2:00 PM"
+      },
+      {
+        "name": "Now! Karaoke Band: Heartbreak Hotel",
+        "start": "1:00 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "name": "LSD Clownsystem: Lovefool",
+        "start": "9:00 PM",
+        "end": "11:00 PM"
+      }
+    ]
   }
 }
