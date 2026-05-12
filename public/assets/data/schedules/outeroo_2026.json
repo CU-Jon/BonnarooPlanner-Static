@@ -227,7 +227,7 @@
         "end": "3:00 PM"
       },
       {
-        "name": "Watchchild",
+        "name": "Waterchild",
         "start": "3:30 PM",
         "end": "4:00 PM"
       },
@@ -342,7 +342,7 @@
         "end": "3:00 PM"
       },
       {
-        "name": "From Dusk Til Dawn with House of Yes, Freak POV & AAAB: Demonic Disco",
+        "name": "From Dusk Til Dawn with House of Yes, Freak POV & BAAB: Demonic Disco",
         "start": "1:00 AM",
         "end": "5:00 AM"
       }
@@ -354,7 +354,7 @@
         "end": "12:00 PM"
       },
       {
-        "name": "Sourbeer Groop Carnival Games",
+        "name": "SOOPERGROOP Carnival Games",
         "start": "12:00 PM",
         "end": "2:00 PM"
       },
@@ -452,11 +452,6 @@
   "Sunday": {
     "Why (Plaza 2)": [
       {
-        "name": "Wishing Fish and the Five Waters",
-        "start": "2:00 AM",
-        "end": "5:00 AM"
-      },
-      {
         "name": "Bend & Zen Yoga: Glow Yoga Flow",
         "start": "10:00 AM",
         "end": "11:00 AM"
@@ -474,22 +469,12 @@
     ],
     "When (Plaza 3)": [
       {
-        "name": "From Dusk Til Dawn with House of Yes, Freak POV & AAAB: Demonic Disco",
-        "start": "1:00 AM",
-        "end": "5:00 AM"
-      },
-      {
         "name": "Igrac: HogGoblin Chopper Gang's Ratchet Roadhouse",
         "start": "12:00 PM",
         "end": "3:00 PM"
       }
     ],
     "Groop (Plaza 5)": [
-      {
-        "name": "EmoRoo AfterDark: Presented by RooHamm",
-        "start": "1:00 AM",
-        "end": "3:00 AM"
-      },
       {
         "name": "The Belonging Co.",
         "start": "10:00 AM",
@@ -508,22 +493,12 @@
     ],
     "Silent Disco (Plaza 9)": [
       {
-        "name": "BOYTOY x Jiminy Kick-It",
-        "start": "2:00 AM",
-        "end": "5:00 AM"
-      },
-      {
         "name": "Chore Boys x N*S*F*W",
         "start": "10:00 AM",
         "end": "2:00 PM"
       }
     ],
     "The Grove (Plaza 7)": [
-      {
-        "name": "Soundscape Harmony with Soularium",
-        "start": "2:30 AM",
-        "end": "4:00 AM"
-      },
       {
         "name": "Stefan, The Saxman & Paperhand Puppets",
         "start": "10:00 AM",
