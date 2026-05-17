@@ -2,9 +2,9 @@
 [![MIT License](https://img.shields.io/github/license/CU-Jon/BonnarooPlanner-Static)](https://github.com/CU-Jon/BonnarooPlanner-Static/blob/main/LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/CU-Jon/BonnarooPlanner-Static)](https://github.com/CU-Jon/BonnarooPlanner-Static/commits)
 [![Issues](https://img.shields.io/github/issues/CU-Jon/BonnarooPlanner-Static)](https://github.com/CU-Jon/BonnarooPlanner-Static/issues)
-[![Node Version](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)](https://nodejs.org/)
+[![Node Version](https://img.shields.io/badge/node-%3E=22.0.0-brightgreen)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
 # Bonnaroo Festival Tools
 
