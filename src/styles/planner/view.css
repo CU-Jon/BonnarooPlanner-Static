@@ -115,6 +115,12 @@ table.day-section tr:nth-child(even) td {
     min-width: 72px;
 }
 
+.event-cell {
+    background-color: color-mix(in srgb, var(--roo-orange) 14%, transparent) !important;
+    color: var(--roo-cream);
+    font-weight: 600;
+}
+
 /* ─────────────────────────────────────────
    COMPACT VIEW
 ───────────────────────────────────────── */

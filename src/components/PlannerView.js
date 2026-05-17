@@ -37,11 +37,14 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
   const [shareCopied, setShareCopied] = useState(false);
   const [shareURL, setShareURL] = useState('');
   const [pdfPopoverVisible, setPdfPopoverVisible] = useState(false);
+  const [printPopoverVisible, setPrintPopoverVisible] = useState(false);
   const shareWrapperRef = useRef(null);
   const shareInputRef = useRef(null);
   const sharePopoverRef = useRef(null);
   const pdfWrapperRef = useRef(null);
   const pdfPopoverRef = useRef(null);
+  const printWrapperRef = useRef(null);
+  const printPopoverRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -139,6 +142,37 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     }
   }, [pdfPopoverVisible]);
 
+  useEffect(() => {
+    if (!printPopoverVisible) return;
+    function handleClickOutside(e) {
+      if (printWrapperRef.current && !printWrapperRef.current.contains(e.target)) {
+        setPrintPopoverVisible(false);
+      }
+    }
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') setPrintPopoverVisible(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [printPopoverVisible]);
+
+  useLayoutEffect(() => {
+    if (!printPopoverVisible || !printPopoverRef.current) return;
+    const el = printPopoverRef.current;
+    el.style.transform = '';
+    const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    if (rect.left < 8) {
+      el.style.transform = `translateX(calc(-50% + ${8 - rect.left}px))`;
+    } else if (rect.right > vw - 8) {
+      el.style.transform = `translateX(calc(-50% + ${vw - 8 - rect.right}px))`;
+    }
+  }, [printPopoverVisible]);
+
   const conflictKeys = useMemo(() => detectConflicts(selections), [selections]);
   const typesPresent = TYPE_ORDER.filter(t => selections.some(s => s.type === t));
   const typeLabel =
@@ -226,6 +260,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
                           <td
                             key={`${day}-${stg}-${tm}`}
                             rowSpan={span}
+                            className="event-cell"
                             dangerouslySetInnerHTML={{ __html: found.name }}
                           />
                         );
@@ -699,6 +734,22 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     setPdfPopoverVisible(prev => !prev);
   }
 
+  function handlePrintClick() {
+    setPrintPopoverVisible(prev => !prev);
+  }
+
+  function printPage(orientation) {
+    setPrintPopoverVisible(false);
+    const style = document.createElement('style');
+    style.id = 'print-orientation-override';
+    style.textContent = `@page { size: ${orientation}; }`;
+    document.head.appendChild(style);
+    window.addEventListener('afterprint', () => {
+      style.remove();
+    }, { once: true });
+    window.print();
+  }
+
   function handleShare() {
     const url = buildShareURL(selections, year);
     setShareURL(url);
@@ -733,13 +784,55 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
         </div>
         <div className="builder-toolbar-right">
           {SHOW_PRINT_BUTTON && (
-            <button
-              type="button"
-              className="btn btn-print"
-              onClick={() => window.print()}
-            >
-              Print
-            </button>
+            <div className="pdf-popover-wrapper print-popover-wrapper" ref={printWrapperRef}>
+              <button
+                type="button"
+                className="btn btn-print"
+                onClick={handlePrintClick}
+                aria-haspopup="dialog"
+                aria-expanded={printPopoverVisible}
+              >
+                Print
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {printPopoverVisible && (
+                <div
+                  className="pdf-popover print-popover"
+                  role="dialog"
+                  aria-label="Print options"
+                  ref={printPopoverRef}
+                >
+                  <div className="print-orientation-row">
+                    <button
+                      type="button"
+                      className="pdf-download-btn"
+                      onClick={() => printPage('portrait')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="6 9 6 2 18 2 18 9" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect x="6" y="14" width="12" height="8" />
+                      </svg>
+                      Portrait
+                    </button>
+                    <button
+                      type="button"
+                      className="pdf-download-btn"
+                      onClick={() => printPage('landscape')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="6 9 6 2 18 2 18 9" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect x="6" y="14" width="12" height="8" />
+                      </svg>
+                      Landscape
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
           <div className="pdf-popover-wrapper" ref={pdfWrapperRef}>
             <button
