@@ -34,18 +34,16 @@
         max-width: 100% !important;
     }
 
-    table.day-section {
+    .table-scroll-wrap ~ .table-scroll-wrap {
         break-before: page;
         page-break-before: always;
+    }
+
+    table.day-section {
         width: 100%;
         margin: 0 !important;
         border-collapse: collapse !important;
         background: #fff !important;
-    }
-
-    table.day-section:first-of-type {
-        break-before: auto;
-        page-break-before: auto;
     }
 
     table.day-section th {
@@ -92,11 +90,7 @@
         break-before: avoid;
     }
 
-    /* Target the first table of each type section, which sits two siblings
-       after the header (header → hidden .day-heading-row → table). Without
-       this, the higher-specificity table.day-section rule forces a page break
-       that orphans the type heading on its own page. */
-    .planner-type-header + * + table.day-section {
+    .planner-type-header + * + .table-scroll-wrap {
         page-break-before: avoid;
         break-before: avoid;
     }
@@ -104,6 +98,16 @@
     .planner-type-header ~ .planner-type-header {
         page-break-before: always;
         break-before: page;
+    }
+
+    .day-heading-compact ~ .day-heading-compact {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .planner-type-header + .day-heading-compact {
+        break-before: avoid;
+        page-break-before: avoid;
     }
 
     .day-heading-compact {

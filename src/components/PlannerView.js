@@ -17,6 +17,7 @@ import {
 } from '../config';
 import { generateCSV } from '../utils/csvExporter';
 import { buildShareURL } from '../utils/shareUtils';
+import { loadUnicodeFontForPDF } from '../utils/pdfFontLoader';
 import { detectConflicts, getSelectionKey } from '../utils/conflictUtils';
 
 const TYPE_ORDER = ['Centeroo', 'Outeroo'];
@@ -372,7 +373,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     return { columns, body, cellStateMap };
   }
 
-  function downloadPDF(orientation = 'portrait') {
+  async function downloadPDF(orientation = 'portrait') {
     const TABLE_MARGIN = 70;
     const FOOTER_MARGIN_BOTTOM = 20;
 
@@ -384,6 +385,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const plannerTitle = `Bonnaroo ${year} Planner \u2014 ${typeLabel}`;
 
     const doc = new jsPDF({ orientation, unit: 'pt', format: 'letter' });
+    const unicodeFont = await loadUnicodeFontForPDF(doc);
     let pageIdx = 0;
 
     typesPresent.forEach(type => {
@@ -409,11 +411,12 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           headStyles: {
             fillColor: ORANGE,
             textColor: PDF_WHITE,
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            font: 'helvetica'
           },
           alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
           styles: {
-            font: 'helvetica',
+            font: unicodeFont,
             fontSize: 9,
             halign: 'center',
             valign: 'middle',
@@ -425,6 +428,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
               fillColor: PDF_TIME_BG,
               textColor: PDF_TIME_TEXT,
               fontStyle: 'bold',
+              font: 'helvetica',
               cellWidth: 50
             }
           },
@@ -497,7 +501,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     doc.save(fileName);
   }
 
-  function downloadCompactPDF(orientation = 'portrait') {
+  async function downloadCompactPDF(orientation = 'portrait') {
     const TABLE_MARGIN = 70;
     const FOOTER_MARGIN_BOTTOM = 20;
     const DAY_HEADING_HEIGHT = 24;
@@ -510,6 +514,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const plannerTitle = `Bonnaroo ${year} Planner \u2014 ${typeLabel} (Compact)`;
 
     const doc = new jsPDF({ orientation, unit: 'pt', format: 'letter' });
+    const unicodeFont = await loadUnicodeFontForPDF(doc);
 
     typesPresent.forEach((type, typeIdx) => {
       const typeSelections = selections.filter(s => s.type === type);
@@ -534,7 +539,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
       let currentY = TABLE_MARGIN;
 
-      Object.entries(byDay).forEach(([day, daySelections]) => {
+      Object.entries(byDay).forEach(([day, daySelections], dayIdx) => {
         const conflictBodyRows = new Set();
         daySelections.forEach((sel, idx) => {
           if (conflictKeys.has(getSelectionKey(sel))) conflictBodyRows.add(idx);
@@ -548,9 +553,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           sel.location
         ]);
 
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const MIN_TABLE_HEIGHT = 50;
-        if (currentY + DAY_HEADING_HEIGHT + MIN_TABLE_HEIGHT > pageHeight - FOOTER_MARGIN_BOTTOM) {
+        if (dayIdx > 0) {
           doc.addPage();
           currentY = TABLE_MARGIN;
         }
@@ -576,11 +579,12 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           headStyles: {
             fillColor: ORANGE,
             textColor: PDF_WHITE,
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            font: 'helvetica'
           },
           alternateRowStyles: { fillColor: PDF_LIGHT_ROW },
           styles: {
-            font: 'helvetica',
+            font: unicodeFont,
             fontSize: 9,
             halign: 'center',
             valign: 'middle',
@@ -592,6 +596,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
               fillColor: PDF_TIME_BG,
               textColor: PDF_TIME_TEXT,
               fontStyle: 'bold',
+              font: 'helvetica',
               cellWidth: 90
             },
             1: { halign: 'left' },
