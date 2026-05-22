@@ -68,9 +68,12 @@ export const dayOffsets = {
 
 // -------------------------------------------------
 // Cutoff (in minutes after midnight) for "late night" sets to count as the
-// previous calendar day. Default is 7:00 AM (420 minutes).
+// previous calendar day, specified per year.
 // -------------------------------------------------
-export const LATE_NIGHT_CUTOFF = 7 * 60;
+export const lateNightCutoffs = {
+  2025: 7 * 60,      // 7:00 AM (420 minutes)
+  2026: 6.75 * 60    // 6:45 AM (405 minutes) - accommodates 7:00 AM Sunday bird watching
+};
 
 // -------------------------------------------------
 // For years where the festival does NOT follow the usual Father's Day rule,

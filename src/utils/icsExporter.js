@@ -15,7 +15,7 @@ export function formatICSDate(day, time, year) {
   eventDate.setDate(baseDate.getDate() + dayOffsets[dayName]);
 
   // Use timeToMinutes for parsing and late-night logic
-  const mins = timeToMinutes(time);
+  const mins = timeToMinutes(time, year);
   let h = Math.floor(mins / 60) % 24;
   const m = mins % 60;
 

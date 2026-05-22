@@ -3,7 +3,7 @@ import { dayOffsets } from '../config';
 
 const DAY_ORDER = Object.keys(dayOffsets);
 
-export function generateCSV(selections) {
+export function generateCSV(selections, year) {
   const rows = [
     ['Artist/Event', 'Location', 'Sublocation', 'Day', 'Start', 'End']
   ];
@@ -15,7 +15,7 @@ export function generateCSV(selections) {
     if (dayA !== dayB) {
       return dayA - dayB;
     }
-    return timeToMinutes(a.event.start) - timeToMinutes(b.event.start);
+    return timeToMinutes(a.event.start, year) - timeToMinutes(b.event.start, year);
   });
 
   sorted.forEach(sel => {

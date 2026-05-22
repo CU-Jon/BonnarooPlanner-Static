@@ -144,7 +144,7 @@ All app-wide settings and filename templates live in `src/config.js`.
 | `availableYears` | Years shown in the year selector. Add new years here. |
 | `jsonBase` | Base path for schedule JSON files. |
 | `dayOffsets` | Maps day names to their offset from the festival's opening Monday. |
-| `LATE_NIGHT_CUTOFF` | Minutes past midnight at which a set still counts as the prior day (default: `420` = 7:00 AM). |
+| `lateNightCutoffs` | Per-year minutes past midnight at which a set still counts as the prior day. Example: `{ 2025: 420, 2026: 405 }`. |
 | `bonnarooMondayOverrides` | Per-year override of the opening Monday for years that fall outside the Father's Day rule. |
 | `HTML_TITLE_FALLBACK` | Browser tab title shown before React hydrates. |
 | `HTML_TITLE_TEMPLATE` | Browser tab title template. Supports `{year}`. |
@@ -180,7 +180,7 @@ export const bonnarooMondayOverrides = {
 
 ### Late-night cutoff
 
-Sets that end before `LATE_NIGHT_CUTOFF` (default 7:00 AM) are grouped with the previous calendar day to match Bonnaroo's official schedule presentation. Exported `.ics` files always use the actual calendar date and time.
+Sets that end before the year's late-night cutoff (defined in `lateNightCutoffs` in `config.js`) are grouped with the previous calendar day to match Bonnaroo's official schedule presentation. Exported `.ics` files always use the actual calendar date and time.
 
 ---
 

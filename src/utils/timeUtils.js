@@ -1,6 +1,6 @@
-import { LATE_NIGHT_CUTOFF, bonnarooMondayOverrides } from '../config';
+import { lateNightCutoffs, bonnarooMondayOverrides } from '../config';
 
-export function timeToMinutes(time) {
+export function timeToMinutes(time, year) {
   const match = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || [];
   let hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
@@ -8,7 +8,8 @@ export function timeToMinutes(time) {
   if (/PM/i.test(ampm) && hours !== 12) hours += 12;
   if (/AM/i.test(ampm) && hours === 12) hours = 0;
   let total = hours * 60 + minutes;
-  if (total <= LATE_NIGHT_CUTOFF) total += 1440;
+  const cutoff = lateNightCutoffs[year] || (7 * 60);
+  if (total <= cutoff) total += 1440;
   return total;
 }
 
@@ -30,14 +31,14 @@ function escapeHTML(str) {
     .replace(/'/g, '&#39;');
 }
 
-export function mergeOverlapsWithDetail(events) {
+export function mergeOverlapsWithDetail(events, year) {
   const sorted = [...events].sort(
-    (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)
+    (a, b) => timeToMinutes(a.start, year) - timeToMinutes(b.start, year)
   );
   const buckets = [];
   sorted.forEach(ev => {
-    const s = timeToMinutes(ev.start);
-    const e = timeToMinutes(ev.end);
+    const s = timeToMinutes(ev.start, year);
+    const e = timeToMinutes(ev.end, year);
     if (!buckets.length || s >= buckets[buckets.length - 1].end) {
       buckets.push({
         start: s,

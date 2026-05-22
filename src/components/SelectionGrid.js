@@ -7,7 +7,8 @@ export default function SelectionGrid({
   type,
   onToggleSelection,
   currentSelections,
-  conflictKeys = new Set()
+  conflictKeys = new Set(),
+  year
 }) {
   return (
     <div>
@@ -28,7 +29,7 @@ export default function SelectionGrid({
               {Object.entries(locations).map(([loc, events]) => {
                 if (!events || !events.length) return null;
                 const sorted = [...events].sort(
-                  (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)
+                  (a, b) => timeToMinutes(a.start, year) - timeToMinutes(b.start, year)
                 );
                 return (
                   <div className="location-block" key={loc}>

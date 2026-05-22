@@ -50,8 +50,8 @@ export default function PlannerBuilder({
   }, [initialSelections]);
 
   const conflictKeys = useMemo(
-    () => detectConflicts(currentSelections),
-    [currentSelections]
+    () => detectConflicts(currentSelections, year),
+    [currentSelections, year]
   );
 
   const selectionCounts = useMemo(
@@ -199,6 +199,7 @@ export default function PlannerBuilder({
           currentSelections={currentSelections}
           onToggleSelection={toggleSelection}
           conflictKeys={conflictKeys}
+          year={year}
         />
       ) : (
         <p className="bonnaroo-status bonnaroo-status--not-available">

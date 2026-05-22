@@ -173,7 +173,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     }
   }, [printPopoverVisible]);
 
-  const conflictKeys = useMemo(() => detectConflicts(selections), [selections]);
+  const conflictKeys = useMemo(() => detectConflicts(selections, year), [selections, year]);
   const typesPresent = TYPE_ORDER.filter(t => selections.some(s => s.type === t));
   const typeLabel =
     typesPresent.length === 0
@@ -200,8 +200,8 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
       Object.entries(locations).forEach(([, events]) => {
         events.forEach(ev => {
-          const s = timeToMinutes(ev.start);
-          const e = timeToMinutes(ev.end);
+          const s = timeToMinutes(ev.start, year);
+          const e = timeToMinutes(ev.end, year);
           timeGrid.start = Math.min(timeGrid.start, s);
           timeGrid.end = Math.max(timeGrid.end, e);
         });
@@ -233,7 +233,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
                   const rows = [];
                   const stageEvents = {};
                   stageNames.forEach(stg => {
-                    stageEvents[stg] = mergeOverlapsWithDetail(locations[stg]);
+                    stageEvents[stg] = mergeOverlapsWithDetail(locations[stg], year);
                   });
                   const rowSpanTracker = {};
 
@@ -251,11 +251,11 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
                         return;
                       }
                       const found = stageEvents[stg].find(
-                        ev => timeToMinutes(ev.start) === tm
+                        ev => timeToMinutes(ev.start, year) === tm
                       );
                       if (found) {
                         const span =
-                          (timeToMinutes(found.end) - timeToMinutes(found.start)) / 15;
+                          (timeToMinutes(found.end, year) - timeToMinutes(found.start, year)) / 15;
                         cells.push(
                           <td
                             key={`${day}-${stg}-${tm}`}
@@ -290,7 +290,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
       const dA = DAY_ORDER.indexOf(a.day);
       const dB = DAY_ORDER.indexOf(b.day);
       if (dA !== dB) return dA - dB;
-      return timeToMinutes(a.event.start) - timeToMinutes(b.event.start);
+      return timeToMinutes(a.event.start, year) - timeToMinutes(b.event.start, year);
     });
 
     const byDay = {};
@@ -347,8 +347,8 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     let maxTime = 0;
     Object.values(locations).forEach(events => {
       events.forEach(ev => {
-        minTime = Math.min(minTime, timeToMinutes(ev.start));
-        maxTime = Math.max(maxTime, timeToMinutes(ev.end));
+        minTime = Math.min(minTime, timeToMinutes(ev.start, year));
+        maxTime = Math.max(maxTime, timeToMinutes(ev.end, year));
       });
     });
     minTime = Math.floor(minTime / 15) * 15;
@@ -356,7 +356,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
 
     const stageEventsMap = {};
     stageNames.forEach(stg => {
-      stageEventsMap[stg] = mergeOverlapsWithDetail(locations[stg]);
+      stageEventsMap[stg] = mergeOverlapsWithDetail(locations[stg], year);
     });
 
     const timeSlots = (maxTime - minTime) / 15;
@@ -366,7 +366,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
       const evList = stageEventsMap[stg];
       return Array.from({ length: timeSlots }, (_, i) => {
         const tm = minTime + i * 15;
-        const startEv = evList.find(e => timeToMinutes(e.start) === tm);
+        const startEv = evList.find(e => timeToMinutes(e.start, year) === tm);
         if (startEv) {
           const cleanName = startEv.name
             .replace(/<br\s*\/?>/gi, '\n')
@@ -381,7 +381,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
           return { state: 'start', content: cleanName };
         }
         const activeEv = evList.find(
-          e => timeToMinutes(e.start) < tm && timeToMinutes(e.end) > tm
+          e => timeToMinutes(e.start, year) < tm && timeToMinutes(e.end, year) > tm
         );
         return activeEv
           ? { state: 'continue', content: '' }
@@ -563,7 +563,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
         const dA = DAY_ORDER.indexOf(a.day);
         const dB = DAY_ORDER.indexOf(b.day);
         if (dA !== dB) return dA - dB;
-        return timeToMinutes(a.event.start) - timeToMinutes(b.event.start);
+        return timeToMinutes(a.event.start, year) - timeToMinutes(b.event.start, year);
       });
 
       const byDay = {};
@@ -719,7 +719,7 @@ export default function PlannerView({ selections, year, onRestart, onBack, onSav
     const fileName = CSV_FILENAME_TEMPLATE
       .replace('{year}', year)
       .replace('{tab}', typeLabel);
-    const csvData = generateCSV(selections);
+    const csvData = generateCSV(selections, year);
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
